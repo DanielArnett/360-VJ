@@ -22,10 +22,11 @@
 #ifndef ShaderMaker_H
 #define ShaderMaker_H
 
-#include <FFGLShader.h>
-#include "../FFGLPluginSDK.h"
+#include "FFGL\FFGLShader.h"
+#include "FFGL\FFGLPluginSDK.h"
 
 #define GL_SHADING_LANGUAGE_VERSION	0x8B8C
+#define GL_READ_FRAMEBUFFER_EXT		0x8CA8
 #define GL_TEXTURE_WRAP_R			0x8072
 
 class ShaderMaker : public CFreeFrameGLPlugin

@@ -26,8 +26,8 @@
 //		--------------------------------------------------------------
 //
 //
-#include <FFGL.h>
-#include <FFGLLib.h>
+#include "FFGL\FFGL.h"
+#include "FFGL\FFGLLib.h"
 #include <stdio.h>
 #include <string>
 #include <time.h> // for date

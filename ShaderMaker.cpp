@@ -51,8 +51,8 @@
 
 static CFFGLPluginInfo PluginInfo ( 
 	ShaderMaker::CreateInstance,		// Create method
-	"FFID",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
-	"Plugin name",						// *** Plugin name - make it different for each plugin
+	"ZZZZ",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
+	"Shader Maker",						// *** Plugin name - make it different for each plugin
 	1,						   			// API major version number 													
 	000,								// API minor version number	
 	1,									// *** Plugin major version number

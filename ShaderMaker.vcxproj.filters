@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\FFGL">
+      <UniqueIdentifier>{712569ec-396c-4a7d-b031-829fac146a44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FFGL">
+      <UniqueIdentifier>{43536f96-7053-4859-8e0c-4765cd58dfb1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FFGL\FFGL.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="FFGL\FFGLExtensions.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="FFGL\FFGLFBO.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="FFGL\FFGLLib.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="FFGL\FFGLPluginInfo.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="FFGL\FFGLPluginManager.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="FFGL\FFGLPluginManager_inl.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="FFGL\FFGLPluginSDK.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="FFGL\FFGLShader.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="FFGL\FreeFrame.h">
+      <Filter>Header Files\FFGL</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderMaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FFGL\FFGL.cpp">
+      <Filter>Source Files\FFGL</Filter>
+    </ClCompile>
+    <ClCompile Include="FFGL\FFGLPluginInfo.cpp">
+      <Filter>Source Files\FFGL</Filter>
+    </ClCompile>
+    <ClCompile Include="FFGL\FFGLPluginInfoData.cpp">
+      <Filter>Source Files\FFGL</Filter>
+    </ClCompile>
+    <ClCompile Include="FFGL\FFGLPluginManager.cpp">
+      <Filter>Source Files\FFGL</Filter>
+    </ClCompile>
+    <ClCompile Include="FFGL\FFGLPluginSDK.cpp">
+      <Filter>Source Files\FFGL</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderMaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FFGL\FFGLShader.cpp">
+      <Filter>Source Files\FFGL</Filter>
+    </ClCompile>
+    <ClCompile Include="FFGL\FFGLExtensions.cpp">
+      <Filter>Source Files\FFGL</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

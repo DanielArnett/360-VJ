@@ -26,11 +26,19 @@
 //		--------------------------------------------------------------
 //
 //
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+// win
 #include "FFGL\FFGL.h"
 #include "FFGL\FFGLLib.h"
+#else   
+#include "FFGL.h"
+#include "FFGLLib.h"
+#endif
+
 #include <stdio.h>
 #include <string>
 #include <time.h> // for date
+
 #include "ShaderMaker.h"
 
 #define FFPARAM_SPEED       (0)
@@ -43,6 +51,7 @@
 #define FFPARAM_BLUE        (7)
 #define FFPARAM_ALPHA       (8)
 
+//// FIXME: cross-platform solution
 #define STRINGIFY(A) #A
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -105,14 +114,15 @@ void main()
 char *fragmentShaderCode = STRINGIFY (
 // ==================== PASTE WITHIN THESE LINES =======================
 
-/*
+
 // Red screen test shader
-void main(void) {
+/*void main(void) {
     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 
-}
-*/
+}*/
 
+
+                                      
 
 //
 // Shadertoy example 1
@@ -130,6 +140,7 @@ void main(void) {
 // 1st place at Numerica Artparty in march 2009 in France
 //
 
+                                      
 float time = iGlobalTime*.5;
 
 const float s=0.4; //Density threshold
@@ -181,8 +192,9 @@ void main()
     gl_FragColor= vec4(color,1.)+vec4(0.1,0.2,0.5,1.0)*(t*0.025);
 
 }
+         
 
-/*
+
 //
 // Shadertoy example 2 - needs a texture input..
 //
@@ -194,6 +206,7 @@ void main()
 // Created by inigo quilez - iq/2013
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 //
+                                      /*
 void main(void)
 {
     vec2 uv = 0.5*gl_FragCoord.xy / iResolution.xy;
@@ -209,11 +222,11 @@ void main(void)
     col *= 1.0 + 2.0*d;
     gl_FragColor = vec4(col,1.0);
 
-}
-*/
+}*/
 
 
-/*
+
+
 //
 // Shadertoy example 3
 //
@@ -231,6 +244,7 @@ void main(void)
 // See http://www.iquilezles.org/articles/menger/menger.htm for the full explanation of how this was done
 //
 
+                                      /*
 float maxcomp(in vec3 p ) { return max(p.x,max(p.y,p.z));}
 float sdBox( vec3 p, vec3 b )
 {
@@ -705,7 +719,11 @@ DWORD ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 
 		// Calculate date vars
 		time(&datime);
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 		localtime_s(&tmbuff, &datime);
+#else
+        localtime_r(&datime, &tmbuff);
+#endif
 		m_dateYear = (float)tmbuff.tm_year;
 		m_dateMonth = (float)tmbuff.tm_mon+1;
 		m_dateDay = (float)tmbuff.tm_mday;
@@ -901,10 +919,12 @@ DWORD ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 	return FF_SUCCESS;
 }
 
+
+
 char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 
 	memset(m_DisplayValue, 0, 15);
-	
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 	switch (dwIndex) {
 
 		case FFPARAM_SPEED:
@@ -946,6 +966,49 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 		default:
 			return m_DisplayValue;
 	}
+#else // posix
+	switch (dwIndex) {
+
+		case FFPARAM_SPEED:
+			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserSpeed*100.0));
+			return m_DisplayValue;
+	
+		case FFPARAM_MOUSEX:
+			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseX*m_vpWidth));
+			return m_DisplayValue;
+
+		case FFPARAM_MOUSEY:
+			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
+			return m_DisplayValue;
+
+		case FFPARAM_MOUSELEFTX:
+			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
+			return m_DisplayValue;
+
+		case FFPARAM_MOUSELEFTY:
+			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
+			return m_DisplayValue;
+
+		case FFPARAM_RED:
+			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
+			return m_DisplayValue;
+
+		case FFPARAM_GREEN:
+			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserGreen*256.0));
+			return m_DisplayValue;
+
+		case FFPARAM_BLUE:
+			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserBlue*256.0));
+			return m_DisplayValue;
+
+		case FFPARAM_ALPHA:
+			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
+			return m_DisplayValue;
+
+		default:
+			return m_DisplayValue;
+	}
+#endif
 	return NULL;
 
 }
@@ -988,8 +1051,7 @@ DWORD ShaderMaker::GetInputStatus(DWORD dwIndex)
 
 }
 
-
-
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 DWORD ShaderMaker::GetParameter(DWORD dwIndex)
 {
 	DWORD dwRet;
@@ -1092,7 +1154,89 @@ DWORD ShaderMaker::SetParameter(const SetParameterStruct* pParam)
 
 	return FF_FAIL;
 }
+#else   // posix FIXME check if this corresponds to more recent FFGL spec
+float ShaderMaker::GetFloatParameter(unsigned int index)
+{
+	switch (index) {
 
+		case FFPARAM_SPEED:
+			return  m_UserSpeed;
+	
+		case FFPARAM_MOUSEX:
+			return  m_UserMouseX;
+
+		case FFPARAM_MOUSEY:
+			return  m_UserMouseY;
+
+		case FFPARAM_MOUSELEFTX:
+			return m_UserMouseLeftX;
+
+		case FFPARAM_MOUSELEFTY:
+			return m_UserMouseLeftY;
+
+		case FFPARAM_RED:
+			return m_UserRed;
+
+		case FFPARAM_GREEN:
+			return m_UserGreen;
+
+		case FFPARAM_BLUE:
+			return m_UserBlue;
+
+		case FFPARAM_ALPHA:
+			return m_UserAlpha;
+
+		default:
+			return FF_FAIL;
+	}
+}
+
+FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
+{
+		switch (index) {
+
+			case FFPARAM_SPEED:
+				m_UserSpeed = value;
+				break;
+
+			case FFPARAM_MOUSEX:
+				m_UserMouseX = value;
+				break;
+
+			case FFPARAM_MOUSEY:
+				m_UserMouseY = value;
+				break;
+
+			case FFPARAM_MOUSELEFTX:
+				m_UserMouseLeftX = value;
+				break;
+
+			case FFPARAM_MOUSELEFTY:
+				m_UserMouseLeftY = value;
+				break;
+
+			case FFPARAM_RED:
+				m_UserRed = value;
+				break;
+
+			case FFPARAM_GREEN:
+				m_UserGreen = value;
+				break;
+
+			case FFPARAM_BLUE:
+				m_UserBlue = value;
+				break;
+
+			case FFPARAM_ALPHA:
+				m_UserAlpha = value;
+				break;
+
+			default:
+				return FF_FAIL;
+		}
+		return FF_SUCCESS;
+}
+#endif
 
 void ShaderMaker::SetDefaults() {
 
@@ -1408,23 +1552,32 @@ bool ShaderMaker::LoadShader(std::string shaderString) {
 
 void ShaderMaker::StartCounter()
 {
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
     LARGE_INTEGER li;
-
 	// Find frequency
     QueryPerformanceFrequency(&li);
     PCFreq = double(li.QuadPart)/1000.0;
-
 	// Second call needed
     QueryPerformanceCounter(&li);
     CounterStart = li.QuadPart;
-
+#else
+    // posix c++11
+    start = std::chrono::steady_clock::now();
+#endif
 }
 
 double ShaderMaker::GetCounter()
 {
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
     LARGE_INTEGER li;
     QueryPerformanceCounter(&li);
     return double(li.QuadPart-CounterStart)/PCFreq;
+#else
+    // posix c++11
+    end = std::chrono::steady_clock::now();
+    return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000.;
+#endif
+    return 0;
 }
 
 void ShaderMaker::CreateRectangleTexture(FFGLTextureStruct Texture, FFGLTexCoords maxCoords, GLuint &glTexture, GLenum texunit, GLuint &fbo, GLuint hostFbo)

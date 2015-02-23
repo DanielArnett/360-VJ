@@ -21,7 +21,7 @@ vpath %.cpp $(DIR_SRC):$(DIR_FFGL)
 #CCPP = @g++
 CCPP = clang++
 CPPFLAGS = -Wall -Wno-unknown-pragmas -pedantic \
-	-I$(DIR_SRC) -DTARGET_OS_MAC
+	-I$(DIR_SRC) -I$(DIR_FFGL) -DTARGET_OS_MAC
 
 CSHLIB = $(CCPP) -o $@ -dynamiclib -framework GLUT -framework OpenGL
 

@@ -3,6 +3,7 @@
 //
 //		------------------------------------------------------------
 //		Copyright (C) 2015. Lynn Jarvis, Leading Edge. Pty. Ltd.
+//      Ported to OSX by Amaury Hazan (amaury@billaboop.com)
 //
 //		This program is free software: you can redistribute it and/or modify
 //		it under the terms of the GNU Lesser General Public License as published by
@@ -22,8 +23,27 @@
 #ifndef ShaderMaker_H
 #define ShaderMaker_H
 
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+// win
 #include "FFGL\FFGLShader.h"
 #include "FFGL\FFGLPluginSDK.h"
+#else   
+#include "FFGLShader.h"
+#include "FFGLPluginSDK.h"
+// posix - c++11 for time
+typedef uint8_t  CHAR;
+typedef uint16_t WORD;
+typedef uint32_t DWORD;
+typedef int8_t  BYTE;
+typedef int16_t SHORT;
+typedef int32_t LONG;
+typedef LONG INT;
+typedef INT BOOL;
+typedef int64_t __int64; 
+typedef int64_t LARGE_INTEGER;
+#include <ctime>
+#include <chrono> // c++11 timer
+#endif
 
 #define GL_SHADING_LANGUAGE_VERSION	0x8B8C
 #define GL_READ_FRAMEBUFFER_EXT		0x8CA8
@@ -41,9 +61,15 @@ public:
 	// FreeFrameGL plugin methods
 	///////////////////////////////////////////////////
 	
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 	DWORD SetParameter(const SetParameterStruct* pParam);		
 	DWORD GetParameter(DWORD dwIndex);					
-	DWORD ProcessOpenGL(ProcessOpenGLStruct* pGL);
+#else   // using FFGLPluginSDK parameters wrapper
+    FFResult    SetFloatParameter(unsigned int index, float value);
+    float       GetFloatParameter(unsigned int index);
+#endif
+	
+    DWORD ProcessOpenGL(ProcessOpenGLStruct* pGL);
 	DWORD InitGL(const FFGLViewportStruct *vp);
 	DWORD DeInitGL();
 
@@ -91,7 +117,6 @@ protected:
 	// Time
 	double startTime, elapsedTime, lastTime, PCFreq;
 	__int64 CounterStart;
-
 	//
 	// Shader uniforms
 	//
@@ -151,6 +176,12 @@ protected:
 	double GetCounter();
 	bool LoadShader(std::string shaderString);
 	void CreateRectangleTexture(FFGLTextureStruct Texture, FFGLTexCoords maxCoords, GLuint &glTexture, GLenum texunit, GLuint &fbo, GLuint hostFbo);
+    
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+#else   // c++11 timer stuff for posix
+    std::chrono::steady_clock::time_point start;
+    std::chrono::steady_clock::time_point end;
+#endif
 
 };
 

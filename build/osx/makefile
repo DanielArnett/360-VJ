@@ -20,14 +20,11 @@ OBJS = $(COMMON_OBJS) $(SHADERMAKER_OBJS)
 
 vpath %.cpp $(DIR_SRC):$(DIR_FFGL)
 
-#CCPP = @g++
 CCPP = clang++
 CPPFLAGS = -Wall -Wno-unknown-pragmas -pedantic \
-	-I$(DIR_SRC) -I$(DIR_FFGL) -DTARGET_OS_MAC -std=c++11 -stdlib=libc++ -arch $(ARCH)
+	-I$(DIR_SRC) -I$(DIR_FFGL) -DTARGET_OS_MAC -std=c++11 -stdlib=libc++ -arch x86_64 -arch i386
 
-CSHLIB = $(CCPP) -o $@ -dynamiclib -framework GLUT -framework OpenGL $(OBJS)
-
-#	-lc -lX11 -lGL -lglut
+CSHLIB = $(CCPP) -o $@ -dynamiclib -framework GLUT -framework OpenGL -arch x86_64 -arch i386 $(OBJS)
 
 ifeq ($(DEBUG), 1)
 	CPPFLAGS += -ggdb2 -O0 -D_DEBUG=1

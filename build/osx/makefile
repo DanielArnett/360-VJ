@@ -1,7 +1,6 @@
 DIR_SRC = ../../
-DIR_FFGL = ../../FFGL-1.6
+DIR_FFGL = ../../FFGL
 DIR_BUNDLE = ../../Binaries/osx
-ARCH = x86_64
 
 DEBUG = 0
 

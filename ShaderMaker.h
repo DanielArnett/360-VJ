@@ -24,13 +24,16 @@
 #define ShaderMaker_H
 
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-// win
+// windows
+// FIXME windows: if msvc project had the FFGL folder in its include path we could have the same #include statement on both platforms
 #include "FFGL\FFGLShader.h"
 #include "FFGL\FFGLPluginSDK.h"
-#else   
+#include "FFGL\FFGLLib.h"
+#else
+// posix
 #include "FFGLShader.h"
 #include "FFGLPluginSDK.h"
-// posix - c++11 for time
+#include "FFGLLib.h"
 typedef uint8_t  CHAR;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
@@ -61,14 +64,8 @@ public:
 	// FreeFrameGL plugin methods
 	///////////////////////////////////////////////////
 	
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-	DWORD SetParameter(const SetParameterStruct* pParam);		
-	DWORD GetParameter(DWORD dwIndex);					
-#else   // using FFGLPluginSDK parameters wrapper
     FFResult    SetFloatParameter(unsigned int index, float value);
     float       GetFloatParameter(unsigned int index);
-#endif
-	
     DWORD ProcessOpenGL(ProcessOpenGLStruct* pGL);
 	DWORD InitGL(const FFGLViewportStruct *vp);
 	DWORD DeInitGL();
@@ -113,10 +110,19 @@ protected:
 	// Viewport
 	float m_vpWidth;
 	float m_vpHeight;
+    
+    // Time
+    double elapsedTime, lastTime;
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+    // windows
+    double PCFreq;
+    __int64 CounterStart;
+#else
+    // posix c++11
+    std::chrono::steady_clock::time_point start;
+    std::chrono::steady_clock::time_point end;
+#endif
 	
-	// Time
-	double startTime, elapsedTime, lastTime, PCFreq;
-	__int64 CounterStart;
 	//
 	// Shader uniforms
 	//
@@ -176,13 +182,6 @@ protected:
 	double GetCounter();
 	bool LoadShader(std::string shaderString);
 	void CreateRectangleTexture(FFGLTextureStruct Texture, FFGLTexCoords maxCoords, GLuint &glTexture, GLenum texunit, GLuint &fbo, GLuint hostFbo);
-    
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-#else   // c++11 timer stuff for posix
-    std::chrono::steady_clock::time_point start;
-    std::chrono::steady_clock::time_point end;
-#endif
-
 };
 
 

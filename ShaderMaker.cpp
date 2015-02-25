@@ -10,6 +10,7 @@
 //		------------------------------------------------------------
 //
 //		Copyright (C) 2015. Lynn Jarvis, Leading Edge. Pty. Ltd.
+//      Ported to OSX by Amaury Hazan (amaury@billaboop.com)
 //
 //		This program is free software: you can redistribute it and/or modify
 //		it under the terms of the GNU Lesser General Public License as published by
@@ -26,20 +27,23 @@
 //		--------------------------------------------------------------
 //
 //
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-// win
-#include "FFGL\FFGL.h"
-#include "FFGL\FFGLLib.h"
-#else   
-#include "FFGL.h"
-#include "FFGLLib.h"
-#endif
-
 #include <stdio.h>
 #include <string>
 #include <time.h> // for date
-
 #include "ShaderMaker.h"
+
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+// windows
+// FIXME windows: if msvc project had the FFGL folder in its include path we could have the same #include statement on both platforms
+#include "FFGL\FFGL.h"
+#include "FFGL\FFGLLib.h"
+int (*cross_secure_sprintf)(char *, size_t, const char *,...) = sprintf_s;
+#else 
+// posix
+#include "FFGL.h"
+#include "FFGLLib.h"
+int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
+#endif
 
 #define FFPARAM_SPEED       (0)
 #define FFPARAM_MOUSEX      (1)
@@ -51,7 +55,6 @@
 #define FFPARAM_BLUE        (7)
 #define FFPARAM_ALPHA       (8)
 
-//// FIXME: cross-platform solution
 #define STRINGIFY(A) #A
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -121,9 +124,6 @@ char *fragmentShaderCode = STRINGIFY (
 
 }*/
 
-
-                                      
-
 //
 // Shadertoy example 1
 //
@@ -140,7 +140,7 @@ char *fragmentShaderCode = STRINGIFY (
 // 1st place at Numerica Artparty in march 2009 in France
 //
 
-                                      
+/*
 float time = iGlobalTime*.5;
 
 const float s=0.4; //Density threshold
@@ -192,8 +192,7 @@ void main()
     gl_FragColor= vec4(color,1.)+vec4(0.1,0.2,0.5,1.0)*(t*0.025);
 
 }
-         
-
+*/
 
 //
 // Shadertoy example 2 - needs a texture input..
@@ -206,7 +205,7 @@ void main()
 // Created by inigo quilez - iq/2013
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 //
-                                      /*
+                                      
 void main(void)
 {
     vec2 uv = 0.5*gl_FragCoord.xy / iResolution.xy;
@@ -222,7 +221,7 @@ void main(void)
     col *= 1.0 + 2.0*d;
     gl_FragColor = vec4(col,1.0);
 
-}*/
+}
 
 
 
@@ -464,8 +463,7 @@ void main() {
     vec3  c = m1 > m2 ? vec3(0.0, 0.05, 0.2) : vec3(0.2, 0.05, 0.0);
 	
     gl_FragColor = vec4(c*f, 1.0);
-}
-*/
+}*/
 
 /*
 //
@@ -919,98 +917,51 @@ DWORD ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 	return FF_SUCCESS;
 }
 
-
-
 char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 
 	memset(m_DisplayValue, 0, 15);
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 	switch (dwIndex) {
 
 		case FFPARAM_SPEED:
-			sprintf_s(m_DisplayValue, 16, "%d", (int)(m_UserSpeed*100.0));
+			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserSpeed*100.0));
 			return m_DisplayValue;
 	
 		case FFPARAM_MOUSEX:
-			sprintf_s(m_DisplayValue, 16, "%d", (int)(m_UserMouseX*m_vpWidth));
+			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseX*m_vpWidth));
 			return m_DisplayValue;
 
 		case FFPARAM_MOUSEY:
-			sprintf_s(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
+			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
 			return m_DisplayValue;
 
 		case FFPARAM_MOUSELEFTX:
-			sprintf_s(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
+			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
 			return m_DisplayValue;
 
 		case FFPARAM_MOUSELEFTY:
-			sprintf_s(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
+			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
 			return m_DisplayValue;
 
 		case FFPARAM_RED:
-			sprintf_s(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
+			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
 			return m_DisplayValue;
 
 		case FFPARAM_GREEN:
-			sprintf_s(m_DisplayValue, 16, "%d", (int)(m_UserGreen*256.0));
+			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserGreen*256.0));
 			return m_DisplayValue;
 
 		case FFPARAM_BLUE:
-			sprintf_s(m_DisplayValue, 16, "%d", (int)(m_UserBlue*256.0));
+			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserBlue*256.0));
 			return m_DisplayValue;
 
 		case FFPARAM_ALPHA:
-			sprintf_s(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
+			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
 			return m_DisplayValue;
 
 		default:
 			return m_DisplayValue;
 	}
-#else // posix
-	switch (dwIndex) {
-
-		case FFPARAM_SPEED:
-			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserSpeed*100.0));
-			return m_DisplayValue;
-	
-		case FFPARAM_MOUSEX:
-			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseX*m_vpWidth));
-			return m_DisplayValue;
-
-		case FFPARAM_MOUSEY:
-			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
-			return m_DisplayValue;
-
-		case FFPARAM_MOUSELEFTX:
-			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
-			return m_DisplayValue;
-
-		case FFPARAM_MOUSELEFTY:
-			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
-			return m_DisplayValue;
-
-		case FFPARAM_RED:
-			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
-			return m_DisplayValue;
-
-		case FFPARAM_GREEN:
-			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserGreen*256.0));
-			return m_DisplayValue;
-
-		case FFPARAM_BLUE:
-			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserBlue*256.0));
-			return m_DisplayValue;
-
-		case FFPARAM_ALPHA:
-			snprintf(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
-			return m_DisplayValue;
-
-		default:
-			return m_DisplayValue;
-	}
-#endif
 	return NULL;
-
 }
 
 DWORD ShaderMaker::GetInputStatus(DWORD dwIndex)
@@ -1051,110 +1002,6 @@ DWORD ShaderMaker::GetInputStatus(DWORD dwIndex)
 
 }
 
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-DWORD ShaderMaker::GetParameter(DWORD dwIndex)
-{
-	DWORD dwRet;
-
-	switch (dwIndex) {
-
-		case FFPARAM_SPEED:
-			*((float *)(unsigned)&dwRet) = m_UserSpeed;
-			return dwRet;
-	
-		case FFPARAM_MOUSEX:
-			*((float *)(unsigned)&dwRet) = m_UserMouseX;
-			return dwRet;
-
-		case FFPARAM_MOUSEY:
-			*((float *)(unsigned)&dwRet) = m_UserMouseY;
-			return dwRet;
-
-		case FFPARAM_MOUSELEFTX:
-			*((float *)(unsigned)&dwRet) = m_UserMouseLeftX;
-			return dwRet;
-
-		case FFPARAM_MOUSELEFTY:
-			*((float *)(unsigned)&dwRet) = m_UserMouseLeftY;
-			return dwRet;
-
-		case FFPARAM_RED:
-			*((float *)(unsigned)&dwRet) = m_UserRed;
-			return dwRet;
-
-		case FFPARAM_GREEN:
-			*((float *)(unsigned)&dwRet) = m_UserGreen;
-			return dwRet;
-
-		case FFPARAM_BLUE:
-			*((float *)(unsigned)&dwRet) = m_UserBlue;
-			return dwRet;
-
-		case FFPARAM_ALPHA:
-			*((float *)(unsigned)&dwRet) = m_UserAlpha;
-			return dwRet;
-
-		default:
-			return FF_FAIL;
-
-	}
-}
-
-DWORD ShaderMaker::SetParameter(const SetParameterStruct* pParam)
-{
-	bool bUserEntry = false;
-
-	if (pParam != NULL) {
-		
-		switch (pParam->ParameterNumber) {
-
-			case FFPARAM_SPEED:
-				m_UserSpeed = *((float *)(unsigned)&(pParam->NewParameterValue));
-				break;
-
-			case FFPARAM_MOUSEX:
-				m_UserMouseX = *((float *)(unsigned)&(pParam->NewParameterValue));
-				break;
-
-			case FFPARAM_MOUSEY:
-				m_UserMouseY = *((float *)(unsigned)&(pParam->NewParameterValue));
-				break;
-
-			case FFPARAM_MOUSELEFTX:
-				m_UserMouseLeftX = *((float *)(unsigned)&(pParam->NewParameterValue));
-				break;
-
-			case FFPARAM_MOUSELEFTY:
-				m_UserMouseLeftY = *((float *)(unsigned)&(pParam->NewParameterValue));
-				break;
-
-			case FFPARAM_RED:
-				m_UserRed = *((float *)(unsigned)&(pParam->NewParameterValue));
-				break;
-
-			case FFPARAM_GREEN:
-				m_UserGreen = *((float *)(unsigned)&(pParam->NewParameterValue));
-				break;
-
-			case FFPARAM_BLUE:
-				m_UserBlue = *((float *)(unsigned)&(pParam->NewParameterValue));
-				break;
-
-			case FFPARAM_ALPHA:
-				m_UserAlpha = *((float *)(unsigned)&(pParam->NewParameterValue));
-				break;
-
-			default:
-				return FF_FAIL;
-		}
-
-		return FF_SUCCESS;
-	
-	}
-
-	return FF_FAIL;
-}
-#else   // posix FIXME check if this corresponds to more recent FFGL spec
 float ShaderMaker::GetFloatParameter(unsigned int index)
 {
 	switch (index) {
@@ -1236,15 +1083,17 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 		}
 		return FF_SUCCESS;
 }
-#endif
 
 void ShaderMaker::SetDefaults() {
 
-	elapsedTime            = 0.0;
-	startTime              = 0.0;
-	lastTime               = 0.0;
+    elapsedTime            = 0.0;
+    lastTime               = 0.0;
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 	PCFreq                 = 0.0;
 	CounterStart           = 0;
+#else
+    start = std::chrono::steady_clock::now();
+#endif
 
 	m_mouseX               = 0.5;
 	m_mouseY               = 0.5;
@@ -1552,6 +1401,7 @@ bool ShaderMaker::LoadShader(std::string shaderString) {
 
 void ShaderMaker::StartCounter()
 {
+//// FIXME WIN32: if msvc supports std::chrono, the win32 case can be removed
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
     LARGE_INTEGER li;
 	// Find frequency
@@ -1568,6 +1418,7 @@ void ShaderMaker::StartCounter()
 
 double ShaderMaker::GetCounter()
 {
+//// FIXME WIN32: if msvc supports std::chrono, the win32 case can be removed
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
     LARGE_INTEGER li;
     QueryPerformanceCounter(&li);

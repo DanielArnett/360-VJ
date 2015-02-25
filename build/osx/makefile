@@ -1,5 +1,7 @@
 DIR_SRC = ../../
 DIR_FFGL = ../../FFGL-1.6
+DIR_BUNDLE = ../../Binaries/osx
+ARCH = x86_64
 
 DEBUG = 0
 
@@ -21,35 +23,36 @@ vpath %.cpp $(DIR_SRC):$(DIR_FFGL)
 #CCPP = @g++
 CCPP = clang++
 CPPFLAGS = -Wall -Wno-unknown-pragmas -pedantic \
-	-I$(DIR_SRC) -I$(DIR_FFGL) -DTARGET_OS_MAC
+	-I$(DIR_SRC) -I$(DIR_FFGL) -DTARGET_OS_MAC -std=c++11 -stdlib=libc++ -arch $(ARCH)
 
-CSHLIB = $(CCPP) -o $@ -dynamiclib -framework GLUT -framework OpenGL
+CSHLIB = $(CCPP) -o $@ -dynamiclib -framework GLUT -framework OpenGL $(OBJS)
 
 #	-lc -lX11 -lGL -lglut
 
 ifeq ($(DEBUG), 1)
 	CPPFLAGS += -ggdb2 -O0 -D_DEBUG=1
 else
-	CPPFLAGS += -g0 -O3
+	CPPFLAGS += -g0 -Os
 endif
 
 %.o: %.cpp
 	$(CCPP) -c $(CPPFLAGS) -o $@ $<
 
-ShaderMaker.dylib: $(SHADERMAKER_OBJS) $(COMMON_OBJS)
-	$(CSHLIB)
 
 .PHONY: clean
 
 all: clean ShaderMaker.dylib clean_package package
 
+ShaderMaker.dylib: $(SHADERMAKER_OBJS) $(COMMON_OBJS)
+	$(CSHLIB)
+
 clean:
 	rm -rf $(OBJS) *.dylib
 
 clean_package:
-	rm -rf "./ShaderMaker.bundle"
+	rm -rf "$(DIR_BUNDLE)/ShaderMaker.bundle"
 
 package:
-	mkdir -p "./ShaderMaker.bundle"/Contents/{MacOS,Resources}
-	cp Info.plist "ShaderMaker.bundle/Contents"
-	cp ./ShaderMaker.dylib "ShaderMaker.bundle/Contents/MacOS/"
+	mkdir -p "$(DIR_BUNDLE)/ShaderMaker.bundle"/Contents/MacOS
+	cp Info.plist "$(DIR_BUNDLE)/ShaderMaker.bundle/Contents"
+	mv ./ShaderMaker.dylib "$(DIR_BUNDLE)/ShaderMaker.bundle/Contents/MacOS/ShaderMaker"

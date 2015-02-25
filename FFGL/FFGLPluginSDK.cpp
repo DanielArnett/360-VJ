@@ -43,21 +43,19 @@ CFreeFrameGLPlugin::~CFreeFrameGLPlugin()
 // Default implementation of CFreeFrameGLPlugin methods
 ////////////////////////////////////////////////////////
 
-char* CFreeFrameGLPlugin::GetParameterDisplay(DWORD dwIndex) 
+char* CFreeFrameGLPlugin::GetParameterDisplay(unsigned int index) 
 {	
-	DWORD dwType = m_pPlugin->GetParamType(dwIndex);
-	DWORD dwValue = m_pPlugin->GetParameter(dwIndex);
+	unsigned int pType = m_pPlugin->GetParamType(index);
 
-	if ((dwValue != FF_FAIL) && (dwType != FF_FAIL))
+	if (pType != FF_FAIL)
   {
-		if (dwType == FF_TYPE_TEXT)
+		if (pType == FF_TYPE_TEXT)
     {
-			return (char *)dwValue;
+			return m_pPlugin->GetTextParameter(index);
     }
 		else
     {
-			float fValue;
-			memcpy(&fValue, &dwValue, 4);
+			float fValue = m_pPlugin->GetFloatParameter(index);
 			memset(s_DisplayValue, 0, 5);
 			sprintf(s_DisplayValue, "%f", fValue);
 			return s_DisplayValue;
@@ -66,18 +64,28 @@ char* CFreeFrameGLPlugin::GetParameterDisplay(DWORD dwIndex)
 	return NULL;
 }			
 
-DWORD CFreeFrameGLPlugin::SetParameter(const SetParameterStruct* pParam) 
+FFResult CFreeFrameGLPlugin::SetFloatParameter(unsigned int index, float value)
 {
-	return FF_FAIL;
-}		
+  return FF_FAIL;
+}
 
-DWORD CFreeFrameGLPlugin::GetParameter(DWORD dwIndex) 
-{ 
-	return FF_FAIL;
+FFResult CFreeFrameGLPlugin::SetTextParameter(unsigned int index, const char *value)
+{
+  return FF_FAIL;
+}
+
+float CFreeFrameGLPlugin::GetFloatParameter(unsigned int index)
+{
+  return 0.0;
+}
+
+char* CFreeFrameGLPlugin::GetTextParameter(unsigned int index)
+{
+  return (char *)FF_FAIL;
 }					
 
-DWORD CFreeFrameGLPlugin::GetInputStatus(DWORD dwIndex)
+FFResult CFreeFrameGLPlugin::GetInputStatus(unsigned int index)
 {
-	if (dwIndex >= (DWORD)GetMaxInputs()) return FF_FAIL;
+	if (index >= GetMaxInputs()) return FF_FAIL;
 	return FF_INPUT_INUSE;
 }

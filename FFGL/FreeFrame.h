@@ -72,13 +72,16 @@
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 
+typedef unsigned __int32 FFUInt32; 
 #else
 
 extern "C" {
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
+typedef uint32_t FFUInt32;
 #endif
 
 
@@ -103,11 +106,15 @@ extern "C" {
 #define FF_GETEXTENDEDINFO			13
 #define FF_PROCESSFRAMECOPY			14
 #define FF_GETPARAMETERTYPE			15
-#define FF_GETIPUTSTATUS			16
+#define FF_GETINPUTSTATUS			16
+
+enum {
+	FF_SUCCESS = 0,
+	FF_FAIL = 0xFFFFFFFF
+};
+typedef FFUInt32 FFResult;
 
 // Return values
-#define FF_SUCCESS					0
-#define FF_FAIL						0xFFFFFFFF
 #define FF_TRUE						1
 #define FF_FALSE					0
 #define	FF_SUPPORTED				1 
@@ -162,60 +169,54 @@ extern "C" {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Typedefs for Linux and MacOS - in Windows these are defined in files included by windows.h
-#ifndef _WIN32
-typedef unsigned int DWORD;
-typedef unsigned char BYTE;
-typedef void *LPVOID;
-#endif
 
+typedef union FFMixed {
+	FFUInt32    UIntValue;
+	void*	    PointerValue;
+} FFMixed;
+
+typedef void *FFInstanceID;
+	
 // PluginInfoStruct
 typedef struct PluginInfoStructTag {
-	DWORD	APIMajorVersion;
-	DWORD	APIMinorVersion;
-	BYTE	PluginUniqueID[4];		// 4 chars uniqueID - not null terminated
-	BYTE	PluginName[16];			// 16 chars plugin friendly name - not null terminated
-	DWORD	PluginType;				// Effect or source
+	FFUInt32	APIMajorVersion;
+	FFUInt32	APIMinorVersion;
+	char		PluginUniqueID[4];		// 4 chars uniqueID - not null terminated
+	char		PluginName[16];			// 16 chars plugin friendly name - not null terminated
+	FFUInt32	PluginType;				// Effect or source
 } PluginInfoStruct;
 
 // PluginExtendedInfoStruct   
 typedef struct PluginExtendedInfoStructTag {
-	DWORD PluginMajorVersion;
-	DWORD PluginMinorVersion;
-	char* Description;
-	char* About;
-	DWORD FreeFrameExtendedDataSize;
-	void* FreeFrameExtendedDataBlock;
+	FFUInt32	PluginMajorVersion;
+	FFUInt32	PluginMinorVersion;
+	char*		Description;
+	char*		About;
+	FFUInt32	FreeFrameExtendedDataSize;
+	void*		FreeFrameExtendedDataBlock;
 } PluginExtendedInfoStruct;
 
 // VideoInfoStruct
 typedef struct VideoInfoStructTag {
-	DWORD FrameWidth;				// width of frame in pixels
-	DWORD FrameHeight;				// height of frame in pixels
-	DWORD BitDepth;					// enumerated indicator of bit depth of video: 0 = 16 bit 5-6-5   1 = 24bit packed   2 = 32bit
-	DWORD Orientation;			
+	FFUInt32	FrameWidth;				// width of frame in pixels
+	FFUInt32	FrameHeight;				// height of frame in pixels
+	FFUInt32	BitDepth;					// enumerated indicator of bit depth of video: 0 = 16 bit 5-6-5   1 = 24bit packed   2 = 32bit
+	FFUInt32	Orientation;			
 } VideoInfoStruct;
 
 // ProcessFrameCopyStruct
 typedef struct ProcessFrameCopyStructTag {
-	DWORD numInputFrames;
-	void** ppInputFrames;
-	void* pOutputFrame;
+	FFUInt32	numInputFrames;
+	void**		ppInputFrames;
+	void*		pOutputFrame;
 } ProcessFrameCopyStruct;
 
 // SetParameterStruct
 typedef struct SetParameterStructTag {
-	DWORD ParameterNumber;
-	DWORD NewParameterValue;
+	FFUInt32	ParameterNumber;
+	FFMixed		NewParameterValue;
 } SetParameterStruct;
 
-// plugMain function return values
-typedef union plugMainUnionTag {
-	DWORD ivalue;
-	float fvalue;
-	VideoInfoStruct* VISvalue;
-	PluginInfoStruct* PISvalue;
-	char* svalue;
-} plugMainUnion;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,14 +242,14 @@ typedef union plugMainUnionTag {
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved);
 
-__declspec(dllexport) plugMainUnion __stdcall plugMain(DWORD functionCode, DWORD inputValue, DWORD instanceID);
-typedef __declspec(dllimport) plugMainUnion (__stdcall *FF_Main_FuncPtr)(DWORD, DWORD, DWORD);
+__declspec(dllexport) FFMixed __stdcall plugMain(FFUInt32 functionCode, FFMixed inputValue, FFInstanceID instanceID);
+typedef __declspec(dllimport) FFMixed (__stdcall *FF_Main_FuncPtr)(FFUInt32, FFMixed, FFInstanceID);
 
 #else
 
 //linux and Mac OSX share these
-plugMainUnion plugMain(DWORD functionCode, DWORD inputValue, DWORD instanceID);
-typedef plugMainUnion (*FF_Main_FuncPtr)(DWORD funcCode, DWORD inputVal, DWORD instanceID);
+FFMixed plugMain(FFUInt32 functionCode, FFMixed inputValue, FFInstanceID instanceID);
+typedef FFMixed (*FF_Main_FuncPtr)(FFUInt32 funcCode, FFMixed inputVal, FFInstanceID instanceID);
 
 #endif
 

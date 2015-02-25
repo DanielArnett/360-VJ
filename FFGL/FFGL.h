@@ -104,14 +104,14 @@ typedef struct FFGLViewportStructTag
 //FFGLTextureStruct (for ProcessOpenGLStruct)
 typedef struct FFGLTextureStructTag
 {
-  DWORD Width, Height;
-  DWORD HardwareWidth, HardwareHeight;
+  FFUInt32 Width, Height;
+  FFUInt32 HardwareWidth, HardwareHeight;
   GLuint Handle; //the actual texture handle, from glGenTextures()
 } FFGLTextureStruct;
 
 // ProcessOpenGLStruct
 typedef struct ProcessOpenGLStructTag {
-  DWORD numInputTextures;
+  FFUInt32 numInputTextures;
   FFGLTextureStruct **inputTextures;
   
   //if the host calls ProcessOpenGL with a framebuffer object actively bound

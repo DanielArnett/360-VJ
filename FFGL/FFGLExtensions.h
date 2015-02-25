@@ -299,19 +299,19 @@ typedef void (APIENTRY *glRenderbufferStorageEXTPROC) (GLenum target, GLenum int
 
 /* GL types for handling shader object handles and characters */
 typedef char GLcharARB;		/* native character */
-typedef unsigned int GLhandleARB;	/* shader object handle */
+typedef unsigned int GLhandleARB_REPLACEMENT;	/* shader object handle */
 
-typedef void (APIENTRY * glDeleteObjectARBPROC) (GLhandleARB);
-typedef GLhandleARB (APIENTRY * glGetHandleARBPROC) (GLenum);
-typedef void (APIENTRY * glDetachObjectARBPROC) (GLhandleARB, GLhandleARB);
-typedef GLhandleARB (APIENTRY * glCreateShaderObjectARBPROC) (GLenum);
-typedef void (APIENTRY * glShaderSourceARBPROC) (GLhandleARB, GLsizei, const GLcharARB* *, const GLint *);
-typedef void (APIENTRY * glCompileShaderARBPROC) (GLhandleARB);
-typedef GLhandleARB (APIENTRY * glCreateProgramObjectARBPROC) (void);
-typedef void (APIENTRY * glAttachObjectARBPROC) (GLhandleARB, GLhandleARB);
-typedef void (APIENTRY * glLinkProgramARBPROC) (GLhandleARB);
-typedef void (APIENTRY * glUseProgramObjectARBPROC) (GLhandleARB);
-typedef void (APIENTRY * glValidateProgramARBPROC) (GLhandleARB);
+typedef void (APIENTRY * glDeleteObjectARBPROC) (GLhandleARB_REPLACEMENT);
+typedef GLhandleARB_REPLACEMENT (APIENTRY * glGetHandleARBPROC) (GLenum);
+typedef void (APIENTRY * glDetachObjectARBPROC) (GLhandleARB_REPLACEMENT, GLhandleARB_REPLACEMENT);
+typedef GLhandleARB_REPLACEMENT (APIENTRY * glCreateShaderObjectARBPROC) (GLenum);
+typedef void (APIENTRY * glShaderSourceARBPROC) (GLhandleARB_REPLACEMENT, GLsizei, const GLcharARB* *, const GLint *);
+typedef void (APIENTRY * glCompileShaderARBPROC) (GLhandleARB_REPLACEMENT);
+typedef GLhandleARB_REPLACEMENT (APIENTRY * glCreateProgramObjectARBPROC) (void);
+typedef void (APIENTRY * glAttachObjectARBPROC) (GLhandleARB_REPLACEMENT, GLhandleARB_REPLACEMENT);
+typedef void (APIENTRY * glLinkProgramARBPROC) (GLhandleARB_REPLACEMENT);
+typedef void (APIENTRY * glUseProgramObjectARBPROC) (GLhandleARB_REPLACEMENT);
+typedef void (APIENTRY * glValidateProgramARBPROC) (GLhandleARB_REPLACEMENT);
 typedef void (APIENTRY * glUniform1fARBPROC) (GLint, GLfloat);
 typedef void (APIENTRY * glUniform2fARBPROC) (GLint, GLfloat, GLfloat);
 typedef void (APIENTRY * glUniform3fARBPROC) (GLint, GLfloat, GLfloat, GLfloat);
@@ -331,15 +331,15 @@ typedef void (APIENTRY * glUniform4ivARBPROC) (GLint, GLsizei, const GLint *);
 typedef void (APIENTRY * glUniformMatrix2fvARBPROC) (GLint, GLsizei, GLboolean, const GLfloat *);
 typedef void (APIENTRY * glUniformMatrix3fvARBPROC) (GLint, GLsizei, GLboolean, const GLfloat *);
 typedef void (APIENTRY * glUniformMatrix4fvARBPROC) (GLint, GLsizei, GLboolean, const GLfloat *);
-typedef void (APIENTRY * glGetObjectParameterfvARBPROC) (GLhandleARB, GLenum, GLfloat *);
-typedef void (APIENTRY * glGetObjectParameterivARBPROC) (GLhandleARB, GLenum, GLint *);
-typedef void (APIENTRY * glGetInfoLogARBPROC) (GLhandleARB, GLsizei, GLsizei *, GLcharARB *);
-typedef void (APIENTRY * glGetAttachedObjectsARBPROC) (GLhandleARB, GLsizei, GLsizei *, GLhandleARB *);
-typedef GLint (APIENTRY * glGetUniformLocationARBPROC) (GLhandleARB, const GLcharARB *);
-typedef void (APIENTRY * glGetActiveUniformARBPROC) (GLhandleARB, GLuint, GLsizei, GLsizei *, GLint *, GLenum *, GLcharARB *);
-typedef void (APIENTRY * glGetUniformfvARBPROC) (GLhandleARB, GLint, GLfloat *);
-typedef void (APIENTRY * glGetUniformivARBPROC) (GLhandleARB, GLint, GLint *);
-typedef void (APIENTRY * glGetShaderSourceARBPROC) (GLhandleARB, GLsizei, GLsizei *, GLcharARB *);
+typedef void (APIENTRY * glGetObjectParameterfvARBPROC) (GLhandleARB_REPLACEMENT, GLenum, GLfloat *);
+typedef void (APIENTRY * glGetObjectParameterivARBPROC) (GLhandleARB_REPLACEMENT, GLenum, GLint *);
+typedef void (APIENTRY * glGetInfoLogARBPROC) (GLhandleARB_REPLACEMENT, GLsizei, GLsizei *, GLcharARB *);
+typedef void (APIENTRY * glGetAttachedObjectsARBPROC) (GLhandleARB_REPLACEMENT, GLsizei, GLsizei *, GLhandleARB_REPLACEMENT *);
+typedef GLint (APIENTRY * glGetUniformLocationARBPROC) (GLhandleARB_REPLACEMENT, const GLcharARB *);
+typedef void (APIENTRY * glGetActiveUniformARBPROC) (GLhandleARB_REPLACEMENT, GLuint, GLsizei, GLsizei *, GLint *, GLenum *, GLcharARB *);
+typedef void (APIENTRY * glGetUniformfvARBPROC) (GLhandleARB_REPLACEMENT, GLint, GLfloat *);
+typedef void (APIENTRY * glGetUniformivARBPROC) (GLhandleARB_REPLACEMENT, GLint, GLint *);
+typedef void (APIENTRY * glGetShaderSourceARBPROC) (GLhandleARB_REPLACEMENT, GLsizei, GLsizei *, GLcharARB *);
 
 #ifdef _WIN32
 
@@ -470,7 +470,7 @@ public:
 #endif
 
 private:
-  void *GetProcAddress(char *);
+  void *GetProcAddress(const char *);
   
   void InitMultitexture();
   void InitARBShaderObjects();

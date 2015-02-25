@@ -1,8 +1,8 @@
 #ifndef FFGLFBO_H
 #define FFGLFBO_H
 
-#include "FFGL.h"
-#include "FFGLExtensions.h"
+#include <FFGL.h>
+#include <FFGLExtensions.h>
 
 class FFGLFBO
 {

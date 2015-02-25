@@ -67,7 +67,7 @@ static CFFGLPluginInfo PluginInfo (
 	1,									// *** Plugin major version number
 	000,								// *** Plugin minor version number
 	FF_EFFECT,							// Plugin type is always an effect
-	"Plugin description",				// *** Plugin description - you can expand on this
+	"Wraps ShaderToy and GLSLSandbox shaders into a FFGL plugin",				// *** Plugin description - you can expand on this
 	"by Author - website.com"			// *** About
 );
 

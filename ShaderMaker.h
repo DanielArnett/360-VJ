@@ -3,7 +3,7 @@
 //
 //		------------------------------------------------------------
 //		Copyright (C) 2015. Lynn Jarvis, Leading Edge. Pty. Ltd.
-//      Ported to OSX by Amaury Hazan (amaury@billaboop.com)
+//		Ported to OSX by Amaury Hazan (amaury@billaboop.com)
 //
 //		This program is free software: you can redistribute it and/or modify
 //		it under the terms of the GNU Lesser General Public License as published by
@@ -23,17 +23,16 @@
 #ifndef ShaderMaker_H
 #define ShaderMaker_H
 
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-// windows
-// FIXME windows: if msvc project had the FFGL folder in its include path we could have the same #include statement on both platforms
-#include "FFGL\FFGLShader.h"
-#include "FFGL\FFGLPluginSDK.h"
-#include "FFGL\FFGLLib.h"
-#else
-// posix
+#include <stdio.h>
+#include <string>
+#include <time.h> // for date
+#include "FFGL.h" // windows : msvc project needs the FFGL folder in its include path
+#include "FFGLLib.h"
 #include "FFGLShader.h"
 #include "FFGLPluginSDK.h"
-#include "FFGLLib.h"
+
+#if (!(defined(WIN32) || defined(_WIN32) || defined(__WIN32__)))
+// posix
 typedef uint8_t  CHAR;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
@@ -58,25 +57,23 @@ class ShaderMaker : public CFreeFrameGLPlugin
 public:
 
 	ShaderMaker();
-	virtual ~ShaderMaker();
+	~ShaderMaker();
 
 	///////////////////////////////////////////////////
 	// FreeFrameGL plugin methods
 	///////////////////////////////////////////////////
-	
-    FFResult    SetFloatParameter(unsigned int index, float value);
-    float       GetFloatParameter(unsigned int index);
-    DWORD ProcessOpenGL(ProcessOpenGLStruct* pGL);
-	DWORD InitGL(const FFGLViewportStruct *vp);
-	DWORD DeInitGL();
-
-	DWORD GetInputStatus(DWORD dwIndex);
+    FFResult SetFloatParameter(unsigned int index, float value);
+    float GetFloatParameter(unsigned int index);
+	FFResult ProcessOpenGL(ProcessOpenGLStruct* pGL);
+	FFResult InitGL(const FFGLViewportStruct *vp);
+	FFResult DeInitGL();
+	FFResult GetInputStatus(DWORD dwIndex);
 	char * GetParameterDisplay(DWORD dwIndex);
 
 	///////////////////////////////////////////////////
 	// Factory method
 	///////////////////////////////////////////////////
-	static DWORD __stdcall CreateInstance(CFreeFrameGLPlugin **ppOutInstance)  {
+	static FFResult __stdcall CreateInstance(CFreeFrameGLPlugin **ppOutInstance) {
   		*ppOutInstance = new ShaderMaker();
 		if (*ppOutInstance != NULL)
 			return FF_SUCCESS;

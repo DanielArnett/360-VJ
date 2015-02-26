@@ -7,10 +7,15 @@
 //		------------------------------------------------------------
 //		Revisions :
 //		21-01-15	Version 1.000
+//		26.02.15	Changes for FFGL 1.6
+//					change DWORD to FFResult
+//					remove "Virtual" from destructor definition
+//					Changes  for port to OSX - see 
+//					Version 1.001
 //		------------------------------------------------------------
 //
 //		Copyright (C) 2015. Lynn Jarvis, Leading Edge. Pty. Ltd.
-//      Ported to OSX by Amaury Hazan (amaury@billaboop.com)
+//		Ported to OSX by Amaury Hazan (amaury@billaboop.com)
 //
 //		This program is free software: you can redistribute it and/or modify
 //		it under the terms of the GNU Lesser General Public License as published by
@@ -27,21 +32,12 @@
 //		--------------------------------------------------------------
 //
 //
-#include <stdio.h>
-#include <string>
-#include <time.h> // for date
 #include "ShaderMaker.h"
 
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-// windows
-// FIXME windows: if msvc project had the FFGL folder in its include path we could have the same #include statement on both platforms
-#include "FFGL\FFGL.h"
-#include "FFGL\FFGLLib.h"
 int (*cross_secure_sprintf)(char *, size_t, const char *,...) = sprintf_s;
 #else 
 // posix
-#include "FFGL.h"
-#include "FFGLLib.h"
 int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 #endif
 
@@ -60,18 +56,17 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // +++++++++++ IMPORTANT : DEFINE YOUR PLUGIN INFORMATION HERE +++++++++++
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 static CFFGLPluginInfo PluginInfo ( 
 	ShaderMaker::CreateInstance,		// Create method
 	"ZZZZ",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
-	"Shader Maker",						// *** Plugin name - make it different for each plugin
+	"Shader Maker",						// *** Plugin name - make it different for each plugin 
 	1,						   			// API major version number 													
-	000,								// API minor version number	
+	006,								// API minor version number	
 	1,									// *** Plugin major version number
-	000,								// *** Plugin minor version number
+	001,								// *** Plugin minor version number
 	FF_EFFECT,							// Plugin type is always an effect
-	"Wraps ShaderToy and GLSLSandbox shaders into a FFGL plugin",				// *** Plugin description - you can expand on this
-	"by Author - website.com"			// *** About
+	"Wraps ShaderToy and GLSLSandbox shaders into a FFGL plugin", // *** Plugin description - you can expand on this
+	"by Author - website.com"			// *** About - use your own name and details
 );
 
 
@@ -140,7 +135,6 @@ char *fragmentShaderCode = STRINGIFY (
 // 1st place at Numerica Artparty in march 2009 in France
 //
 
-/*
 float time = iGlobalTime*.5;
 
 const float s=0.4; //Density threshold
@@ -192,8 +186,8 @@ void main()
     gl_FragColor= vec4(color,1.)+vec4(0.1,0.2,0.5,1.0)*(t*0.025);
 
 }
-*/
 
+/*
 //
 // Shadertoy example 2 - needs a texture input..
 //
@@ -222,7 +216,7 @@ void main(void)
     gl_FragColor = vec4(col,1.0);
 
 }
-
+*/
 
 
 
@@ -569,7 +563,7 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD ShaderMaker::InitGL(const FFGLViewportStruct *vp)
+FFResult ShaderMaker::InitGL(const FFGLViewportStruct *vp)
 {
 	// initialize gl extensions and make sure required features are supported
 	m_extensions.Initialize();
@@ -592,10 +586,11 @@ DWORD ShaderMaker::InitGL(const FFGLViewportStruct *vp)
 
 ShaderMaker::~ShaderMaker()
 {
-
+	// Not using this but it is here just in case
 }
 
-DWORD ShaderMaker::DeInitGL()
+
+FFResult ShaderMaker::DeInitGL()
 {
 	if(bInitialized)
 		m_shader.UnbindShader();
@@ -617,7 +612,7 @@ DWORD ShaderMaker::DeInitGL()
 	return FF_SUCCESS;
 }
 
-DWORD ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
+FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 {
 	FFGLTextureStruct Texture0;
 	FFGLTextureStruct Texture1;
@@ -964,7 +959,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 	return NULL;
 }
 
-DWORD ShaderMaker::GetInputStatus(DWORD dwIndex)
+FFResult ShaderMaker::GetInputStatus(DWORD dwIndex)
 {
 	DWORD dwRet = FF_INPUT_NOTINUSE;
 
@@ -1401,7 +1396,7 @@ bool ShaderMaker::LoadShader(std::string shaderString) {
 
 void ShaderMaker::StartCounter()
 {
-//// FIXME WIN32: if msvc supports std::chrono, the win32 case can be removed
+
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
     LARGE_INTEGER li;
 	// Find frequency
@@ -1414,11 +1409,12 @@ void ShaderMaker::StartCounter()
     // posix c++11
     start = std::chrono::steady_clock::now();
 #endif
+
 }
 
 double ShaderMaker::GetCounter()
 {
-//// FIXME WIN32: if msvc supports std::chrono, the win32 case can be removed
+
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
     LARGE_INTEGER li;
     QueryPerformanceCounter(&li);

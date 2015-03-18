@@ -18,3 +18,9 @@ To make your own shader plugin, all you do is copy/paste the shader code into th
 change the plugin information and rename the resulting dll.
 
 There are some things to take note of, but hopefully the code and documentation are clear enough.
+
+##Credits
+Implementation by Lynn Jarvis leadedge@adam.com.au
+MacOSX port by Amaury Hazan amaury@billaboop.com
+The MacOSX port was supported by Coldcut/Ninja Tune as a contribution to the Visuals Community
+

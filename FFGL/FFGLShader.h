@@ -1,8 +1,8 @@
 #ifndef FFGLShader_H
 #define FFGLShader_H
 
-#include "FFGL.h"
-#include "FFGLExtensions.h"
+#include <FFGL.h>
+#include <FFGLExtensions.h>
 
 class FFGLShader
 {

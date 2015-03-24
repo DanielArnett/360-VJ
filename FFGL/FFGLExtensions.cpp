@@ -1,5 +1,5 @@
-#include "FFGL.h"
-#include "FFGLExtensions.h"
+#include <FFGL.h>
+#include <FFGLExtensions.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,7 +28,7 @@ void FFGLExtensions::Initialize()
   InitEXTFramebufferObject();
 }
 
-void *FFGLExtensions::GetProcAddress(char *name)
+void *FFGLExtensions::GetProcAddress(const char *name)
 {
 
 #ifdef _WIN32
@@ -69,7 +69,7 @@ void *FFGLExtensions::GetProcAddress(char *name)
 
 #ifdef __linux__
 
-  void *result = (void *)(unsigned)glXGetProcAddress((const GLubyte *)name);
+  void *result = (void *)glXGetProcAddress((const GLubyte *)name);
 
   if (result!=NULL)
     return result;
@@ -89,44 +89,44 @@ void FFGLExtensions::InitMultitexture()
 {
   try
   {  
-  glActiveTexture = (glActiveTexturePROC)(unsigned)GetProcAddress("glActiveTexture");
-  glClientActiveTexture = (glClientActiveTexturePROC)(unsigned)GetProcAddress("glClientActiveTexture");
+  glActiveTexture = (glActiveTexturePROC)GetProcAddress("glActiveTexture");
+  glClientActiveTexture = (glClientActiveTexturePROC)GetProcAddress("glClientActiveTexture");
 
-  glMultiTexCoord1d = (glMultiTexCoord1dPROC)(unsigned)GetProcAddress("glMultiTexCoord1d");
-  glMultiTexCoord1dv = (glMultiTexCoord1dvPROC)(unsigned)GetProcAddress("glMultiTexCoord1dv");
-  glMultiTexCoord1f = (glMultiTexCoord1fPROC)(unsigned)GetProcAddress("glMultiTexCoord1f");
-  glMultiTexCoord1fv = (glMultiTexCoord1fvPROC)(unsigned)GetProcAddress("glMultiTexCoord1fv");
-  glMultiTexCoord1i = (glMultiTexCoord1iPROC)(unsigned)GetProcAddress("glMultiTexCoord1i");
-  glMultiTexCoord1iv = (glMultiTexCoord1ivPROC)(unsigned)GetProcAddress("glMultiTexCoord1iv");
-  glMultiTexCoord1s = (glMultiTexCoord1sPROC)(unsigned)GetProcAddress("glMultiTexCoord1s");
-  glMultiTexCoord1sv = (glMultiTexCoord1svPROC)(unsigned)GetProcAddress("glMultiTexCoord1sv");
+  glMultiTexCoord1d = (glMultiTexCoord1dPROC)GetProcAddress("glMultiTexCoord1d");
+  glMultiTexCoord1dv = (glMultiTexCoord1dvPROC)GetProcAddress("glMultiTexCoord1dv");
+  glMultiTexCoord1f = (glMultiTexCoord1fPROC)GetProcAddress("glMultiTexCoord1f");
+  glMultiTexCoord1fv = (glMultiTexCoord1fvPROC)GetProcAddress("glMultiTexCoord1fv");
+  glMultiTexCoord1i = (glMultiTexCoord1iPROC)GetProcAddress("glMultiTexCoord1i");
+  glMultiTexCoord1iv = (glMultiTexCoord1ivPROC)GetProcAddress("glMultiTexCoord1iv");
+  glMultiTexCoord1s = (glMultiTexCoord1sPROC)GetProcAddress("glMultiTexCoord1s");
+  glMultiTexCoord1sv = (glMultiTexCoord1svPROC)GetProcAddress("glMultiTexCoord1sv");
 
-  glMultiTexCoord2d = (glMultiTexCoord2dPROC)(unsigned)GetProcAddress("glMultiTexCoord2d");
-  glMultiTexCoord2dv = (glMultiTexCoord2dvPROC)(unsigned)GetProcAddress("glMultiTexCoord2dv");
-  glMultiTexCoord2f = (glMultiTexCoord2fPROC)(unsigned)GetProcAddress("glMultiTexCoord2f");
-  glMultiTexCoord2fv = (glMultiTexCoord2fvPROC)(unsigned)GetProcAddress("glMultiTexCoord2fv");
-  glMultiTexCoord2i = (glMultiTexCoord2iPROC)(unsigned)GetProcAddress("glMultiTexCoord2i");
-  glMultiTexCoord2iv = (glMultiTexCoord2ivPROC)(unsigned)GetProcAddress("glMultiTexCoord2iv");
-  glMultiTexCoord2s = (glMultiTexCoord2sPROC)(unsigned)GetProcAddress("glMultiTexCoord2s");
-  glMultiTexCoord2sv = (glMultiTexCoord2svPROC)(unsigned)GetProcAddress("glMultiTexCoord2sv");
+  glMultiTexCoord2d = (glMultiTexCoord2dPROC)GetProcAddress("glMultiTexCoord2d");
+  glMultiTexCoord2dv = (glMultiTexCoord2dvPROC)GetProcAddress("glMultiTexCoord2dv");
+  glMultiTexCoord2f = (glMultiTexCoord2fPROC)GetProcAddress("glMultiTexCoord2f");
+  glMultiTexCoord2fv = (glMultiTexCoord2fvPROC)GetProcAddress("glMultiTexCoord2fv");
+  glMultiTexCoord2i = (glMultiTexCoord2iPROC)GetProcAddress("glMultiTexCoord2i");
+  glMultiTexCoord2iv = (glMultiTexCoord2ivPROC)GetProcAddress("glMultiTexCoord2iv");
+  glMultiTexCoord2s = (glMultiTexCoord2sPROC)GetProcAddress("glMultiTexCoord2s");
+  glMultiTexCoord2sv = (glMultiTexCoord2svPROC)GetProcAddress("glMultiTexCoord2sv");
 
-  glMultiTexCoord3d = (glMultiTexCoord3dPROC)(unsigned)GetProcAddress("glMultiTexCoord3d");
-  glMultiTexCoord3dv = (glMultiTexCoord3dvPROC)(unsigned)GetProcAddress("glMultiTexCoord3dv");
-  glMultiTexCoord3f = (glMultiTexCoord3fPROC)(unsigned)GetProcAddress("glMultiTexCoord3f");
-  glMultiTexCoord3fv = (glMultiTexCoord3fvPROC)(unsigned)GetProcAddress("glMultiTexCoord3fv");
-  glMultiTexCoord3i = (glMultiTexCoord3iPROC)(unsigned)GetProcAddress("glMultiTexCoord3i");
-  glMultiTexCoord3iv = (glMultiTexCoord3ivPROC)(unsigned)GetProcAddress("glMultiTexCoord3iv");
-  glMultiTexCoord3s = (glMultiTexCoord3sPROC)(unsigned)GetProcAddress("glMultiTexCoord3s");
-  glMultiTexCoord3sv = (glMultiTexCoord3svPROC)(unsigned)GetProcAddress("glMultiTexCoord3sv");
+  glMultiTexCoord3d = (glMultiTexCoord3dPROC)GetProcAddress("glMultiTexCoord3d");
+  glMultiTexCoord3dv = (glMultiTexCoord3dvPROC)GetProcAddress("glMultiTexCoord3dv");
+  glMultiTexCoord3f = (glMultiTexCoord3fPROC)GetProcAddress("glMultiTexCoord3f");
+  glMultiTexCoord3fv = (glMultiTexCoord3fvPROC)GetProcAddress("glMultiTexCoord3fv");
+  glMultiTexCoord3i = (glMultiTexCoord3iPROC)GetProcAddress("glMultiTexCoord3i");
+  glMultiTexCoord3iv = (glMultiTexCoord3ivPROC)GetProcAddress("glMultiTexCoord3iv");
+  glMultiTexCoord3s = (glMultiTexCoord3sPROC)GetProcAddress("glMultiTexCoord3s");
+  glMultiTexCoord3sv = (glMultiTexCoord3svPROC)GetProcAddress("glMultiTexCoord3sv");
 
-  glMultiTexCoord4d = (glMultiTexCoord4dPROC)(unsigned)GetProcAddress("glMultiTexCoord4d");
-  glMultiTexCoord4dv = (glMultiTexCoord4dvPROC)(unsigned)GetProcAddress("glMultiTexCoord4dv");
-  glMultiTexCoord4f = (glMultiTexCoord4fPROC)(unsigned)GetProcAddress("glMultiTexCoord4f");
-  glMultiTexCoord4fv = (glMultiTexCoord4fvPROC)(unsigned)GetProcAddress("glMultiTexCoord4fv");
-  glMultiTexCoord4i = (glMultiTexCoord4iPROC)(unsigned)GetProcAddress("glMultiTexCoord4i");
-  glMultiTexCoord4iv = (glMultiTexCoord4ivPROC)(unsigned)GetProcAddress("glMultiTexCoord4iv");
-  glMultiTexCoord4s = (glMultiTexCoord4sPROC)(unsigned)GetProcAddress("glMultiTexCoord4s");
-  glMultiTexCoord4sv = (glMultiTexCoord4svPROC)(unsigned)GetProcAddress("glMultiTexCoord4sv");
+  glMultiTexCoord4d = (glMultiTexCoord4dPROC)GetProcAddress("glMultiTexCoord4d");
+  glMultiTexCoord4dv = (glMultiTexCoord4dvPROC)GetProcAddress("glMultiTexCoord4dv");
+  glMultiTexCoord4f = (glMultiTexCoord4fPROC)GetProcAddress("glMultiTexCoord4f");
+  glMultiTexCoord4fv = (glMultiTexCoord4fvPROC)GetProcAddress("glMultiTexCoord4fv");
+  glMultiTexCoord4i = (glMultiTexCoord4iPROC)GetProcAddress("glMultiTexCoord4i");
+  glMultiTexCoord4iv = (glMultiTexCoord4ivPROC)GetProcAddress("glMultiTexCoord4iv");
+  glMultiTexCoord4s = (glMultiTexCoord4sPROC)GetProcAddress("glMultiTexCoord4s");
+  glMultiTexCoord4sv = (glMultiTexCoord4svPROC)GetProcAddress("glMultiTexCoord4sv");
   }
   catch (...)
   {
@@ -145,45 +145,45 @@ void FFGLExtensions::InitARBShaderObjects()
   try
   {
 
-  glDeleteObjectARB = (glDeleteObjectARBPROC)(unsigned)GetProcAddress("glDeleteObjectARB");
-  glGetHandleARB = (glGetHandleARBPROC)(unsigned)GetProcAddress("glGetHandleARB");
-  glDetachObjectARB = (glDetachObjectARBPROC)(unsigned)GetProcAddress("glDetachObjectARB");
-  glCreateShaderObjectARB = (glCreateShaderObjectARBPROC)(unsigned)GetProcAddress("glCreateShaderObjectARB");
-  glShaderSourceARB = (glShaderSourceARBPROC)(unsigned)GetProcAddress("glShaderSourceARB");
-  glCompileShaderARB = (glCompileShaderARBPROC)(unsigned)GetProcAddress("glCompileShaderARB");
-  glCreateProgramObjectARB = (glCreateProgramObjectARBPROC)(unsigned)GetProcAddress("glCreateProgramObjectARB");
-  glAttachObjectARB = (glAttachObjectARBPROC)(unsigned)GetProcAddress("glAttachObjectARB");
-  glLinkProgramARB = (glLinkProgramARBPROC)(unsigned)GetProcAddress("glLinkProgramARB");
-  glUseProgramObjectARB = (glUseProgramObjectARBPROC)(unsigned)GetProcAddress("glUseProgramObjectARB");
-  glValidateProgramARB = (glValidateProgramARBPROC)(unsigned)GetProcAddress("glValidateProgramARB");
-  glUniform1fARB = (glUniform1fARBPROC)(unsigned)GetProcAddress("glUniform1fARB");
-  glUniform2fARB = (glUniform2fARBPROC)(unsigned)GetProcAddress("glUniform2fARB");
-  glUniform3fARB = (glUniform3fARBPROC)(unsigned)GetProcAddress("glUniform3fARB");
-  glUniform4fARB = (glUniform4fARBPROC)(unsigned)GetProcAddress("glUniform4fARB");
-  glUniform1iARB = (glUniform1iARBPROC)(unsigned)GetProcAddress("glUniform1iARB");
-  glUniform2iARB = (glUniform2iARBPROC)(unsigned)GetProcAddress("glUniform2iARB");
-  glUniform3iARB = (glUniform3iARBPROC)(unsigned)GetProcAddress("glUniform3iARB");
-  glUniform4iARB = (glUniform4iARBPROC)(unsigned)GetProcAddress("glUniform4iARB");
-  glUniform1fvARB = (glUniform1fvARBPROC)(unsigned)GetProcAddress("glUniform1fvARB");
-  glUniform2fvARB = (glUniform2fvARBPROC)(unsigned)GetProcAddress("glUniform2fvARB");
-  glUniform3fvARB = (glUniform3fvARBPROC)(unsigned)GetProcAddress("glUniform3fvARB");
-  glUniform4fvARB = (glUniform4fvARBPROC)(unsigned)GetProcAddress("glUniform4fvARB");
-  glUniform1ivARB = (glUniform1ivARBPROC)(unsigned)GetProcAddress("glUniform1ivARB");
-  glUniform2ivARB = (glUniform2ivARBPROC)(unsigned)GetProcAddress("glUniform2ivARB");
-  glUniform3ivARB = (glUniform3ivARBPROC)(unsigned)GetProcAddress("glUniform3ivARB");
-  glUniform4ivARB = (glUniform4ivARBPROC)(unsigned)GetProcAddress("glUniform4ivARB");
-  glUniformMatrix2fvARB = (glUniformMatrix2fvARBPROC)(unsigned)GetProcAddress("glUniformMatrix2fvARB");
-  glUniformMatrix3fvARB = (glUniformMatrix3fvARBPROC)(unsigned)GetProcAddress("glUniformMatrix3fvARB");
-  glUniformMatrix4fvARB = (glUniformMatrix4fvARBPROC)(unsigned)GetProcAddress("glUniformMatrix4fvARB");
-  glGetObjectParameterfvARB = (glGetObjectParameterfvARBPROC)(unsigned)GetProcAddress("glGetObjectParameterfvARB");
-  glGetObjectParameterivARB = (glGetObjectParameterivARBPROC)(unsigned)GetProcAddress("glGetObjectParameterivARB");
-  glGetInfoLogARB = (glGetInfoLogARBPROC)(unsigned)GetProcAddress("glGetInfoLogARB");
-  glGetAttachedObjectsARB = (glGetAttachedObjectsARBPROC)(unsigned)GetProcAddress("glGetAttachedObjectsARB");
-  glGetUniformLocationARB = (glGetUniformLocationARBPROC)(unsigned)GetProcAddress("glGetUniformLocationARB");
-  glGetActiveUniformARB = (glGetActiveUniformARBPROC)(unsigned)GetProcAddress("glGetActiveUniformARB");
-  glGetUniformfvARB = (glGetUniformfvARBPROC)(unsigned)GetProcAddress("glGetUniformfvARB");
-  glGetUniformivARB = (glGetUniformivARBPROC)(unsigned)GetProcAddress("glGetUniformivARB");
-  glGetShaderSourceARB = (glGetShaderSourceARBPROC)(unsigned)GetProcAddress("glGetShaderSourceARB");
+  glDeleteObjectARB = (glDeleteObjectARBPROC)GetProcAddress("glDeleteObjectARB");
+  glGetHandleARB = (glGetHandleARBPROC)GetProcAddress("glGetHandleARB");
+  glDetachObjectARB = (glDetachObjectARBPROC)GetProcAddress("glDetachObjectARB");
+  glCreateShaderObjectARB = (glCreateShaderObjectARBPROC)GetProcAddress("glCreateShaderObjectARB");
+  glShaderSourceARB = (glShaderSourceARBPROC)GetProcAddress("glShaderSourceARB");
+  glCompileShaderARB = (glCompileShaderARBPROC)GetProcAddress("glCompileShaderARB");
+  glCreateProgramObjectARB = (glCreateProgramObjectARBPROC)GetProcAddress("glCreateProgramObjectARB");
+  glAttachObjectARB = (glAttachObjectARBPROC)GetProcAddress("glAttachObjectARB");
+  glLinkProgramARB = (glLinkProgramARBPROC)GetProcAddress("glLinkProgramARB");
+  glUseProgramObjectARB = (glUseProgramObjectARBPROC)GetProcAddress("glUseProgramObjectARB");
+  glValidateProgramARB = (glValidateProgramARBPROC)GetProcAddress("glValidateProgramARB");
+  glUniform1fARB = (glUniform1fARBPROC)GetProcAddress("glUniform1fARB");
+  glUniform2fARB = (glUniform2fARBPROC)GetProcAddress("glUniform2fARB");
+  glUniform3fARB = (glUniform3fARBPROC)GetProcAddress("glUniform3fARB");
+  glUniform4fARB = (glUniform4fARBPROC)GetProcAddress("glUniform4fARB");
+  glUniform1iARB = (glUniform1iARBPROC)GetProcAddress("glUniform1iARB");
+  glUniform2iARB = (glUniform2iARBPROC)GetProcAddress("glUniform2iARB");
+  glUniform3iARB = (glUniform3iARBPROC)GetProcAddress("glUniform3iARB");
+  glUniform4iARB = (glUniform4iARBPROC)GetProcAddress("glUniform4iARB");
+  glUniform1fvARB = (glUniform1fvARBPROC)GetProcAddress("glUniform1fvARB");
+  glUniform2fvARB = (glUniform2fvARBPROC)GetProcAddress("glUniform2fvARB");
+  glUniform3fvARB = (glUniform3fvARBPROC)GetProcAddress("glUniform3fvARB");
+  glUniform4fvARB = (glUniform4fvARBPROC)GetProcAddress("glUniform4fvARB");
+  glUniform1ivARB = (glUniform1ivARBPROC)GetProcAddress("glUniform1ivARB");
+  glUniform2ivARB = (glUniform2ivARBPROC)GetProcAddress("glUniform2ivARB");
+  glUniform3ivARB = (glUniform3ivARBPROC)GetProcAddress("glUniform3ivARB");
+  glUniform4ivARB = (glUniform4ivARBPROC)GetProcAddress("glUniform4ivARB");
+  glUniformMatrix2fvARB = (glUniformMatrix2fvARBPROC)GetProcAddress("glUniformMatrix2fvARB");
+  glUniformMatrix3fvARB = (glUniformMatrix3fvARBPROC)GetProcAddress("glUniformMatrix3fvARB");
+  glUniformMatrix4fvARB = (glUniformMatrix4fvARBPROC)GetProcAddress("glUniformMatrix4fvARB");
+  glGetObjectParameterfvARB = (glGetObjectParameterfvARBPROC)GetProcAddress("glGetObjectParameterfvARB");
+  glGetObjectParameterivARB = (glGetObjectParameterivARBPROC)GetProcAddress("glGetObjectParameterivARB");
+  glGetInfoLogARB = (glGetInfoLogARBPROC)GetProcAddress("glGetInfoLogARB");
+  glGetAttachedObjectsARB = (glGetAttachedObjectsARBPROC)GetProcAddress("glGetAttachedObjectsARB");
+  glGetUniformLocationARB = (glGetUniformLocationARBPROC)GetProcAddress("glGetUniformLocationARB");
+  glGetActiveUniformARB = (glGetActiveUniformARBPROC)GetProcAddress("glGetActiveUniformARB");
+  glGetUniformfvARB = (glGetUniformfvARBPROC)GetProcAddress("glGetUniformfvARB");
+  glGetUniformivARB = (glGetUniformivARBPROC)GetProcAddress("glGetUniformivARB");
+  glGetShaderSourceARB = (glGetShaderSourceARBPROC)GetProcAddress("glGetShaderSourceARB");
 
   }
   catch (...)
@@ -203,23 +203,23 @@ void FFGLExtensions::InitEXTFramebufferObject()
   try
   {
 
-  glBindFramebufferEXT = (glBindFramebufferEXTPROC)(unsigned)GetProcAddress("glBindFramebufferEXT");
-  glBindRenderbufferEXT = (glBindRenderbufferEXTPROC)(unsigned)GetProcAddress("glBindRenderbufferEXT");
-  glCheckFramebufferStatusEXT = (glCheckFramebufferStatusEXTPROC)(unsigned)GetProcAddress("glCheckFramebufferStatusEXT");
-  glDeleteFramebuffersEXT = (glDeleteFramebuffersEXTPROC)(unsigned)GetProcAddress("glDeleteFramebuffersEXT");
-  glDeleteRenderBuffersEXT = (glDeleteRenderBuffersEXTPROC)(unsigned)GetProcAddress("glDeleteRenderbuffersEXT");
-  glFramebufferRenderbufferEXT = (glFramebufferRenderbufferEXTPROC)(unsigned)GetProcAddress("glFramebufferRenderbufferEXT");
-  glFramebufferTexture1DEXT = (glFramebufferTexture1DEXTPROC)(unsigned)GetProcAddress("glFramebufferTexture1DEXT");
-  glFramebufferTexture2DEXT = (glFramebufferTexture2DEXTPROC)(unsigned)GetProcAddress("glFramebufferTexture2DEXT");
-  glFramebufferTexture3DEXT = (glFramebufferTexture3DEXTPROC)(unsigned)GetProcAddress("glFramebufferTexture3DEXT");
-  glGenFramebuffersEXT = (glGenFramebuffersEXTPROC)(unsigned)GetProcAddress("glGenFramebuffersEXT");
-  glGenRenderbuffersEXT = (glGenRenderbuffersEXTPROC)(unsigned)GetProcAddress("glGenRenderbuffersEXT");
-  glGenerateMipmapEXT = (glGenerateMipmapEXTPROC)(unsigned)GetProcAddress("glGenerateMipmapEXT");
-  glGetFramebufferAttachmentParameterivEXT = (glGetFramebufferAttachmentParameterivEXTPROC)(unsigned)GetProcAddress("glGetFramebufferAttachmentParameterivEXT");
-  glGetRenderbufferParameterivEXT = (glGetRenderbufferParameterivEXTPROC)(unsigned)GetProcAddress("glGetRenderbufferParameterivEXT");
-  glIsFramebufferEXT = (glIsFramebufferEXTPROC)(unsigned)GetProcAddress("glIsFramebufferEXT");
-  glIsRenderbufferEXT = (glIsRenderbufferEXTPROC)(unsigned)GetProcAddress("glIsRenderbufferEXT");
-  glRenderbufferStorageEXT = (glRenderbufferStorageEXTPROC)(unsigned)GetProcAddress("glRenderbufferStorageEXT");
+  glBindFramebufferEXT = (glBindFramebufferEXTPROC)GetProcAddress("glBindFramebufferEXT");
+  glBindRenderbufferEXT = (glBindRenderbufferEXTPROC)GetProcAddress("glBindRenderbufferEXT");
+  glCheckFramebufferStatusEXT = (glCheckFramebufferStatusEXTPROC)GetProcAddress("glCheckFramebufferStatusEXT");
+  glDeleteFramebuffersEXT = (glDeleteFramebuffersEXTPROC)GetProcAddress("glDeleteFramebuffersEXT");
+  glDeleteRenderBuffersEXT = (glDeleteRenderBuffersEXTPROC)GetProcAddress("glDeleteRenderbuffersEXT");
+  glFramebufferRenderbufferEXT = (glFramebufferRenderbufferEXTPROC)GetProcAddress("glFramebufferRenderbufferEXT");
+  glFramebufferTexture1DEXT = (glFramebufferTexture1DEXTPROC)GetProcAddress("glFramebufferTexture1DEXT");
+  glFramebufferTexture2DEXT = (glFramebufferTexture2DEXTPROC)GetProcAddress("glFramebufferTexture2DEXT");
+  glFramebufferTexture3DEXT = (glFramebufferTexture3DEXTPROC)GetProcAddress("glFramebufferTexture3DEXT");
+  glGenFramebuffersEXT = (glGenFramebuffersEXTPROC)GetProcAddress("glGenFramebuffersEXT");
+  glGenRenderbuffersEXT = (glGenRenderbuffersEXTPROC)GetProcAddress("glGenRenderbuffersEXT");
+  glGenerateMipmapEXT = (glGenerateMipmapEXTPROC)GetProcAddress("glGenerateMipmapEXT");
+  glGetFramebufferAttachmentParameterivEXT = (glGetFramebufferAttachmentParameterivEXTPROC)GetProcAddress("glGetFramebufferAttachmentParameterivEXT");
+  glGetRenderbufferParameterivEXT = (glGetRenderbufferParameterivEXTPROC)GetProcAddress("glGetRenderbufferParameterivEXT");
+  glIsFramebufferEXT = (glIsFramebufferEXTPROC)GetProcAddress("glIsFramebufferEXT");
+  glIsRenderbufferEXT = (glIsRenderbufferEXTPROC)GetProcAddress("glIsRenderbufferEXT");
+  glRenderbufferStorageEXT = (glRenderbufferStorageEXTPROC)GetProcAddress("glRenderbufferStorageEXT");
 
   }
   catch (...)

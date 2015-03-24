@@ -56,7 +56,7 @@ public:
 	/// \return		The default implementation always returns FF_SUCCESS. 
 	///						A custom implementation must be provided by every specific plugin that allocates
   ///           any OpenGL resources
-  virtual DWORD InitGL(const FFGLViewportStruct *vp) { return FF_SUCCESS; }
+  virtual FFResult InitGL(const FFGLViewportStruct *vp) { return FF_SUCCESS; }
 
   /// Default implementation of the FFGL DeInitGL instance specific function. This function frees
   /// any OpenGL resources the plugin has allocated
@@ -64,7 +64,7 @@ public:
 	/// \return		The default implementation always returns FF_SUCCESS. 
 	///						A custom implementation must be provided by every specific plugin that allocates
   ///           any OpenGL resources
-  virtual DWORD DeInitGL() { return FF_SUCCESS; }
+  virtual FFResult DeInitGL() { return FF_SUCCESS; }
 
 	/// Default implementation of the FreeFrame getParameterDisplay instance specific function. It provides a string 
 	/// to display as the value of the plugin parameter whose index is passed as parameter to the method. This default 
@@ -74,29 +74,14 @@ public:
 	/// \param		dwIndex		The index of the parameter whose display value is queried. 
 	///							It should be in the range [0, Number of plugin parameters).
 	/// \return					The display value of the plugin parameter or NULL in case of error
-	virtual char* GetParameterDisplay(DWORD dwIndex);
+	virtual char* GetParameterDisplay(unsigned int index);
 
-	/// Default implementation of the FreeFrame setParameter instance specific function. It allows setting the current 
-	/// value of the plugin parameter whose index is passed as parameter to the method. This default implementation 
-	/// always returns FF_FAIL. A custom implementation must be provided by every specific plugin.
-	///
-	/// \param		pParam		A pointer to a SetParameterStruct (see FreeFrame.h and FreeFrame specification for 
-	///							further information) containing the index and the new value of the plugin parameter 
-	///							whose value is going to be set. The parameter index should be in the range 
-	///							[0, Number of plugin parameters). 
-	/// \return					The default implementation always returns FF_FAIL. 
-	///							A custom implementation must be provided.
-	virtual DWORD SetParameter(const SetParameterStruct* pParam);
-	
-	/// Default implementation of the FreeFrame getParameter instance specific function. It allows getting the current 
-	/// value of the plugin parameter whose index is passed as parameter to the method. This default implementation 
-	/// always returns FF_FAIL. A custom implementation must be provided by every specific plugin.
-	///
-	/// \param		dwIndex		The index of the parameter whose current value is queried.
-	///							It should be in the range [0, Number of plugin parameters).
-	/// \return					The default implementation always returns FF_FAIL. 
-	///							A custom implementation must be provided by every specific plugin
-	virtual DWORD GetParameter(DWORD dwIndex);
+	/* Added the following to obscure the casting to FFMixed from implementations. Could/should also deal with other paramter types
+	    in a similar way */
+	virtual FFResult SetFloatParameter(unsigned int index, float value);
+	virtual FFResult SetTextParameter(unsigned int index, const char *value);
+	virtual float GetFloatParameter(unsigned int index);
+	virtual char* GetTextParameter(unsigned int index);
 	
 	/// Default implementation of the FFGL ProcessOpenGL instance specific function. This function processes 
 	/// the input texture(s) by 
@@ -105,7 +90,7 @@ public:
 	///						the description in the FFGL specification).
 	/// \return		The default implementation always returns FF_FAIL. 
 	///						A custom implementation must be provided by every specific plugin.
-  virtual DWORD ProcessOpenGL(ProcessOpenGLStruct* pOpenGLData) { return FF_FAIL; }
+  virtual FFResult ProcessOpenGL(ProcessOpenGLStruct* pOpenGLData) { return FF_FAIL; }
 
  	/// Default implementation of the FFGL SetTime instance specific function
 	///
@@ -113,7 +98,7 @@ public:
 	///						the description in the FFGL specification).
 	/// \return		The default implementation always returns FF_FAIL. 
 	///						A custom implementation must be provided by every specific plugin.
-  virtual DWORD SetTime(double time) { return FF_FAIL; }
+  virtual FFResult SetTime(double time) { return FF_FAIL; }
 
 	/// Default implementation of the FreeFrame getInputStatus instance specific function. This function is called 
 	/// to know whether a given input is currently in use. For the default implementation every input is always in use. 
@@ -123,7 +108,7 @@ public:
 	///							It should be in the range [Minimum number of inputs, Maximum number of inputs).
 	/// \return					The default implementation always returns FF_FF_INPUT_INUSE or FF_FAIL if the index 
 	///							is out of range. A custom implementation may be provided by every specific plugin.
-	virtual DWORD GetInputStatus(DWORD dwIndex);
+	virtual FFResult GetInputStatus(unsigned int index);
 
 	/// The only public data field CFreeFrameGLPlugin contains is m_pPlugin, a pointer to the plugin instance. 
 	/// Subclasses may use this pointer for self-referencing (e.g., a plugin may pass this pointer to external modules, 

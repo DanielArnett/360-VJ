@@ -34,7 +34,7 @@
 
 //FPCREATEINSTANCEGL is a pointer to a function that creates FFGL plugins
 //in this SDK, all FFGL plugins must derive from CFreeFrameGLPlugin
-typedef DWORD __stdcall FPCREATEINSTANCEGL(class CFreeFrameGLPlugin **ppOutInstance);
+typedef FFResult __stdcall FPCREATEINSTANCEGL(class CFreeFrameGLPlugin **ppOutInstance);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// \class		CFFGLPluginInfo
@@ -99,14 +99,14 @@ public:
 		FPCREATEINSTANCEGL* pCreateInstance,
 		const char* pchUniqueID,
 		const char* pchPluginName,
-		DWORD dwAPIMajorVersion,
-		DWORD dwAPIMinorVersion,
-		DWORD dwPluginMajorVersion,
-		DWORD dwPluginMinorVersion,
-		DWORD dwPluginType,
+		unsigned int dwAPIMajorVersion,
+		unsigned int dwAPIMinorVersion,
+		unsigned int dwPluginMajorVersion,
+		unsigned int dwPluginMinorVersion,
+		unsigned int dwPluginType,
 		const char* pchDescription,
 		const char* pchAbout,
-		DWORD dwFreeFrameExtendedDataSize = 0,
+		unsigned int dwFreeFrameExtendedDataSize = 0,
 		const void* pFreeFrameExtendedDataBlock = NULL
 	);
 

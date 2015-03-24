@@ -3,6 +3,7 @@
 //
 //		------------------------------------------------------------
 //		Copyright (C) 2015. Lynn Jarvis, Leading Edge. Pty. Ltd.
+//		Ported to OSX by Amaury Hazan (amaury@billaboop.com)
 //
 //		This program is free software: you can redistribute it and/or modify
 //		it under the terms of the GNU Lesser General Public License as published by
@@ -22,8 +23,29 @@
 #ifndef ShaderMaker_H
 #define ShaderMaker_H
 
-#include "FFGL\FFGLShader.h"
-#include "FFGL\FFGLPluginSDK.h"
+#include <stdio.h>
+#include <string>
+#include <time.h> // for date
+#include "FFGL.h" // windows : msvc project needs the FFGL folder in its include path
+#include "FFGLLib.h"
+#include "FFGLShader.h"
+#include "FFGLPluginSDK.h"
+
+#if (!(defined(WIN32) || defined(_WIN32) || defined(__WIN32__)))
+// posix
+typedef uint8_t  CHAR;
+typedef uint16_t WORD;
+typedef uint32_t DWORD;
+typedef int8_t  BYTE;
+typedef int16_t SHORT;
+typedef int32_t LONG;
+typedef LONG INT;
+typedef INT BOOL;
+typedef int64_t __int64; 
+typedef int64_t LARGE_INTEGER;
+#include <ctime>
+#include <chrono> // c++11 timer
+#endif
 
 #define GL_SHADING_LANGUAGE_VERSION	0x8B8C
 #define GL_READ_FRAMEBUFFER_EXT		0x8CA8
@@ -35,25 +57,23 @@ class ShaderMaker : public CFreeFrameGLPlugin
 public:
 
 	ShaderMaker();
-	virtual ~ShaderMaker();
+	~ShaderMaker();
 
 	///////////////////////////////////////////////////
 	// FreeFrameGL plugin methods
 	///////////////////////////////////////////////////
-	
-	DWORD SetParameter(const SetParameterStruct* pParam);		
-	DWORD GetParameter(DWORD dwIndex);					
-	DWORD ProcessOpenGL(ProcessOpenGLStruct* pGL);
-	DWORD InitGL(const FFGLViewportStruct *vp);
-	DWORD DeInitGL();
-
-	DWORD GetInputStatus(DWORD dwIndex);
+    FFResult SetFloatParameter(unsigned int index, float value);
+    float GetFloatParameter(unsigned int index);
+	FFResult ProcessOpenGL(ProcessOpenGLStruct* pGL);
+	FFResult InitGL(const FFGLViewportStruct *vp);
+	FFResult DeInitGL();
+	FFResult GetInputStatus(DWORD dwIndex);
 	char * GetParameterDisplay(DWORD dwIndex);
 
 	///////////////////////////////////////////////////
 	// Factory method
 	///////////////////////////////////////////////////
-	static DWORD __stdcall CreateInstance(CFreeFrameGLPlugin **ppOutInstance)  {
+	static FFResult __stdcall CreateInstance(CFreeFrameGLPlugin **ppOutInstance) {
   		*ppOutInstance = new ShaderMaker();
 		if (*ppOutInstance != NULL)
 			return FF_SUCCESS;
@@ -87,11 +107,19 @@ protected:
 	// Viewport
 	float m_vpWidth;
 	float m_vpHeight;
+    
+    // Time
+    double elapsedTime, lastTime;
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+    // windows
+    double PCFreq;
+    __int64 CounterStart;
+#else
+    // posix c++11
+    std::chrono::steady_clock::time_point start;
+    std::chrono::steady_clock::time_point end;
+#endif
 	
-	// Time
-	double startTime, elapsedTime, lastTime, PCFreq;
-	__int64 CounterStart;
-
 	//
 	// Shader uniforms
 	//
@@ -151,7 +179,6 @@ protected:
 	double GetCounter();
 	bool LoadShader(std::string shaderString);
 	void CreateRectangleTexture(FFGLTextureStruct Texture, FFGLTexCoords maxCoords, GLuint &glTexture, GLenum texunit, GLuint &fbo, GLuint hostFbo);
-
 };
 
 

@@ -1,0 +1,277 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AC62BFA41A9E16ED00174CF4 /* ShaderMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC62BFA31A9E16ED00174CF4 /* ShaderMaker.cpp */; };
+		AC62BFB71A9E170100174CF4 /* FFGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC62BFA51A9E170100174CF4 /* FFGL.cpp */; };
+		AC62BFB81A9E170100174CF4 /* FFGLExtensions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC62BFA71A9E170100174CF4 /* FFGLExtensions.cpp */; };
+		AC62BFB91A9E170100174CF4 /* FFGLFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC62BFA91A9E170100174CF4 /* FFGLFBO.cpp */; };
+		AC62BFBA1A9E170100174CF4 /* FFGLPluginInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC62BFAC1A9E170100174CF4 /* FFGLPluginInfo.cpp */; };
+		AC62BFBB1A9E170100174CF4 /* FFGLPluginInfoData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC62BFAE1A9E170100174CF4 /* FFGLPluginInfoData.cpp */; };
+		AC62BFBC1A9E170100174CF4 /* FFGLPluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC62BFB01A9E170100174CF4 /* FFGLPluginManager.cpp */; };
+		AC62BFBD1A9E170100174CF4 /* FFGLPluginSDK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC62BFB21A9E170100174CF4 /* FFGLPluginSDK.cpp */; };
+		AC62BFBE1A9E170100174CF4 /* FFGLShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC62BFB41A9E170100174CF4 /* FFGLShader.cpp */; };
+		AC62BFC01A9E178700174CF4 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC62BFBF1A9E178700174CF4 /* Info.plist */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2DA287A70AEEFE950030A4DD /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		AC62BFA31A9E16ED00174CF4 /* ShaderMaker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderMaker.cpp; path = ../../ShaderMaker.cpp; sourceTree = "<group>"; };
+		AC62BFA51A9E170100174CF4 /* FFGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFGL.cpp; path = ../../FFGL/FFGL.cpp; sourceTree = "<group>"; };
+		AC62BFA71A9E170100174CF4 /* FFGLExtensions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFGLExtensions.cpp; path = ../../FFGL/FFGLExtensions.cpp; sourceTree = "<group>"; };
+		AC62BFA91A9E170100174CF4 /* FFGLFBO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFGLFBO.cpp; path = ../../FFGL/FFGLFBO.cpp; sourceTree = "<group>"; };
+		AC62BFAC1A9E170100174CF4 /* FFGLPluginInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFGLPluginInfo.cpp; path = ../../FFGL/FFGLPluginInfo.cpp; sourceTree = "<group>"; };
+		AC62BFAE1A9E170100174CF4 /* FFGLPluginInfoData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFGLPluginInfoData.cpp; path = ../../FFGL/FFGLPluginInfoData.cpp; sourceTree = "<group>"; };
+		AC62BFB01A9E170100174CF4 /* FFGLPluginManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFGLPluginManager.cpp; path = ../../FFGL/FFGLPluginManager.cpp; sourceTree = "<group>"; };
+		AC62BFB21A9E170100174CF4 /* FFGLPluginSDK.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFGLPluginSDK.cpp; path = ../../FFGL/FFGLPluginSDK.cpp; sourceTree = "<group>"; };
+		AC62BFB41A9E170100174CF4 /* FFGLShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFGLShader.cpp; path = ../../FFGL/FFGLShader.cpp; sourceTree = "<group>"; };
+		AC62BFBF1A9E178700174CF4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC62BFC11A9E247900174CF4 /* ShaderMaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderMaker.h; path = ../../ShaderMaker.h; sourceTree = "<group>"; };
+		ACB4E01C1A9268BC00E4C1D2 /* FFGLShaderMaker.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FFGLShaderMaker.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		ACB4E0181A9268BC00E4C1D2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2DA285910AEE5D640030A4DD = {
+			isa = PBXGroup;
+			children = (
+				AC62BFA11A9E16CD00174CF4 /* ShaderMaker */,
+				AC62BFA21A9E16D400174CF4 /* FFGL */,
+				2DA287A70AEEFE950030A4DD /* OpenGL.framework */,
+				2DA285A10AEE5E480030A4DD /* Products */,
+				AC62BFBF1A9E178700174CF4 /* Info.plist */,
+			);
+			sourceTree = "<group>";
+		};
+		2DA285A10AEE5E480030A4DD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ACB4E01C1A9268BC00E4C1D2 /* FFGLShaderMaker.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC62BFA11A9E16CD00174CF4 /* ShaderMaker */ = {
+			isa = PBXGroup;
+			children = (
+				AC62BFC11A9E247900174CF4 /* ShaderMaker.h */,
+				AC62BFA31A9E16ED00174CF4 /* ShaderMaker.cpp */,
+			);
+			name = ShaderMaker;
+			sourceTree = "<group>";
+		};
+		AC62BFA21A9E16D400174CF4 /* FFGL */ = {
+			isa = PBXGroup;
+			children = (
+				AC62BFA51A9E170100174CF4 /* FFGL.cpp */,
+				AC62BFA71A9E170100174CF4 /* FFGLExtensions.cpp */,
+				AC62BFA91A9E170100174CF4 /* FFGLFBO.cpp */,
+				AC62BFAC1A9E170100174CF4 /* FFGLPluginInfo.cpp */,
+				AC62BFAE1A9E170100174CF4 /* FFGLPluginInfoData.cpp */,
+				AC62BFB01A9E170100174CF4 /* FFGLPluginManager.cpp */,
+				AC62BFB21A9E170100174CF4 /* FFGLPluginSDK.cpp */,
+				AC62BFB41A9E170100174CF4 /* FFGLShader.cpp */,
+			);
+			name = FFGL;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		ACB4E00F1A9268BC00E4C1D2 /* ShaderMaker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ACB4E0191A9268BC00E4C1D2 /* Build configuration list for PBXNativeTarget "ShaderMaker" */;
+			buildPhases = (
+				ACB4E0101A9268BC00E4C1D2 /* Resources */,
+				ACB4E0111A9268BC00E4C1D2 /* Sources */,
+				ACB4E0181A9268BC00E4C1D2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShaderMaker;
+			productName = FFGLBrightness;
+			productReference = ACB4E01C1A9268BC00E4C1D2 /* FFGLShaderMaker.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2DA285930AEE5D640030A4DD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 2DA285940AEE5D640030A4DD /* Build configuration list for PBXProject "ShaderMaker" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2DA285910AEE5D640030A4DD;
+			productRefGroup = 2DA285A10AEE5E480030A4DD /* Products */;
+			projectDirPath = "";
+			projectRoot = ../../..;
+			targets = (
+				ACB4E00F1A9268BC00E4C1D2 /* ShaderMaker */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		ACB4E0101A9268BC00E4C1D2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC62BFC01A9E178700174CF4 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		ACB4E0111A9268BC00E4C1D2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC62BFBA1A9E170100174CF4 /* FFGLPluginInfo.cpp in Sources */,
+				AC62BFB71A9E170100174CF4 /* FFGL.cpp in Sources */,
+				AC62BFBD1A9E170100174CF4 /* FFGLPluginSDK.cpp in Sources */,
+				AC62BFB81A9E170100174CF4 /* FFGLExtensions.cpp in Sources */,
+				AC62BFBB1A9E170100174CF4 /* FFGLPluginInfoData.cpp in Sources */,
+				AC62BFB91A9E170100174CF4 /* FFGLFBO.cpp in Sources */,
+				AC62BFBC1A9E170100174CF4 /* FFGLPluginManager.cpp in Sources */,
+				AC62BFA41A9E16ED00174CF4 /* ShaderMaker.cpp in Sources */,
+				AC62BFBE1A9E170100174CF4 /* FFGLShader.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2DA285950AEE5D640030A4DD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2DA285960AEE5D640030A4DD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		ACB4E01A1A9268BC00E4C1D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CONFIGURATION_BUILD_DIR = ../../Binaries/OSX;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"_DEBUG=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					../../,
+					"../../FFGL-1.6",
+				);
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"-framework",
+					OpenGL,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ShaderMaker;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		ACB4E01B1A9268BC00E4C1D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CONFIGURATION_BUILD_DIR = ../../Binaries/OSX;
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "TARGET_OS_MAC=1";
+				HEADER_SEARCH_PATHS = (
+					../../,
+					"../../FFGL-1.6",
+				);
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"-framework",
+					OpenGL,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ShaderMaker;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2DA285940AEE5D640030A4DD /* Build configuration list for PBXProject "ShaderMaker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2DA285950AEE5D640030A4DD /* Debug */,
+				2DA285960AEE5D640030A4DD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ACB4E0191A9268BC00E4C1D2 /* Build configuration list for PBXNativeTarget "ShaderMaker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ACB4E01A1A9268BC00E4C1D2 /* Debug */,
+				ACB4E01B1A9268BC00E4C1D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2DA285930AEE5D640030A4DD /* Project object */;
+}

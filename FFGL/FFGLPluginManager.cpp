@@ -65,20 +65,20 @@ CFFGLPluginManager::~CFFGLPluginManager()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CFFGLPluginManager methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void CFFGLPluginManager::SetMinInputs(int iMinInputs)
+void CFFGLPluginManager::SetMinInputs(unsigned int iMinInputs)
 {
 	m_iMinInputs = iMinInputs;
 }
 
-void CFFGLPluginManager::SetMaxInputs(int iMaxInputs)
+void CFFGLPluginManager::SetMaxInputs(unsigned int iMaxInputs)
 {
 	m_iMaxInputs = iMaxInputs;
 }
 
-void CFFGLPluginManager::SetParamInfo(DWORD dwIndex, const char* pchName, DWORD dwType, float fDefaultValue)
+void CFFGLPluginManager::SetParamInfo(unsigned int pIndex, const char* pchName, unsigned int pType, float fDefaultValue)
 {
 	ParamInfo* pInfo = new ParamInfo;
-	pInfo->ID = dwIndex;
+	pInfo->ID = pIndex;
 	
 	bool bEndFound = false;
 	for (int i = 0; i < 16; ++i) {
@@ -86,7 +86,7 @@ void CFFGLPluginManager::SetParamInfo(DWORD dwIndex, const char* pchName, DWORD 
 		pInfo->Name[i] = (bEndFound) ?  0 : pchName[i];
 	}
 	
-	pInfo->dwType = dwType;
+	pInfo->dwType = pType;
 	if (fDefaultValue > 1.0) fDefaultValue = 1.0;
 	if (fDefaultValue < 0.0) fDefaultValue = 0.0;
 	pInfo->DefaultValue = fDefaultValue;
@@ -98,10 +98,10 @@ void CFFGLPluginManager::SetParamInfo(DWORD dwIndex, const char* pchName, DWORD 
 	m_NParams++;
 }
 
-void CFFGLPluginManager::SetParamInfo(DWORD dwIndex, const char* pchName, DWORD dwType, bool bDefaultValue)
+void CFFGLPluginManager::SetParamInfo(unsigned int pIndex, const char* pchName, unsigned int pType, bool bDefaultValue)
 {
 	ParamInfo* pInfo = new ParamInfo;
-	pInfo->ID = dwIndex;
+	pInfo->ID = pIndex;
 	
 	bool bEndFound = false;
 	for (int i = 0; i < 16; ++i) {
@@ -109,7 +109,7 @@ void CFFGLPluginManager::SetParamInfo(DWORD dwIndex, const char* pchName, DWORD 
 		pInfo->Name[i] = (bEndFound) ?  0 : pchName[i];
 	}
 	
-	pInfo->dwType = dwType;
+	pInfo->dwType = pType;
 	pInfo->DefaultValue = bDefaultValue ? 1.0f : 0.0f;
 	pInfo->StrDefaultValue = NULL;
 	pInfo->pNext = NULL;
@@ -119,7 +119,7 @@ void CFFGLPluginManager::SetParamInfo(DWORD dwIndex, const char* pchName, DWORD 
 	m_NParams++;
 }
 
-void CFFGLPluginManager::SetParamInfo(DWORD dwIndex, const char* pchName, DWORD dwType, const char* pchDefaultValue)
+void CFFGLPluginManager::SetParamInfo(unsigned int dwIndex, const char* pchName, unsigned int dwType, const char* pchDefaultValue)
 {
 	ParamInfo* pInfo = new ParamInfo;
 	pInfo->ID = dwIndex;
@@ -145,7 +145,7 @@ void CFFGLPluginManager::SetTimeSupported(bool supported)
   m_timeSupported = supported;
 }
 
-char* CFFGLPluginManager::GetParamName(DWORD dwIndex) const
+char* CFFGLPluginManager::GetParamName(unsigned int dwIndex) const
 {
 	ParamInfo* pCurr = m_pFirst;
 	bool bFound = false;
@@ -160,7 +160,7 @@ char* CFFGLPluginManager::GetParamName(DWORD dwIndex) const
 	return NULL;
 }
 	
-DWORD CFFGLPluginManager::GetParamType(DWORD dwIndex) const
+unsigned int CFFGLPluginManager::GetParamType(unsigned int dwIndex) const
 {
 	ParamInfo* pCurr = m_pFirst;
 	bool bFound = false;
@@ -175,8 +175,9 @@ DWORD CFFGLPluginManager::GetParamType(DWORD dwIndex) const
 	return FF_FAIL;
 }
 
-void* CFFGLPluginManager::GetParamDefault(DWORD dwIndex) const
+FFMixed CFFGLPluginManager::GetParamDefault(unsigned int dwIndex) const
 {
+  FFMixed result;
 	ParamInfo* pCurr = m_pFirst;
 	bool bFound = false;
 	while (pCurr != NULL) {
@@ -188,11 +189,13 @@ void* CFFGLPluginManager::GetParamDefault(DWORD dwIndex) const
 	}
 	if (bFound) {
 		if (GetParamType(dwIndex) == FF_TYPE_TEXT)
-			return (void*)pCurr->StrDefaultValue;
+			result.PointerValue = (void*)pCurr->StrDefaultValue;
 		else
-			return (void*) &pCurr->DefaultValue;
-	}
-	return NULL;
+			result.UIntValue = *(unsigned int*)&pCurr->DefaultValue;
+	} else {
+    result.UIntValue = FF_FAIL;
+  }
+	return result;
 }
 
 bool CFFGLPluginManager::GetTimeSupported() const

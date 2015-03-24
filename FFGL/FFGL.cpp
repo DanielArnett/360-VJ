@@ -86,7 +86,7 @@ void *getInfo()
 	return (void *)(g_CurrPluginInfo->GetPluginInfo());
 }
 
-DWORD initialise()
+FFResult initialise()
 {
   if (g_CurrPluginInfo==NULL)
     return FF_FAIL;
@@ -97,10 +97,10 @@ DWORD initialise()
     FPCREATEINSTANCEGL *pInstantiate = g_CurrPluginInfo->GetFactoryMethod();
 
 	  //call the instantiate function
-    DWORD dwRet = pInstantiate(&s_pPrototype);
+    FFResult ret = pInstantiate(&s_pPrototype);
 
     //make sure the instantiate call worked
-    if ((dwRet == FF_FAIL) || (s_pPrototype == NULL))
+    if ((ret == FF_FAIL) || (s_pPrototype == NULL))
       return FF_FAIL;
 
     return FF_SUCCESS;
@@ -109,7 +109,7 @@ DWORD initialise()
 	return FF_SUCCESS; 
 }
 
-DWORD deInitialise()
+FFResult deInitialise()
 {
 	if (s_pPrototype != NULL) {
 		delete s_pPrototype;
@@ -118,49 +118,44 @@ DWORD deInitialise()
 	return FF_SUCCESS;
 }
 
-DWORD getNumParameters() 
+unsigned int getNumParameters() 
 {
 	if (s_pPrototype == NULL) {
-		DWORD dwRet = initialise();
+		FFResult dwRet = initialise();
 		if (dwRet == FF_FAIL) return FF_FAIL;
 	}
 
-	return (DWORD) s_pPrototype->GetNumParams();
+	return s_pPrototype->GetNumParams();
 }
 							
-char* getParameterName(DWORD index)
+char* getParameterName(unsigned int index)
 {
 	if (s_pPrototype == NULL) {
-		DWORD dwRet = initialise();
+		FFResult dwRet = initialise();
 		if (dwRet == FF_FAIL) return NULL;
 	}
 	
 	return s_pPrototype->GetParamName(index);
 }
 
-DWORD getParameterDefault(DWORD index)
+FFMixed getParameterDefault(unsigned int index)
 {
+  FFMixed ret;
+  ret.UIntValue = FF_FAIL;
 	if (s_pPrototype == NULL) {
-		DWORD dwRet = initialise();
-		if (dwRet == FF_FAIL) return FF_FAIL;
+		FFResult dwRet = initialise();
+		if (dwRet == FF_FAIL) return ret;
 	}
-
-	void* pValue = s_pPrototype->GetParamDefault(index);
-	if (pValue == NULL) return FF_FAIL;
-	else {
-		DWORD dwRet;
-		memcpy(&dwRet, pValue, 4);
-		return dwRet;
-	}
+	return s_pPrototype->GetParamDefault(index);
 }
 
-DWORD getPluginCaps(DWORD index)
+FFResult getPluginCaps(unsigned int index)
 {
 	int MinInputs = -1;
 	int MaxInputs = -1;
 
 	if (s_pPrototype == NULL) {
-		DWORD dwRet = initialise();
+		FFResult dwRet = initialise();
 		if (dwRet == FF_FAIL) return FF_FAIL;
 	}
 
@@ -190,12 +185,12 @@ DWORD getPluginCaps(DWORD index)
 	case FF_CAP_MINIMUMINPUTFRAMES:
 		MinInputs = s_pPrototype->GetMinInputs();
 		if (MinInputs < 0) return FF_FALSE;
-		return DWORD(MinInputs);
+		return MinInputs;
 
 	case FF_CAP_MAXIMUMINPUTFRAMES:
 		MaxInputs = s_pPrototype->GetMaxInputs();
 		if (MaxInputs < 0) return FF_FALSE;
-		return DWORD(MaxInputs);
+		return MaxInputs;
 
 	case FF_CAP_COPYORINPLACE:
   	return FF_FALSE;
@@ -212,28 +207,28 @@ void *getExtendedInfo()
 	return (void *)(g_CurrPluginInfo->GetPluginExtendedInfo());
 }
 
-DWORD getParameterType(DWORD index)
+unsigned int getParameterType(unsigned int index)
 {
 	if (s_pPrototype == NULL) {
-		DWORD dwRet = initialise();
+		FFResult dwRet = initialise();
 		if (dwRet == FF_FAIL) return FF_FAIL;
 	}
 	
 	return s_pPrototype->GetParamType(index);
 }
 
-DWORD instantiateGL(const FFGLViewportStruct *pGLViewport)
+void *instantiateGL(const FFGLViewportStruct *pGLViewport)
 {
 	if (g_CurrPluginInfo==NULL || pGLViewport==NULL)
-    return FF_FAIL;
+    return (void *)FF_FAIL;
 
   // If the plugin is not initialized, initialize it
   if (s_pPrototype == NULL)
   {
-		DWORD dwRet = initialise();
+		FFResult dwRet = initialise();
 
 	  if ((dwRet == FF_FAIL) || (s_pPrototype == NULL))
-      return FF_FAIL;
+      return (void *)FF_FAIL;
 	}
 		
 	//get the instantiate function pointer
@@ -242,28 +237,28 @@ DWORD instantiateGL(const FFGLViewportStruct *pGLViewport)
 	CFreeFrameGLPlugin *pInstance = NULL;
 
   //call the instantiate function
-  DWORD dwRet = pInstantiate(&pInstance);
+  FFResult dwRet = pInstantiate(&pInstance);
 
   //make sure the instantiate call worked
   if ((dwRet == FF_FAIL) || (pInstance == NULL))
-    return FF_FAIL;
+    return (void *)FF_FAIL;
 
 	pInstance->m_pPlugin = pInstance;
 		
 	// Initializing instance with default values
-	for (int i = 0; i < s_pPrototype->GetNumParams(); ++i)
+	for (unsigned int i = 0; i < s_pPrototype->GetNumParams(); ++i)
   {
-		//DWORD dwType = s_pPrototype->GetParamType(DWORD(i));
-		void* pValue = s_pPrototype->GetParamDefault(DWORD(i));
-		SetParameterStruct ParamStruct;
-		ParamStruct.ParameterNumber = DWORD(i);
-		memcpy(&ParamStruct.NewParameterValue, pValue, 4);
-		dwRet = pInstance->SetParameter(&ParamStruct);
+		unsigned int pType = s_pPrototype->GetParamType(i);
+		FFMixed pDefault = s_pPrototype->GetParamDefault(i);
+    if (pType == FF_TYPE_TEXT)
+      dwRet = pInstance->SetTextParameter(i, (const char *)pDefault.PointerValue);
+    else
+      dwRet = pInstance->SetFloatParameter(i, *(float *)&pDefault.UIntValue);
 		if (dwRet == FF_FAIL)
     {
       //SetParameter failed, delete the instance
       delete pInstance;
-      return FF_FAIL;
+      return (void *)FF_FAIL;
     }
 	}
 
@@ -271,17 +266,17 @@ DWORD instantiateGL(const FFGLViewportStruct *pGLViewport)
   if (pInstance->InitGL(pGLViewport)==FF_SUCCESS)
   {
     //succes? we're done.
-    return (DWORD)pInstance;
+    return pInstance;
   }
 
   //InitGL failed, delete the instance
   pInstance->DeInitGL();
   delete pInstance;
 
-  return FF_FAIL;
+  return (void *)FF_FAIL;
 }
 
-DWORD deInstantiateGL(void *instanceID)
+FFResult deInstantiateGL(void *instanceID)
 {
   CFreeFrameGLPlugin *p = (CFreeFrameGLPlugin *)instanceID;
 
@@ -303,20 +298,20 @@ DWORD deInstantiateGL(void *instanceID)
 
 #ifdef WIN32
 
-   plugMainUnion __stdcall plugMain(DWORD functionCode, DWORD inputValue, DWORD instanceID) 
+   FFMixed __stdcall plugMain(FFUInt32 functionCode, FFMixed inputValue, FFInstanceID instanceID) 
 
 #elif TARGET_OS_MAC
 
-   plugMainUnion plugMain(DWORD functionCode, DWORD inputValue, DWORD instanceID) 
+   FFMixed plugMain(FFUInt32 functionCode, FFMixed inputValue, FFInstanceID instanceID) 
 
 #elif __linux__
 
-   plugMainUnion plugMain(DWORD functionCode, DWORD inputValue, DWORD instanceID)
+   FFMixed plugMain(FFUInt32 functionCode, FFMixed inputValue, FFInstanceID instanceID)
 
 #endif	
 
 {
-	plugMainUnion retval;
+	FFMixed retval;
 
 	// declare pPlugObj - pointer to this instance
 	CFreeFrameGLPlugin* pPlugObj;
@@ -327,104 +322,118 @@ DWORD deInstantiateGL(void *instanceID)
 	switch (functionCode) {
 
 	case FF_GETINFO:
-		retval.PISvalue = (PluginInfoStruct*)getInfo();
+		retval.PointerValue = (PluginInfoStruct*)getInfo();
 		break;
 
 	case FF_INITIALISE:
-		retval.ivalue = initialise();
+		retval.UIntValue = initialise();
 		break;
 
 	case FF_DEINITIALISE:
-		retval.ivalue = deInitialise();	
+		retval.UIntValue = deInitialise();	
 		break;
 
 	case FF_GETNUMPARAMETERS:
-		retval.ivalue = getNumParameters();
+		retval.UIntValue = getNumParameters();
 		break;
 
 	case FF_GETPARAMETERNAME:
-		retval.svalue = getParameterName(inputValue);
+		retval.PointerValue = getParameterName(inputValue.UIntValue);
 		break;
 	
 	case FF_GETPARAMETERDEFAULT:
-		retval.ivalue = getParameterDefault(inputValue);
+		retval = getParameterDefault(inputValue.UIntValue);
 		break;
 
 	case FF_GETPLUGINCAPS:
-		retval.ivalue = getPluginCaps(inputValue);
+		retval.UIntValue = getPluginCaps(inputValue.UIntValue);
 		break;
 
 	case FF_GETEXTENDEDINFO: 
-		retval.ivalue = (DWORD) getExtendedInfo();
+		retval.PointerValue = getExtendedInfo();
 		break;
 
 	case FF_GETPARAMETERTYPE:		
-		retval.ivalue = getParameterType(inputValue);
+		retval.UIntValue = getParameterType(inputValue.UIntValue);
 		break;
 
 	case FF_GETPARAMETERDISPLAY:
 		if (pPlugObj != NULL) 
-			retval.svalue = pPlugObj->GetParameterDisplay(inputValue);
+			retval.PointerValue = pPlugObj->GetParameterDisplay(inputValue.UIntValue);
 		else
-			retval.svalue = (char*)FF_FAIL;
+			retval.PointerValue = (char*)FF_FAIL;
 		break;
 		
 	case FF_SETPARAMETER:
-		if (pPlugObj != NULL)
-			retval.ivalue = pPlugObj->SetParameter((const SetParameterStruct*) inputValue);
+		if (pPlugObj != NULL) {
+      if (getParameterType(((const SetParameterStruct*)inputValue.PointerValue)->ParameterNumber) == FF_TYPE_TEXT)
+        retval.UIntValue = pPlugObj->SetTextParameter(((const SetParameterStruct*)inputValue.PointerValue)->ParameterNumber,
+                                                      (const char *)((const SetParameterStruct*)inputValue.PointerValue)->NewParameterValue.PointerValue);
+      else
+        retval.UIntValue = pPlugObj->SetFloatParameter(((const SetParameterStruct*)inputValue.PointerValue)->ParameterNumber,
+                                                       (*(float *)&((const SetParameterStruct*)inputValue.PointerValue)->NewParameterValue.UIntValue));
+    }
 		else
-			retval.ivalue = FF_FAIL;
+			retval.UIntValue = FF_FAIL;
 		break;
 	
 	case FF_GETPARAMETER:
-		if (pPlugObj != NULL) 
-			retval.ivalue = pPlugObj->GetParameter(inputValue);
+		if (pPlugObj != NULL) {
+      if (getParameterType(inputValue.UIntValue) == FF_TYPE_TEXT)
+        retval.PointerValue = pPlugObj->GetTextParameter(inputValue.UIntValue);
+	  else {
+		float fValue = pPlugObj->GetFloatParameter(inputValue.UIntValue);
+		retval.UIntValue = *(FFUInt32 *)&fValue;
+	  }
+        
+    }
+			
 		else 
-			retval.ivalue = FF_FAIL;
+			retval.UIntValue = FF_FAIL;
 		break;
 		
   case FF_INSTANTIATEGL:
-    retval.ivalue = (DWORD)instantiateGL((const FFGLViewportStruct *)inputValue);
+    retval.PointerValue = instantiateGL((const FFGLViewportStruct *)inputValue.PointerValue);
     break;
 
   case FF_DEINSTANTIATEGL:
     if (pPlugObj != NULL)
-			retval.ivalue = deInstantiateGL(pPlugObj);
+			retval.UIntValue = deInstantiateGL(pPlugObj);
 		else
-			retval.ivalue = FF_FAIL;
+			retval.UIntValue = FF_FAIL;
     break;
 	
-	case FF_GETIPUTSTATUS:
+	case FF_GETINPUTSTATUS:
 		if (pPlugObj != NULL)
-			retval.ivalue = pPlugObj->GetInputStatus(inputValue);
+			retval.UIntValue = pPlugObj->GetInputStatus(inputValue.UIntValue);
 		else
-			retval.ivalue = FF_FAIL;
+			retval.UIntValue = FF_FAIL;
 		break;
 
   case FF_PROCESSOPENGL:
     if (pPlugObj != NULL)
     {
-      ProcessOpenGLStruct *pogls = (ProcessOpenGLStruct *)inputValue;
+      ProcessOpenGLStruct *pogls = (ProcessOpenGLStruct *)inputValue.PointerValue;
       if (pogls!=NULL)
-        retval.ivalue = pPlugObj->ProcessOpenGL(pogls);
+        retval.UIntValue = pPlugObj->ProcessOpenGL(pogls);
       else
-        retval.ivalue = FF_FAIL;
+        retval.UIntValue = FF_FAIL;
     }
 		else
-			retval.ivalue = FF_FAIL;
+			retval.UIntValue = FF_FAIL;
 		break;
 
   case FF_SETTIME:
     if (pPlugObj != NULL)
     {
-      double *inputTime = (double *)inputValue;
+      double *inputTime = (double *)inputValue.PointerValue;
       if (inputTime!=NULL)
-        retval.ivalue = pPlugObj->SetTime(*inputTime);
+        retval.UIntValue = pPlugObj->SetTime(*inputTime);
       else
-        retval.ivalue = FF_FAIL;
+        retval.UIntValue = FF_FAIL;
     }
 		else
-			retval.ivalue = FF_FAIL;
+			retval.UIntValue = FF_FAIL;
 		break;
 
   //these old FF functions must always fail for FFGL plugins
@@ -433,7 +442,7 @@ DWORD deInstantiateGL(void *instanceID)
 	case FF_PROCESSFRAME:
   case FF_PROCESSFRAMECOPY:
 	default:
-		retval.ivalue = FF_FAIL;
+		retval.UIntValue = FF_FAIL;
 		break;
 	}
 	

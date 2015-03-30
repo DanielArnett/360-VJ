@@ -17,8 +17,7 @@
 //					Version 1.002
 //		30.03.15	Set m_glTextureXX to zero after delete
 //					Check for incoming Texture ID change
-//					Version 1.003
-//
+
 //		------------------------------------------------------------
 //
 //		Copyright (C) 2015. Lynn Jarvis, Leading Edge. Pty. Ltd.
@@ -70,7 +69,7 @@ static CFFGLPluginInfo PluginInfo (
 	1,						   			// API major version number 													
 	006,								// API minor version number	
 	1,									// *** Plugin major version number
-	003,								// *** Plugin minor version number
+	002,								// *** Plugin minor version number
 	FF_EFFECT,							// Plugin type is always an effect
 	"Wraps ShaderToy and GLSLSandbox shaders into a FFGL plugin", // *** Plugin description - you can expand on this
 	"by Lynn Jarvis (spout.zeal.co) OSX port by Amaury Hazan (billaboop.com)"			// *** About - use your own name and details

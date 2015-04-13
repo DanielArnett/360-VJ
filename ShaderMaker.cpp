@@ -18,6 +18,9 @@
 //		30.03.15	Set m_glTextureXX to zero after delete
 //					Check for incoming Texture ID change
 //					Version 1.003
+//		14.04.15	Corrected texture change test in ProcessOpenGL
+//					Recommend setting PluginInfo to FF_SOURCE for shaders that do not require a texture
+//					Version 1.004
 //
 //		------------------------------------------------------------
 //
@@ -70,8 +73,9 @@ static CFFGLPluginInfo PluginInfo (
 	1,						   			// API major version number 													
 	006,								// API minor version number	
 	1,									// *** Plugin major version number
-	003,								// *** Plugin minor version number
-	FF_EFFECT,							// Plugin type is always an effect
+	004,								// *** Plugin minor version number
+	FF_EFFECT,							// Plugin type can always be an effect
+	// FF_SOURCE,						// or change this to FF_SOURCE for shaders that do not use a texture
 	"Wraps ShaderToy and GLSLSandbox shaders into a FFGL plugin", // *** Plugin description - you can expand on this
 	"by Lynn Jarvis (spout.zeal.co) OSX port by Amaury Hazan (billaboop.com)"			// *** About - use your own name and details
 );
@@ -659,7 +663,7 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 	FILE* pCout; // should really be freed on exit 
 	AllocConsole();
 	freopen_s(&pCout, "CONOUT$", "w", stdout); 
-	printf("Shader Maker Vers 1.002\n");
+	printf("Shader Maker Vers 1.004\n");
 	printf("GLSL version [%s]\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	*/
 
@@ -772,10 +776,8 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 				maxCoords = GetMaxGLTexCoords(Texture0);
 
 				// Delete the local texture if the incoming size is different
-				// or the texture ID has changed (30.03.15)
 				if((int)m_channelResolution[0][0] != Texture0.Width 
-				|| (int)m_channelResolution[0][1] != Texture0.Height
-				|| Texture0.Handle != m_glTexture0) {
+				|| (int)m_channelResolution[0][1] != Texture0.Height) {
 					if(m_glTexture0 > 0) {
 						glDeleteTextures(1, &m_glTexture0);
 						m_glTexture0 = 0; // This is needed or the local texture is not re-created in CreateRectangleTexture (30.03.15)
@@ -791,7 +793,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 				// the same size as the resolution we set to the shader.  Also the shader needs
 				// textures created with wrapping REPEAT rather than CLAMP to edge. So we ALWAYS
 				// create such a texture and use it for every frame. The texture is re-created
-				// if the size or texture ID changes 
+				// if the texture size changes 
 				CreateRectangleTexture(Texture0, maxCoords, m_glTexture0, GL_TEXTURE0, m_fbo, pGL->HostFBO);
 				// Now we have a local texture of the right size and type
 				// Filled with the data from the incoming Freeframe texture
@@ -802,8 +804,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 				Texture1 = *(pGL->inputTextures[1]);
 				maxCoords = GetMaxGLTexCoords(Texture1);
 				if((int)m_channelResolution[1][0] != Texture1.Width 
-				|| (int)m_channelResolution[1][1] != Texture1.Height
-				|| Texture1.Handle != m_glTexture1) {
+				|| (int)m_channelResolution[1][1] != Texture1.Height) {
 					if(m_glTexture1 > 0) {
 						glDeleteTextures(1, &m_glTexture1);
 						m_glTexture1 = 0;
@@ -821,8 +822,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 				Texture2 = *(pGL->inputTextures[2]);
 				maxCoords = GetMaxGLTexCoords(Texture2);
 				if((int)m_channelResolution[2][0] != Texture2.Width 
-				|| (int)m_channelResolution[2][1] != Texture2.Height
-				|| Texture2.Handle != m_glTexture2) {
+				|| (int)m_channelResolution[2][1] != Texture2.Height) {
 					if(m_glTexture2 > 0) {
 						glDeleteTextures(1, &m_glTexture2);
 						m_glTexture2 = 0;
@@ -837,8 +837,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 				Texture3 = *(pGL->inputTextures[3]);
 				maxCoords = GetMaxGLTexCoords(Texture3);
 				if((int)m_channelResolution[3][0] != Texture3.Width 
-				|| (int)m_channelResolution[3][1] != Texture3.Height
-				|| Texture3.Handle != m_glTexture3) {
+				|| (int)m_channelResolution[3][1] != Texture3.Height) {
 					if(m_glTexture3 > 0) {
 						glDeleteTextures(1, &m_glTexture3);
 						m_glTexture3 = 0;

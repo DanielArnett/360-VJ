@@ -1,3 +1,9 @@
+## Flat to Fisheye
+This FFGL Shader will convert a flat, rectilinear video into a fisheye video suitable for playback on part of a planetarium dome. 
+
+### Installation
+Download the shader from our Releases page, unizip it, and install it into your Resolume Plugin Directory. You can find this directory by looking in Resolume->Preferences->Video->FFGL Plugin Directories. Restart Resolume and look for the new shader in the Effects tab titled "Flat to Fisheye".
+
 # ShaderMaker
 A source code template to create FreeframeGL plugins from GLSL Sandbox and ShaderToy shaders.
 

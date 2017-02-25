@@ -37,7 +37,7 @@
 //		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //		GNU Lesser General Public License for more details.
 //
-//		You will receive a copy of the GNU Lesser General Public License along 
+//		You will receive a copy of the GNU Lesser General Public License along
 //		with this program.  If not, see http://www.gnu.org/licenses/.
 //		--------------------------------------------------------------
 //
@@ -46,38 +46,38 @@
 
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 int (*cross_secure_sprintf)(char *, size_t, const char *,...) = sprintf_s;
-#else 
+#else
 // posix
 int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 #endif
 
-#define FFPARAM_SPEED       (0)
-#define FFPARAM_MOUSEX      (1)
-#define FFPARAM_MOUSEY      (2)
-#define FFPARAM_MOUSELEFTX  (3)
-#define FFPARAM_MOUSELEFTY  (4)
-#define FFPARAM_RED         (5)
-#define FFPARAM_GREEN       (6)
-#define FFPARAM_BLUE        (7)
-#define FFPARAM_ALPHA       (8)
+//#define FFPARAM_SPEED       (0)
+#define FFPARAM_MOUSEX      (0)
+#define FFPARAM_MOUSEY      (1)
+//#define FFPARAM_MOUSELEFTX  (3)
+//#define FFPARAM_MOUSELEFTY  (4)
+//#define FFPARAM_RED         (5)
+//#define FFPARAM_GREEN       (6)
+//#define FFPARAM_BLUE        (7)
+//#define FFPARAM_ALPHA       (8)
 
 #define STRINGIFY(A) #A
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // +++++++++++ IMPORTANT : DEFINE YOUR PLUGIN INFORMATION HERE +++++++++++
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-static CFFGLPluginInfo PluginInfo ( 
+static CFFGLPluginInfo PluginInfo (
 	ShaderMaker::CreateInstance,		// Create method
-	"ZZZZ",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
-	"Shader Maker",						// *** Plugin name - make it different for each plugin 
-	1,						   			// API major version number 													
-	006,								// API minor version number	
+	"FDLA",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
+	"Flat to Fisheye",					// *** Plugin name - make it different for each plugin
+	1,						   			// API major version number
+	006,								// API minor version number
 	1,									// *** Plugin major version number
 	004,								// *** Plugin minor version number
 	FF_EFFECT,							// Plugin type can always be an effect
 	// FF_SOURCE,						// or change this to FF_SOURCE for shaders that do not use a texture
-	"Wraps ShaderToy and GLSLSandbox shaders into a FFGL plugin", // *** Plugin description - you can expand on this
-	"by Lynn Jarvis (spout.zeal.co) OSX port by Amaury Hazan (billaboop.com)"			// *** About - use your own name and details
+	"Converts a flat, rectilinear image into a fisheye image suitable for a planetarium dome.", // *** Plugin description - you can expand on this
+	"by Daniel Arnett"			// *** About - use your own name and details
 );
 
 
@@ -167,14 +167,14 @@ void main()
     vec2 q = gl_FragCoord.xy/iResolution.xy;
     vec2 v = -1.0+2.0*q;
     v.x *= iResolution.x/iResolution.y*.5+.5;
-	
+
     vec3 o = vec3(v.x,v.y,0.0);
     vec3 d = normalize(vec3(v.x+cos(time)*.3,v.y,1.0))/64.0;
-	
+
     vec3 color = vec3(0.0);
     float t = 0.0;
     bool hit = false;
-	
+
     for(int i=0; i<100; i++) {
         if(!hit) {
             if(obj(o+d*t) < s) {
@@ -201,7 +201,7 @@ void main()
 */
 
 
-/*
+
 //
 // Shadertoy example 2 - needs a texture input..
 //
@@ -213,7 +213,7 @@ void main()
 // Created by inigo quilez - iq/2013
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 //
-                                      
+/*
 void main(void)
 {
 	vec2 uv = 0.5*gl_FragCoord.xy / iResolution.xy;
@@ -225,13 +225,11 @@ void main(void)
     float w = col.x;
     col *= 1.0 - texture2D( iChannel0, 0.4*uv + 0.1*col.xy  ).xyy;
     col *= w*2.0;
-	
+
     col *= 1.0 + 2.0*d;
     gl_FragColor = vec4(col,1.0);
 
-}
-*/
-
+}*/
 
 /*
 //
@@ -271,13 +269,13 @@ vec4 map( in vec3 p )
 
     float ani = smoothstep( -0.2, 0.2, -cos(0.5*iGlobalTime) );
 	float off = 1.5*sin( 0.01*iGlobalTime );
-	
+
     float s = 1.0;
     for( int m=0; m<4; m++ )
     {
 
         p = mix( p, ma*(p+off), ani );
-	   
+
         vec3 a = mod( p*s, 2.0 )-1.0;
         s *= 3.0;
         vec3 r = abs(1.0 - 3.0*abs(a));
@@ -354,13 +352,13 @@ void main(void)
 
     // background color
     vec3 col = mix( vec3(0.3,0.2,0.1)*0.5, vec3(0.7, 0.9, 1.0), 0.5 + 0.5*rd.y );
-	
+
     vec4 tmat = intersect(ro,rd);
     if( tmat.x>0.0 )
     {
         vec3  pos = ro + tmat.x*rd;
         vec3  nor = calcNormal(pos);
-		
+
         float occ = tmat.y;
 		float sha = softshadow( pos, light, 0.01, 64.0 );
 
@@ -372,7 +370,7 @@ void main(void)
         lin += 1.00*dif*vec3(1.10,0.85,0.60)*sha;
         lin += 0.50*sky*vec3(0.10,0.20,0.40)*occ;
         lin += 0.10*bac*vec3(1.00,1.00,1.00)*(0.5+0.5*occ);
-        lin += 0.25*occ*vec3(0.15,0.17,0.20);	 
+        lin += 0.25*occ*vec3(0.15,0.17,0.20);
 
         vec3 matcol = vec3(
             0.5+0.5*cos(0.0+2.0*tmat.z),
@@ -386,7 +384,7 @@ void main(void)
     gl_FragColor = vec4(col,1.0);
 }
 */
-
+/*
 //
 // Shadertoy example 4
 //
@@ -403,7 +401,7 @@ void main(void)
 
 // I've not seen anybody out there computing correct cell interior distances for Voronoi
 // patterns yet. That's why they cannot shade the cell interior correctly, and why you've
-// never seen cell boundaries rendered correctly. 
+// never seen cell boundaries rendered correctly.
 
 // However, here's how you do mathematically correct distances (note the equidistant and non
 // degenerated grey isolines inside the cells) and hence edges (in yellow):
@@ -418,8 +416,8 @@ vec2 hash2( vec2 p )
 {
     // texture based white noise
     // return texture2D( iChannel0, (p+0.5)/256.0, -100.0 ).xy;
-	
-    // procedural white noise	
+
+    // procedural white noise
     return fract(sin(vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3))))*43758.5453);
 }
 
@@ -490,17 +488,17 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
     // isolines
     vec3 col = c.x*(0.5 + 0.5*sin(64.0*c.x))*vec3(1.0);
-    
-    // borders	
+
+    // borders
     col = mix( vec3(1.0,0.6,0.0), col, smoothstep( 0.04, 0.07, c.x ) );
-    
+
     // feature points
     float dd = length( c.yz );
     col = mix( vec3(1.0,0.6,0.1), col, smoothstep( 0.0, 0.12, dd) );
     col += vec3(1.0,0.6,0.1)*(1.0-smoothstep( 0.0, 0.04, dd));
 
     fragColor = vec4(col,1.0);
-}
+}*/
 
 
 /*
@@ -535,14 +533,14 @@ struct Ray {
 // http://www.fractalforums.com/mandelbulb-implementation/realtime-renderingoptimisations/
 
 float mandelbulb(in vec3 p, float power) {
-	
+
     float dr = 1.0;
     float r  = length(p);
 
     vec3 c = p;
-	
+
     for(int i=0; i<2; i++) {
-		    
+
         float zo0 = asin(p.z / r);
         float zi0 = atan(p.y, p.x);
         float zr  = pow(r, power-1.0);
@@ -554,19 +552,19 @@ float mandelbulb(in vec3 p, float power) {
         zr *= r;
 
         p = zr * vec3(czo*cos(zi), czo*sin(zi), sin(zo));
-	        
+
 	p += c;
-	    
+
         r = length(p);
     }
 
-    return 0.5 * r * log(r) / r;	
+    return 0.5 * r * log(r) / r;
 }
 
 void main() {
 
     vec2 p = ((gl_FragCoord.xy / resolution.xy) * 2.0 - 1.0) * 3.5;
-	
+
     float t = time;
 
     Ray ray1;
@@ -576,16 +574,16 @@ void main() {
     Ray ray2;
     ray2.o = vec3(0.0);
     ray2.d = normalize( vec3((p - 1.5*vec2(cos(-t),sin(t))) * vec2(resolution.x/resolution.y, 1.0), 1.0 ) );
-		
-    ray1.d.xy = vec2( ray1.d.x * cos(t) - ray1.d.y * sin(t), ray1.d.x * sin(t) + ray1.d.y * cos(t)); 
-    ray2.d.xy = vec2( ray2.d.x * cos(t) - ray2.d.y * sin(t), ray2.d.x * sin(t) + ray2.d.y * cos(t)); 
-	
+
+    ray1.d.xy = vec2( ray1.d.x * cos(t) - ray1.d.y * sin(t), ray1.d.x * sin(t) + ray1.d.y * cos(t));
+    ray2.d.xy = vec2( ray2.d.x * cos(t) - ray2.d.y * sin(t), ray2.d.x * sin(t) + ray2.d.y * cos(t));
+
     float m1 =  mandelbulb(ray1.o + ray1.d, abs(cos(t)*13.0));
     float m2 =  mandelbulb(ray2.o + ray2.d, abs(sin(t)*13.0));
-	
+
     float f = pow(max(m1,m2) , abs(m1-m2));
     vec3  c = m1 > m2 ? vec3(0.0, 0.05, 0.2) : vec3(0.2, 0.05, 0.0);
-	
+
     gl_FragColor = vec4(c*f, 1.0);
 }*/
 
@@ -610,7 +608,7 @@ uniform vec2 mouse;
 uniform vec2 resolution;
 
 void main( void ) {
-	
+
 	vec2 p = -1.0 + 2.0 * gl_FragCoord.xy / resolution.xy;
    	vec2 uv;
 
@@ -643,12 +641,199 @@ void main( void ) {
 
 	gl_FragColor = vec4(vec3(.1-v,.9-v,1.-v)*w*ao,1.0);
 
+}*/
+
+// Created by inigo quilez - iq/2013
+// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+float DigitBin(const int x)
+{
+	return x == 0 ? 480599.0 : x == 1 ? 139810.0 : x == 2 ? 476951.0 : x == 3 ? 476999.0 : x == 4 ? 350020.0 : x == 5 ? 464711.0 : x == 6 ? 464727.0 : x == 7 ? 476228.0 : x == 8 ? 481111.0 : x == 9 ? 481095.0 : 0.0;
 }
-*/
 
+float PrintValue(const vec2 vStringCoords, const float fValue, const float fMaxDigits, const float fDecimalPlaces)
+{
+	if ((vStringCoords.y < 0.0) || (vStringCoords.y >= 1.0)) return 0.0;
+	float fLog10Value = log2(abs(fValue)) / log2(10.0);
+	float fBiggestIndex = max(floor(fLog10Value), 0.0);
+	float fDigitIndex = fMaxDigits - floor(vStringCoords.x);
+	float fCharBin = 0.0;
+	if (fDigitIndex >(-fDecimalPlaces - 1.01)) {
+		if (fDigitIndex > fBiggestIndex) {
+			if ((fValue < 0.0) && (fDigitIndex < (fBiggestIndex + 1.5))) fCharBin = 1792.0;
+		}
+		else {
+			if (fDigitIndex == -1.0) {
+				if (fDecimalPlaces > 0.0) fCharBin = 2.0;
+			}
+			else {
+				float fReducedRangeValue = fValue;
+				if (fDigitIndex < 0.0) { fReducedRangeValue = fract(fValue); fDigitIndex += 1.0; }
+				float fDigitValue = (abs(fReducedRangeValue / (pow(10.0, fDigitIndex))));
+				fCharBin = DigitBin(int(floor(mod(fDigitValue, 10.0))));
+			}
+		}
+	}
+	return floor(mod((fCharBin / pow(2.0, floor(fract(vStringCoords.x) * 4.0) + (floor(vStringCoords.y * 5.0) * 4.0))), 2.0));
+}
+
+// ---- 8< -------- 8< -------- 8< -------- 8< ----
+
+
+// Original interface
+
+float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in vec2 vFontSize, const in float fValue, const in float fMaxDigits, const in float fDecimalPlaces)
+{
+	vec2 vStringCharCoords = (fragCoord.xy - vPixelCoords) / vFontSize;
+
+	return PrintValue(vStringCharCoords, fValue, fMaxDigits, fDecimalPlaces);
+}
+
+int DEBUG = 0;
+float PI = 3.14159;
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+	float fovInput = iMouse.x / iResolution.x; // 0.0 to 1.0
+	float FOV = 180.0 * (1.0/3.0 + fovInput*2.0/3.0); // 60 degrees to 180 degrees
+	float aspectInput = iMouse.y / iResolution.y;
+	float ASPECT_RATIO = 1.0 + aspectInput; // 1.0 to 2.0
+	vec2 vFontSize = vec2(50.0, 100.0);
+	vec2 pos = 2.0*(fragCoord.xy / iResolution.xy - 0.5);
+	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
+	if (1.0 < r) {
+		return;
+	}
+	float latitude = (1.0 - r)*(PI / 2.0);
+	float longitude;
+	float phi;
+	float percentX;
+	float percentY;
+	float flatImgWidth = tan(radians(FOV / 2.0)) * 2.0;
+	float flatImgHeight = flatImgWidth / ASPECT_RATIO;
+	int u;
+	int v;
+	vec3 p;
+	vec3 col;
+
+	if (r == 0.0) {
+		longitude = 0.0;
+	}
+	else if (pos.x < 0.0) {
+		longitude = PI - asin(pos.y / r);
+	}
+	else if (pos.x >= 0.0) {
+		longitude = asin(pos.y / r);
+	}
+	if (longitude < 0.0) {
+		longitude += 2.0*PI;
+	}
+	p.x = cos(latitude) * cos(longitude);
+	p.y = cos(latitude) * sin(longitude);
+	p.z = sin(latitude);
+
+	phi = atan(p.y, p.x);
+	if (phi < 0.0) {
+		phi += 2.0*PI;
+	}
+	p.x = cos(phi) * tan(PI / 2.0 - latitude);
+	p.y = sin(phi) * tan(PI / 2.0 - latitude);
+	p.z = 1.0;
+
+	if (p.x > (flatImgWidth / 2.0) || p.x < (-flatImgWidth / 2.0)
+		|| (p.y > flatImgHeight / 2.0) || p.y < (-flatImgHeight / 2.0)) {
+		return;
+	}
+
+	percentX = p.x / ((float(flatImgWidth)) / 2.0);
+	percentY = p.y / ((float(flatImgHeight)) / 2.0);
+
+	u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
+	v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
+
+	vec2 outCoord;
+	outCoord.x = float(u);
+	outCoord.y = float(v);
+
+	col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
+
+	// Debug information
+	if (DEBUG == 1) {
+		// Plot Mouse Pos
+		float pointSize = 20.0;
+		float fDistToPointB = length(vec2(iMouse.x, iMouse.y) - fragCoord.xy) - pointSize;
+		col = mix(col, vec3(0.0, 1.0, 0.0), (1.0 - clamp(fDistToPointB, 0.0, 1.0)));
+		if (iMouse.x > 0.0)
+		{
+			// Print Mouse X
+			vec2 vPixelCoord2 = iMouse.xy + vec2(-52.0, 6.0);
+			vec2 mousePos = 2.0*(iMouse.xy / iResolution.xy - 0.5);
+			float mouseR = sqrt(mousePos.x*mousePos.x + mousePos.y*mousePos.y);
+			float mouseLat = (1.0 - mouseR)*(PI / 2.0);
+			float mouseLong;
+			vec3 mouseP;
+			float mousePhi;
+			float mousePercentX;
+			float mousePercentY;
+			int mouseU;
+			int mouseV;
+			vec2 mouseOutCoord;
+			if (mouseR == 0.0) {
+				mouseLong = 0.0;
+			}
+			else if (mousePos.x < 0.0) {
+				mouseLong = PI - asin(mousePos.y / mouseR);
+			}
+			else if (mousePos.x >= 0.0) {
+				mouseLong = asin(mousePos.y / mouseR);
+			}
+			if (mouseLong < 0.0) {
+				mouseLong += 2.0*PI;
+			}
+			mouseP.x = cos(mouseLat) * cos(mouseLong);
+			mouseP.y = cos(mouseLat) * sin(mouseLong);
+			mouseP.z = sin(mouseLat);
+			// if (mousePos.x < 0.0) {
+			// 	mouseP.x = -1 - mouseP.x;
+			// }
+			// if (mousePos.y < 0.0) {
+			// 	mouseP.y = -1 - mouseP.y;
+			// }
+			mousePhi = atan(mouseP.y, mouseP.x);
+			if (mousePhi < 0.0) {
+				mousePhi += 2.0*PI;
+			}
+			mouseP.x = cos(mousePhi) * tan(PI / 2.0 - mouseLat);
+			mouseP.y = sin(mousePhi) * tan(PI / 2.0 - mouseLat);
+			mouseP.z = 1.0;
+			mousePercentX = mouseP.x / (flatImgWidth / 2.0);
+			mousePercentY = mouseP.y / (flatImgHeight / 2.0);
+			mouseU = int(mousePercentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
+			//mouseU = mousePercentX;
+			mouseV = int(mousePercentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
+			mouseOutCoord.x = float(mouseU) / iResolution.x;
+			mouseOutCoord.y = float(mouseV) / iResolution.y;
+			float fValue2 = 0.0;
+			float fDigits = 1.0;
+			float fDecimalPlaces = 3.0;
+			float fIsDigit2 = PrintValue((fragCoord - vPixelCoord2) / vFontSize, fValue2, fDigits, fDecimalPlaces);
+			col = mix(col, vec3(0.0, 1.0, 0.0), fIsDigit2);
+		}
+		// Print Date
+		col = mix(col, vec3(1.0, 1.0, 0.0), PrintValue((fragCoord - vec2(0.0, 5.0)) / vFontSize, iResolution.x, 4.0, 0.0));
+	} // Debug Information
+
+	fragColor = vec4(col, 1.0);
+}
+
+/*
+
+// Shadertoy How to retrieve and display a texture
+void main(void)
+{
+	vec3 col = texture2D(iChannel0, gl_FragCoord.xy / iResolution.xy);
+	gl_FragColor = vec4(col, 1.0);
+
+}*/
 // ==================== END OF SHADER CODE PASTE =======================
-
-
 );
 
 
@@ -660,9 +845,9 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 
 	/*
 	// Debug console window so printf works
-	FILE* pCout; // should really be freed on exit 
+	FILE* pCout; // should really be freed on exit
 	AllocConsole();
-	freopen_s(&pCout, "CONOUT$", "w", stdout); 
+	freopen_s(&pCout, "CONOUT$", "w", stdout);
 	printf("Shader Maker Vers 1.004\n");
 	printf("GLSL version [%s]\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	*/
@@ -672,15 +857,15 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 	SetMaxInputs(2); // TODO - 4 inputs
 
 	// Parameters
-	SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEX,        "X mouse",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEY,        "Y mouse",       FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
-	SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
+	//SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
+	SetParamInfo(FFPARAM_MOUSEX,        "FOV",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
+	SetParamInfo(FFPARAM_MOUSEY,		"Aspect Ratio",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
+	/*SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
 	SetParamInfo(FFPARAM_RED,           "Red",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
 	SetParamInfo(FFPARAM_GREEN,         "Green",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
 	SetParamInfo(FFPARAM_BLUE,          "Blue",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
-	SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
+	SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;*/
 
 	// Set defaults
 	SetDefaults();
@@ -776,7 +961,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 				maxCoords = GetMaxGLTexCoords(Texture0);
 
 				// Delete the local texture if the incoming size is different
-				if((int)m_channelResolution[0][0] != Texture0.Width 
+				if((int)m_channelResolution[0][0] != Texture0.Width
 				|| (int)m_channelResolution[0][1] != Texture0.Height) {
 					if(m_glTexture0 > 0) {
 						glDeleteTextures(1, &m_glTexture0);
@@ -793,7 +978,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 				// the same size as the resolution we set to the shader.  Also the shader needs
 				// textures created with wrapping REPEAT rather than CLAMP to edge. So we ALWAYS
 				// create such a texture and use it for every frame. The texture is re-created
-				// if the texture size changes 
+				// if the texture size changes
 				CreateRectangleTexture(Texture0, maxCoords, m_glTexture0, GL_TEXTURE0, m_fbo, pGL->HostFBO);
 				// Now we have a local texture of the right size and type
 				// Filled with the data from the incoming Freeframe texture
@@ -803,7 +988,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 			if(m_inputTextureLocation1 >= 0 && pGL->numInputTextures > 1 && pGL->inputTextures[1] != NULL) {
 				Texture1 = *(pGL->inputTextures[1]);
 				maxCoords = GetMaxGLTexCoords(Texture1);
-				if((int)m_channelResolution[1][0] != Texture1.Width 
+				if((int)m_channelResolution[1][0] != Texture1.Width
 				|| (int)m_channelResolution[1][1] != Texture1.Height) {
 					if(m_glTexture1 > 0) {
 						glDeleteTextures(1, &m_glTexture1);
@@ -821,13 +1006,13 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 			if(m_inputTextureLocation2 >= 0 && pGL->numInputTextures > 2 && pGL->inputTextures[2] != NULL) {
 				Texture2 = *(pGL->inputTextures[2]);
 				maxCoords = GetMaxGLTexCoords(Texture2);
-				if((int)m_channelResolution[2][0] != Texture2.Width 
+				if((int)m_channelResolution[2][0] != Texture2.Width
 				|| (int)m_channelResolution[2][1] != Texture2.Height) {
 					if(m_glTexture2 > 0) {
 						glDeleteTextures(1, &m_glTexture2);
 						m_glTexture2 = 0;
 					}
-				}				
+				}
 				m_channelResolution[2][0] = (float)Texture2.Width;
 				m_channelResolution[2][1] = (float)Texture2.Height;
 				CreateRectangleTexture(Texture2, maxCoords, m_glTexture2, GL_TEXTURE1, m_fbo, pGL->HostFBO);
@@ -836,7 +1021,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 			if(m_inputTextureLocation3 >= 0 && pGL->numInputTextures > 3 && pGL->inputTextures[3] != NULL) {
 				Texture3 = *(pGL->inputTextures[3]);
 				maxCoords = GetMaxGLTexCoords(Texture3);
-				if((int)m_channelResolution[3][0] != Texture3.Width 
+				if((int)m_channelResolution[3][0] != Texture3.Width
 				|| (int)m_channelResolution[3][1] != Texture3.Height) {
 					if(m_glTexture3 > 0) {
 						glDeleteTextures(1, &m_glTexture3);
@@ -850,7 +1035,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 			*/
 
 		} // endif shader uses a texture
-	
+
 		// Calculate elapsed time
 		lastTime = elapsedTime;
 		elapsedTime = GetCounter()/1000.0; // In seconds - higher resolution than timeGetTime()
@@ -906,21 +1091,21 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 		*/
 
 		// Elapsed time
-		if(m_timeLocation >= 0) 
+		if(m_timeLocation >= 0)
 			m_extensions.glUniform1fARB(m_timeLocation, m_time);
-	
+
 		//
 		// GLSL sandbox
 		//
 		// resolution (viewport size)
-		if(m_screenLocation >= 0) 
-			m_extensions.glUniform2fARB(m_screenLocation, m_vpWidth, m_vpHeight); 
+		if(m_screenLocation >= 0)
+			m_extensions.glUniform2fARB(m_screenLocation, m_vpWidth, m_vpHeight);
 
 		// mouse - Mouse position
 		if(m_mouseLocation >= 0) { // Vec2 - normalized
 			m_mouseX = m_UserMouseX;
 			m_mouseY = m_UserMouseY;
-			m_extensions.glUniform2fARB(m_mouseLocation, m_mouseX, m_mouseY); 
+			m_extensions.glUniform2fARB(m_mouseLocation, m_mouseX, m_mouseY);
 		}
 
 		// surfaceSize - Mouse left drag position - in pixel coordinates
@@ -945,12 +1130,12 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 			m_mouseY     = m_UserMouseY*m_vpHeight;
 			m_mouseLeftX = m_UserMouseLeftX*m_vpWidth;
 			m_mouseLeftY = m_UserMouseLeftY*m_vpHeight;
-			m_extensions.glUniform4fARB(m_mouseLocationVec4, m_mouseX, m_mouseY, m_mouseLeftX, m_mouseLeftY); 
+			m_extensions.glUniform4fARB(m_mouseLocationVec4, m_mouseX, m_mouseY, m_mouseLeftX, m_mouseLeftY);
 		}
 
 		// iResolution - viewport resolution
 		if(m_resolutionLocation >= 0) // Vec3
-			m_extensions.glUniform3fARB(m_resolutionLocation, m_vpWidth, m_vpHeight, 1.0); 
+			m_extensions.glUniform3fARB(m_resolutionLocation, m_vpWidth, m_vpHeight, 1.0);
 
 		// Channel resolutions are linked to the actual texture resolutions - the size is set in ProcessOpenGL
 		// Global resolution is the viewport
@@ -968,7 +1153,7 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 		}
 
 		// iDate - vec4
-		if(m_dateLocation >= 0) 
+		if(m_dateLocation >= 0)
 			m_extensions.glUniform4fARB(m_dateLocation, m_dateYear, m_dateMonth, m_dateDay, m_dateTime);
 
 		// Channel elapsed time - vec4
@@ -985,9 +1170,9 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 			m_extensions.glActiveTexture(GL_TEXTURE0);
 			// Has the local texture been created
 			// TODO - it should have been always created so this logic can be changed
-			if(m_glTexture0 > 0) 
+			if(m_glTexture0 > 0)
 				glBindTexture(GL_TEXTURE_2D, m_glTexture0);
-			else 
+			else
 				glBindTexture(GL_TEXTURE_2D, Texture0.Handle);
 		}
 
@@ -1022,13 +1207,13 @@ FFResult ShaderMaker::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 		// Do the draw for the shader to work
 		glEnable(GL_TEXTURE_2D);
 		glBegin(GL_QUADS);
-		glTexCoord2f(0.0, 0.0);	
+		glTexCoord2f(0.0, 0.0);
 		glVertex2f(-1.0, -1.0);
-		glTexCoord2f(0.0, 1.0);	
+		glTexCoord2f(0.0, 1.0);
 		glVertex2f(-1.0,  1.0);
-		glTexCoord2f(1.0, 1.0);	
+		glTexCoord2f(1.0, 1.0);
 		glVertex2f( 1.0,  1.0);
-		glTexCoord2f(1.0, 0.0);	
+		glTexCoord2f(1.0, 0.0);
 		glVertex2f( 1.0, -1.0);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
@@ -1071,10 +1256,10 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 	memset(m_DisplayValue, 0, 15);
 	switch (dwIndex) {
 
-		case FFPARAM_SPEED:
+		/*case FFPARAM_SPEED:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserSpeed*100.0));
-			return m_DisplayValue;
-	
+			return m_DisplayValue;*/
+
 		case FFPARAM_MOUSEX:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseX*m_vpWidth));
 			return m_DisplayValue;
@@ -1083,7 +1268,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
 			return m_DisplayValue;
 
-		case FFPARAM_MOUSELEFTX:
+		/*case FFPARAM_MOUSELEFTX:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
 			return m_DisplayValue;
 
@@ -1105,7 +1290,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 
 		case FFPARAM_ALPHA:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
-			return m_DisplayValue;
+			return m_DisplayValue;*/
 
 		default:
 			return m_DisplayValue;
@@ -1155,16 +1340,16 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 {
 	switch (index) {
 
-		case FFPARAM_SPEED:
-			return  m_UserSpeed;
-	
+		/*case FFPARAM_SPEED:
+			return  m_UserSpeed;*/
+
 		case FFPARAM_MOUSEX:
 			return  m_UserMouseX;
 
 		case FFPARAM_MOUSEY:
 			return  m_UserMouseY;
 
-		case FFPARAM_MOUSELEFTX:
+		/*case FFPARAM_MOUSELEFTX:
 			return m_UserMouseLeftX;
 
 		case FFPARAM_MOUSELEFTY:
@@ -1180,7 +1365,7 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 			return m_UserBlue;
 
 		case FFPARAM_ALPHA:
-			return m_UserAlpha;
+			return m_UserAlpha;*/
 
 		default:
 			return FF_FAIL;
@@ -1191,10 +1376,9 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 {
 		switch (index) {
 
-			case FFPARAM_SPEED:
+			/*case FFPARAM_SPEED:
 				m_UserSpeed = value;
-				break;
-
+				break;*/
 			case FFPARAM_MOUSEX:
 				m_UserMouseX = value;
 				break;
@@ -1203,7 +1387,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserMouseY = value;
 				break;
 
-			case FFPARAM_MOUSELEFTX:
+			/*case FFPARAM_MOUSELEFTX:
 				m_UserMouseLeftX = value;
 				break;
 
@@ -1225,7 +1409,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 
 			case FFPARAM_ALPHA:
 				m_UserAlpha = value;
-				break;
+				break;*/
 
 			default:
 				return FF_FAIL;
@@ -1265,7 +1449,7 @@ void ShaderMaker::SetDefaults() {
 	m_channelTime[2]       = 0.0;
 	m_channelTime[3]       = 0.0;
 
-	// ShaderToy -  Vec3 - 4 channels 
+	// ShaderToy -  Vec3 - 4 channels
 	m_channelResolution[0][0] = 0.0; // 0 is width
 	m_channelResolution[0][1] = 0.0; // 1 is height
 	m_channelResolution[0][2] = 1.0; // 2 is depth
@@ -1298,7 +1482,7 @@ void ShaderMaker::SetDefaults() {
 }
 
 bool ShaderMaker::LoadShader(std::string shaderString) {
-		
+
 		std::string stoyUniforms;
 
 		//
@@ -1306,7 +1490,7 @@ bool ShaderMaker::LoadShader(std::string shaderString) {
 		// For GLSL Sandbox, the extra "inputColour" uniform has to be typed into the shader
 		//		uniform vec4 inputColour
 		static char *extraUniforms = { "uniform vec4 inputColour;\n" };
-		
+
 		// Is it a GLSL Sandbox file?
 		// look for "uniform float time;". If it does not exist it is a ShaderToy file
 		// This is an exact string, so the shader has to have it.
@@ -1336,7 +1520,7 @@ bool ShaderMaker::LoadShader(std::string shaderString) {
 									  "uniform sampler2D iChannel1;\n"
 									  "uniform sampler2D iChannel2;\n"
 									  "uniform sampler2D iChannel3;\n" };
-			
+
 			stoyUniforms = uniforms;
 			stoyUniforms += extraUniforms;
 			stoyUniforms += shaderString; // add the rest of the shared content
@@ -1346,7 +1530,7 @@ bool ShaderMaker::LoadShader(std::string shaderString) {
 				//
 				// If it is a revised spec ShaderToy file, add a fix at the end for GLSL compatibility
 				//
-				// Credit Eric Newman 
+				// Credit Eric Newman
 				// http://magicmusicvisuals.com/forums/viewtopic.php?f=2&t=196
 				//
 				static char *stoyMainFunction = { "void main(void) {\n"
@@ -1357,7 +1541,7 @@ bool ShaderMaker::LoadShader(std::string shaderString) {
 
 			shaderString = stoyUniforms; // the final string
 		}
-	
+
 		// initialize gl shader
 		m_shader.SetExtensions(&m_extensions);
 		if (!m_shader.Compile(vertexShaderCode, shaderString.c_str())) {
@@ -1448,16 +1632,16 @@ bool ShaderMaker::LoadShader(std::string shaderString) {
 
 				// Screen size
 				if(m_screenLocation < 0) // Vec2
-					m_screenLocation = m_shader.FindUniform("resolution"); 
+					m_screenLocation = m_shader.FindUniform("resolution");
 
 				// Mouse left drag
 				if(m_surfaceSizeLocation < 0)
 					m_surfaceSizeLocation = m_shader.FindUniform("surfaceSize");
-				
+
 				/*
 				// TODO
 				// surfacePosAttrib is the attribute, surfacePosition is the varying var
-				m_surfacePositionLocation = m_shader.FindAttribute("surfacePosAttrib"); 
+				m_surfacePositionLocation = m_shader.FindAttribute("surfacePosAttrib");
 				if(m_surfacePositionLocation < 0) printf("surfacePosition attribute not found\n");
 				if(m_surfacePositionLocation >= 0) {
 					// enable the attribute
@@ -1475,13 +1659,13 @@ bool ShaderMaker::LoadShader(std::string shaderString) {
 				// Shadertoy
 				//
 
-				
+
 				//
 				// Texture inputs iChannelx
 				//
 				if(m_inputTextureLocation < 0)
 					m_inputTextureLocation = m_shader.FindUniform("iChannel0");
-				
+
 				if(m_inputTextureLocation1 < 0)
 					m_inputTextureLocation1 = m_shader.FindUniform("iChannel1");
 
@@ -1596,7 +1780,7 @@ void ShaderMaker::CreateRectangleTexture(FFGLTextureStruct Texture, FFGLTexCoord
 {
 	// First create an fbo and a texture the same size if they don't exist
 	if(fbo == 0) {
-		m_extensions.glGenFramebuffersEXT(1, &fbo); 
+		m_extensions.glGenFramebuffersEXT(1, &fbo);
 	}
 
 	// The texture ID will be zero if not created yet or if it has been deleted
@@ -1614,12 +1798,12 @@ void ShaderMaker::CreateRectangleTexture(FFGLTextureStruct Texture, FFGLTexCoord
 		glBindTexture(GL_TEXTURE_2D, 0);
 		m_extensions.glActiveTexture(GL_TEXTURE0);
 	} // endif created a new texture
-				
+
 	// Render the incoming texture to the local one via the fbo
 	m_extensions.glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
 	m_extensions.glFramebufferTexture2DEXT(GL_READ_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, glTexture, 0);
 	glBindTexture(GL_TEXTURE_2D, Texture.Handle);
-				
+
 	glEnable(GL_TEXTURE_2D);
 	glBegin(GL_QUADS);
 	//
@@ -1651,4 +1835,3 @@ void ShaderMaker::CreateRectangleTexture(FFGLTextureStruct Texture, FFGLTexCoord
 		m_extensions.glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
 }
-

@@ -688,7 +688,7 @@ float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in v
 	return PrintValue(vStringCharCoords, fValue, fMaxDigits, fDecimalPlaces);
 }
 
-int DEBUG = 1;
+int DEBUG = 0;
 float PI = 3.14159;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {

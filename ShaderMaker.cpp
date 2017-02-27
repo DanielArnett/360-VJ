@@ -648,7 +648,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	// Get the value of the azimuth
 	float azimuthInput = iMouse.x / iResolution.x; // 0.0 to 1.0
 	// Get the number of tiles to make
-	float numOfTiles = float(int(iMouse.y*10.0 / iResolution.y));
+	float numOfTiles = float(int(iMouse.y * 10.0 / iResolution.y));
 	vec2 outCoord;
 	// Y coordinate doesn't change.
 	outCoord.y = fragCoord.y;
@@ -658,7 +658,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	if (outCoord.x < 0.0) {
 		outCoord.x += iResolution.x;
 	}
-	else if (float(iResolution.x) < outCoord.x) {
+	else if (iResolution.x < outCoord.x) {
 		outCoord.x -= iResolution.x;
 	}
 	// Get the color at the new coordinate

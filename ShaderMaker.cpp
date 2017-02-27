@@ -56,10 +56,10 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 #define FFPARAM_MOUSEY      (1)
 //#define FFPARAM_MOUSELEFTX  (3)
 //#define FFPARAM_MOUSELEFTY  (4)
-//#define FFPARAM_RED         (5)
-//#define FFPARAM_GREEN       (6)
-//#define FFPARAM_BLUE        (7)
-//#define FFPARAM_ALPHA       (8)
+#define FFPARAM_RED         (2)
+#define FFPARAM_GREEN       (3)
+#define FFPARAM_BLUE        (4)
+#define FFPARAM_ALPHA       (5)
 
 #define STRINGIFY(A) #A
 
@@ -688,7 +688,7 @@ float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in v
 	return PrintValue(vStringCharCoords, fValue, fMaxDigits, fDecimalPlaces);
 }
 
-int DEBUG = 0;
+int DEBUG = 1;
 float PI = 3.14159;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
@@ -811,7 +811,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 			mouseV = int(mousePercentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
 			mouseOutCoord.x = float(mouseU) / iResolution.x;
 			mouseOutCoord.y = float(mouseV) / iResolution.y;
-			float fValue2 = 0.0;
+			float fValue2 = inputColour.a;
 			float fDigits = 1.0;
 			float fDecimalPlaces = 3.0;
 			float fIsDigit2 = PrintValue((fragCoord - vPixelCoord2) / vFontSize, fValue2, fDigits, fDecimalPlaces);
@@ -861,11 +861,11 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 	SetParamInfo(FFPARAM_MOUSEX,        "FOV",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSEY,		"Aspect Ratio",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
 	/*SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
+	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;*/
 	SetParamInfo(FFPARAM_RED,           "Red",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
 	SetParamInfo(FFPARAM_GREEN,         "Green",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
 	SetParamInfo(FFPARAM_BLUE,          "Blue",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
-	SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;*/
+	SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
 
 	// Set defaults
 	SetDefaults();
@@ -1274,7 +1274,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 
 		case FFPARAM_MOUSELEFTY:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
-			return m_DisplayValue;
+			return m_DisplayValue;*/
 
 		case FFPARAM_RED:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
@@ -1290,7 +1290,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 
 		case FFPARAM_ALPHA:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
-			return m_DisplayValue;*/
+			return m_DisplayValue;
 
 		default:
 			return m_DisplayValue;
@@ -1353,7 +1353,7 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 			return m_UserMouseLeftX;
 
 		case FFPARAM_MOUSELEFTY:
-			return m_UserMouseLeftY;
+			return m_UserMouseLeftY;*/
 
 		case FFPARAM_RED:
 			return m_UserRed;
@@ -1365,7 +1365,7 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 			return m_UserBlue;
 
 		case FFPARAM_ALPHA:
-			return m_UserAlpha;*/
+			return m_UserAlpha;
 
 		default:
 			return FF_FAIL;
@@ -1393,7 +1393,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 
 			case FFPARAM_MOUSELEFTY:
 				m_UserMouseLeftY = value;
-				break;
+				break;*/
 
 			case FFPARAM_RED:
 				m_UserRed = value;
@@ -1409,7 +1409,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 
 			case FFPARAM_ALPHA:
 				m_UserAlpha = value;
-				break;*/
+				break;
 
 			default:
 				return FF_FAIL;

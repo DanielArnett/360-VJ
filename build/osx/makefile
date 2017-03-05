@@ -1,6 +1,7 @@
 DIR_SRC = ../../
 DIR_FFGL = ../../FFGL
 DIR_BUNDLE = ../../Binaries/osx
+NAME = FlatToFisheye
 
 DEBUG = 0
 
@@ -37,18 +38,18 @@ endif
 
 .PHONY: clean
 
-all: clean ShaderMaker.dylib clean_package package
+all: clean $(NAME).dylib clean_package package
 
-ShaderMaker.dylib: $(SHADERMAKER_OBJS) $(COMMON_OBJS)
+$(NAME).dylib: $(SHADERMAKER_OBJS) $(COMMON_OBJS)
 	$(CSHLIB)
 
 clean:
 	rm -rf $(OBJS) *.dylib
 
 clean_package:
-	rm -rf "$(DIR_BUNDLE)/ShaderMaker.bundle"
+	rm -rf "$(DIR_BUNDLE)/$(NAME).bundle"
 
 package:
-	mkdir -p "$(DIR_BUNDLE)/ShaderMaker.bundle"/Contents/MacOS
-	cp Info.plist "$(DIR_BUNDLE)/ShaderMaker.bundle/Contents"
-	mv ./ShaderMaker.dylib "$(DIR_BUNDLE)/ShaderMaker.bundle/Contents/MacOS/ShaderMaker"
+	mkdir -p "$(DIR_BUNDLE)/$(NAME).bundle"/Contents/MacOS
+	cp Info.plist "$(DIR_BUNDLE)/$(NAME).bundle/Contents"
+	mv ./$(NAME).dylib "$(DIR_BUNDLE)/$(NAME).bundle/Contents/MacOS/$(NAME)"

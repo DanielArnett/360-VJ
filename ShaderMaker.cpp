@@ -59,7 +59,7 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 #define FFPARAM_RED         (2)
 #define FFPARAM_GREEN       (3)
 #define FFPARAM_BLUE        (4)
-#define FFPARAM_ALPHA       (5)
+// #define FFPARAM_ALPHA       (5)
 
 #define STRINGIFY(A) #A
 
@@ -693,11 +693,28 @@ float PI = 3.14159;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
 	float fovInput = iMouse.x / iResolution.x; // 0.0 to 1.0
-	float FOV = 180.0 * (1.0/3.0 + fovInput*2.0/3.0); // 60 degrees to 180 degrees
-	float aspectInput = iMouse.y / iResolution.y;
-	float ASPECT_RATIO = 1.0 + aspectInput; // 1.0 to 2.0
+	float FOV = 180.0 * fovInput; // 60 degrees to 180 degrees
+	bool cropInput = (inputColour.x > 0.5) ? true : false;
+	if (FOV == 0.0 && cropInput) {
+		vec3 col = texture2D(iChannel0, fragCoord.xy / iResolution.xy).xyz;
+		fragColor = vec4(col, 1.0);
+		return;
+	}
+	float aspectInput = (iMouse.y / iResolution.y);
+	float scaleXInput = inputColour.y * 2.0;
+	float scaleYInput = inputColour.z * 2.0;
+	float ASPECT_RATIO = 2.0 * aspectInput; // 0.0 to 2.0
 	vec2 vFontSize = vec2(50.0, 100.0);
 	vec2 pos = 2.0*(fragCoord.xy / iResolution.xy - 0.5);
+	float flatImgWidth = tan(radians(FOV / 2.0)) * 2.0;
+	float flatImgHeight = flatImgWidth / ASPECT_RATIO;
+	if (cropInput) {
+		float autoScale = FOV / 180.0;
+		pos.x *= autoScale;
+		pos.y *= autoScale;
+	}
+	pos.x *= scaleXInput;
+	pos.y *= scaleYInput;
 	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
 	if (1.0 < r) {
 		return;
@@ -707,8 +724,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	float phi;
 	float percentX;
 	float percentY;
-	float flatImgWidth = tan(radians(FOV / 2.0)) * 2.0;
-	float flatImgHeight = flatImgWidth / ASPECT_RATIO;
 	int u;
 	int v;
 	vec3 p;
@@ -862,10 +877,10 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 	SetParamInfo(FFPARAM_MOUSEY,		"Aspect Ratio",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
 	/*SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;*/
-	SetParamInfo(FFPARAM_RED,           "Red",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
-	SetParamInfo(FFPARAM_GREEN,         "Green",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
-	SetParamInfo(FFPARAM_BLUE,          "Blue",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
-	SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
+	SetParamInfo(FFPARAM_RED,           "AutoCrop",           FF_TYPE_STANDARD, 1.0f); m_UserRed = 1.0f;
+	SetParamInfo(FFPARAM_GREEN,         "X Scale",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
+	SetParamInfo(FFPARAM_BLUE,          "Y Scale",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
+	// SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
 
 	// Set defaults
 	SetDefaults();
@@ -1288,9 +1303,9 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserBlue*256.0));
 			return m_DisplayValue;
 
-		case FFPARAM_ALPHA:
+		/*case FFPARAM_ALPHA:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
-			return m_DisplayValue;
+			return m_DisplayValue;*/
 
 		default:
 			return m_DisplayValue;
@@ -1364,8 +1379,8 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		case FFPARAM_BLUE:
 			return m_UserBlue;
 
-		case FFPARAM_ALPHA:
-			return m_UserAlpha;
+		/*case FFPARAM_ALPHA:
+			return m_UserAlpha;*/
 
 		default:
 			return FF_FAIL;
@@ -1407,9 +1422,9 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserBlue = value;
 				break;
 
-			case FFPARAM_ALPHA:
+			/*case FFPARAM_ALPHA:
 				m_UserAlpha = value;
-				break;
+				break;*/
 
 			default:
 				return FF_FAIL;

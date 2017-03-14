@@ -52,13 +52,13 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 #endif
 
 //#define FFPARAM_SPEED       (0)
-#define FFPARAM_MOUSEX      (0)
-#define FFPARAM_MOUSEY      (1)
-//#define FFPARAM_MOUSELEFTX  (3)
-//#define FFPARAM_MOUSELEFTY  (4)
-#define FFPARAM_RED         (2)
-#define FFPARAM_GREEN       (3)
-#define FFPARAM_BLUE        (4)
+//#define FFPARAM_MOUSEX      (0)
+//#define FFPARAM_MOUSEY      (1)
+#define FFPARAM_MOUSELEFTX  (0)
+#define FFPARAM_MOUSELEFTY  (1)
+// #define FFPARAM_RED         (2)
+// #define FFPARAM_GREEN       (3)
+// #define FFPARAM_BLUE        (4)
 // #define FFPARAM_ALPHA       (5)
 
 #define STRINGIFY(A) #A
@@ -68,15 +68,15 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 static CFFGLPluginInfo PluginInfo (
 	ShaderMaker::CreateInstance,		// Create method
-	"FDLA",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
-	"Flat to Fisheye",					// *** Plugin name - make it different for each plugin
+	"STOF",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
+	"360 to Fisheye",					// *** Plugin name - make it different for each plugin
 	1,						   			// API major version number
 	006,								// API minor version number
 	1,									// *** Plugin major version number
 	004,								// *** Plugin minor version number
 	FF_EFFECT,							// Plugin type can always be an effect
 	// FF_SOURCE,						// or change this to FF_SOURCE for shaders that do not use a texture
-	"Converts a flat, rectilinear image into a fisheye image suitable for a planetarium dome.", // *** Plugin description - you can expand on this
+	"Converts a 360 VR, Equirectangular image into a fisheye image suitable for a planetarium dome.", // *** Plugin description - you can expand on this
 	"by Daniel Arnett"			// *** About - use your own name and details
 );
 
@@ -687,11 +687,54 @@ float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in v
 
 	return PrintValue(vStringCharCoords, fValue, fMaxDigits, fDecimalPlaces);
 }
+vec3 PRotateX(vec3 p, float theta)
+{
+   vec3 q;
+	 float r = sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+  //  q.x = p.x;
+  //  q.y = p.y * cos(theta) + p.z * sin(theta);
+  //  q.z = -p.y * sin(theta) + p.z * cos(theta);
+	q.x = p.x;
+	q.y = r*cos(theta) + p.y;
+	q.z = r*sin(theta) + p.z;
+  return(q);
+}
+vec3 PTranslateX(vec3 p, float theta)
+{
+   vec3 q;
+
+   q.x = p.x;
+   q.y = p.y + p.z * tan(theta);
+   q.z = p.z;
+   return(q);
+}
+
+vec3 PRotateY(vec3 p, float theta)
+{
+   vec3 q;
+
+   q.x = p.x * cos(theta) - p.z * sin(theta);
+   q.y = p.y;
+   q.z = p.x * sin(theta) + p.z * cos(theta);
+   return(q);
+}
+
+vec3 PRotateZ(vec3 p, float theta)
+{
+   vec3 q;
+
+   q.x = p.x * cos(theta) + p.y * sin(theta);
+   q.y = -p.x * sin(theta) + p.y * cos(theta);
+   q.z = p.z;
+   return(q);
+}
 
 int DEBUG = 0;
 float PI = 3.14159;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+	float rotateZInput = (iMouse.z / iResolution.x) - 0.5; // -0.5 to 0.5
+	float rotateYInput = (iMouse.w / iResolution.y) - 0.5; // -0.5 to 0.5
 	vec2 vFontSize = vec2(50.0, 100.0);
 	vec2 pos = 2.0*(fragCoord.xy / iResolution.xy - 0.5);
 	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
@@ -717,19 +760,22 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	else if (pos.x >= 0.0) {
 		longitude = asin(pos.y / r);
 	}
+	longitude += rotateZInput * 2.0 * PI;
 	if (longitude < 0.0) {
 		longitude += 2.0*PI;
 	}
 	p.x = cos(latitude) * cos(longitude);
 	p.y = cos(latitude) * sin(longitude);
 	p.z = sin(latitude);
+	float temp = p.y;
+	p.z = p.y;
+	p.y = p.z;
+	// p = PRotateX(p, PI * iMouse.x / iResolution.x);
 	latitude = asin(p.z);
-	if (0 <= p.y) {
-		longitude = acos(p.x / cos(latitude));
-	}
-	else {
-		longitude = -acos(p.x / cos(latitude));
-	}
+	longitude = -acos(p.x / cos(latitude));
+	longitude += rotateYInput * 2.0 * PI;
+	// Rotate by a quarter turn to align the fisheye image with the center of the 360 image
+	longitude += PI/2.0;
 	// phi = atan(p.y, p.x);
 	// if (phi < 0.0) {
 	// 	phi += 2.0*PI;
@@ -852,13 +898,13 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 
 	// Parameters
 	//SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEX,        "iMouse.x",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEY,		"iMouse.y",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
-	/*SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;*/
-	SetParamInfo(FFPARAM_RED,           "Unused",           FF_TYPE_STANDARD, 1.0f); m_UserRed = 1.0f;
+	/*SetParamInfo(FFPARAM_MOUSEX,        "iMouse.x",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
+	SetParamInfo(FFPARAM_MOUSEY,		"iMouse.y",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;*/
+	SetParamInfo(FFPARAM_MOUSELEFTX,    "Roll",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
+	SetParamInfo(FFPARAM_MOUSELEFTY,    "Yaw",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
+	/*SetParamInfo(FFPARAM_RED,           "Unused",           FF_TYPE_STANDARD, 1.0f); m_UserRed = 1.0f;
 	SetParamInfo(FFPARAM_GREEN,         "Unused",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
-	SetParamInfo(FFPARAM_BLUE,          "Unused",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
+	SetParamInfo(FFPARAM_BLUE,          "Unused",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;*/
 	// SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
 
 	// Set defaults
@@ -1254,23 +1300,23 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserSpeed*100.0));
 			return m_DisplayValue;*/
 
-		case FFPARAM_MOUSEX:
+		/*case FFPARAM_MOUSEX:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseX*m_vpWidth));
 			return m_DisplayValue;
 
 		case FFPARAM_MOUSEY:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
-			return m_DisplayValue;
+			return m_DisplayValue;*/
 
-		/*case FFPARAM_MOUSELEFTX:
+		case FFPARAM_MOUSELEFTX:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
 			return m_DisplayValue;
 
 		case FFPARAM_MOUSELEFTY:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
-			return m_DisplayValue;*/
+			return m_DisplayValue;
 
-		case FFPARAM_RED:
+		/*case FFPARAM_RED:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
 			return m_DisplayValue;
 
@@ -1280,7 +1326,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 
 		case FFPARAM_BLUE:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserBlue*256.0));
-			return m_DisplayValue;
+			return m_DisplayValue;*/
 
 		/*case FFPARAM_ALPHA:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
@@ -1337,26 +1383,26 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		/*case FFPARAM_SPEED:
 			return  m_UserSpeed;*/
 
-		case FFPARAM_MOUSEX:
+		/*case FFPARAM_MOUSEX:
 			return  m_UserMouseX;
 
 		case FFPARAM_MOUSEY:
-			return  m_UserMouseY;
+			return  m_UserMouseY;*/
 
-		/*case FFPARAM_MOUSELEFTX:
+		case FFPARAM_MOUSELEFTX:
 			return m_UserMouseLeftX;
 
 		case FFPARAM_MOUSELEFTY:
-			return m_UserMouseLeftY;*/
+			return m_UserMouseLeftY;
 
-		case FFPARAM_RED:
+		/*case FFPARAM_RED:
 			return m_UserRed;
 
 		case FFPARAM_GREEN:
 			return m_UserGreen;
 
 		case FFPARAM_BLUE:
-			return m_UserBlue;
+			return m_UserBlue;*/
 
 		/*case FFPARAM_ALPHA:
 			return m_UserAlpha;*/
@@ -1373,23 +1419,23 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 			/*case FFPARAM_SPEED:
 				m_UserSpeed = value;
 				break;*/
-			case FFPARAM_MOUSEX:
+			/*case FFPARAM_MOUSEX:
 				m_UserMouseX = value;
 				break;
 
 			case FFPARAM_MOUSEY:
 				m_UserMouseY = value;
-				break;
+				break;*/
 
-			/*case FFPARAM_MOUSELEFTX:
+			case FFPARAM_MOUSELEFTX:
 				m_UserMouseLeftX = value;
 				break;
 
 			case FFPARAM_MOUSELEFTY:
 				m_UserMouseLeftY = value;
-				break;*/
+				break;
 
-			case FFPARAM_RED:
+			/*case FFPARAM_RED:
 				m_UserRed = value;
 				break;
 
@@ -1399,7 +1445,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 
 			case FFPARAM_BLUE:
 				m_UserBlue = value;
-				break;
+				break;*/
 
 			/*case FFPARAM_ALPHA:
 				m_UserAlpha = value;

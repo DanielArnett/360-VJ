@@ -642,7 +642,93 @@ void main( void ) {
 	gl_FragColor = vec4(vec3(.1-v,.9-v,1.-v)*w*ao,1.0);
 
 }*/
+// Created by inigo quilez - iq/2013
+// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+float DigitBin(const int x)
+{
+	return x == 0 ? 480599.0 : x == 1 ? 139810.0 : x == 2 ? 476951.0 : x == 3 ? 476999.0 : x == 4 ? 350020.0 : x == 5 ? 464711.0 : x == 6 ? 464727.0 : x == 7 ? 476228.0 : x == 8 ? 481111.0 : x == 9 ? 481095.0 : 0.0;
+}
+
+float PrintValue(const vec2 vStringCoords, const float fValue, const float fMaxDigits, const float fDecimalPlaces)
+{
+	if ((vStringCoords.y < 0.0) || (vStringCoords.y >= 1.0)) return 0.0;
+	float fLog10Value = log2(abs(fValue)) / log2(10.0);
+	float fBiggestIndex = max(floor(fLog10Value), 0.0);
+	float fDigitIndex = fMaxDigits - floor(vStringCoords.x);
+	float fCharBin = 0.0;
+	if (fDigitIndex >(-fDecimalPlaces - 1.01)) {
+		if (fDigitIndex > fBiggestIndex) {
+			if ((fValue < 0.0) && (fDigitIndex < (fBiggestIndex + 1.5))) fCharBin = 1792.0;
+		}
+		else {
+			if (fDigitIndex == -1.0) {
+				if (fDecimalPlaces > 0.0) fCharBin = 2.0;
+			}
+			else {
+				float fReducedRangeValue = fValue;
+				if (fDigitIndex < 0.0) { fReducedRangeValue = fract(fValue); fDigitIndex += 1.0; }
+				float fDigitValue = (abs(fReducedRangeValue / (pow(10.0, fDigitIndex))));
+				fCharBin = DigitBin(int(floor(mod(fDigitValue, 10.0))));
+			}
+		}
+	}
+	return floor(mod((fCharBin / pow(2.0, floor(fract(vStringCoords.x) * 4.0) + (floor(vStringCoords.y * 5.0) * 4.0))), 2.0));
+}
+
+// ---- 8< -------- 8< -------- 8< -------- 8< ----
+
+
+// Original interface
+
+float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in vec2 vFontSize, const in float fValue, const in float fMaxDigits, const in float fDecimalPlaces)
+{
+	vec2 vStringCharCoords = (fragCoord.xy - vPixelCoords) / vFontSize;
+
+	return PrintValue(vStringCharCoords, fValue, fMaxDigits, fDecimalPlaces);
+}
+vec3 PRotateX(vec3 p, float theta)
+{
+   vec3 q;
+	 float r = sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+  //  q.x = p.x;
+  //  q.y = p.y * cos(theta) + p.z * sin(theta);
+  //  q.z = -p.y * sin(theta) + p.z * cos(theta);
+	q.x = p.x;
+	q.y = r*cos(theta) + p.y;
+	q.z = r*sin(theta) + p.z;
+  return(q);
+}
+vec3 PTranslateX(vec3 p, float theta)
+{
+   vec3 q;
+
+   q.x = p.x;
+   q.y = p.y + p.z * tan(theta);
+   q.z = p.z;
+   return(q);
+}
+
+vec3 PRotateY(vec3 p, float theta)
+{
+   vec3 q;
+
+   q.x = p.x * cos(theta) - p.z * sin(theta);
+   q.y = p.y;
+   q.z = p.x * sin(theta) + p.z * cos(theta);
+   return(q);
+}
+
+vec3 PRotateZ(vec3 p, float theta)
+{
+   vec3 q;
+
+   q.x = p.x * cos(theta) + p.y * sin(theta);
+   q.y = -p.x * sin(theta) + p.y * cos(theta);
+   q.z = p.z;
+   return(q);
+}
 float PI = 3.14159265359;
+bool DEBUG = true;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
 	// Get the value of the azimuth

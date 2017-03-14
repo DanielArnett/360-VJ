@@ -720,9 +720,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	if (longitude < 0.0) {
 		longitude += 2.0*PI;
 	}
-	// p.x = cos(latitude) * cos(longitude);
-	// p.y = cos(latitude) * sin(longitude);
-	// p.z = sin(latitude);
+	p.x = cos(latitude) * cos(longitude);
+	p.y = cos(latitude) * sin(longitude);
+	p.z = sin(latitude);
+	latitude = asin(p.z);
+	if (0 <= p.y) {
+		longitude = acos(p.x / cos(latitude));
+	}
+	else {
+		longitude = -acos(p.x / cos(latitude));
+	}
 	// phi = atan(p.y, p.x);
 	// if (phi < 0.0) {
 	// 	phi += 2.0*PI;

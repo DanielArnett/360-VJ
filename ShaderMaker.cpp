@@ -54,12 +54,12 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 //#define FFPARAM_SPEED       (0)
 #define FFPARAM_MOUSEX      (0)
 #define FFPARAM_MOUSEY      (1)
-//#define FFPARAM_MOUSELEFTX  (3)
-//#define FFPARAM_MOUSELEFTY  (4)
-#define FFPARAM_RED         (2)
-#define FFPARAM_GREEN       (3)
-#define FFPARAM_BLUE        (4)
-// #define FFPARAM_ALPHA       (5)
+#define FFPARAM_MOUSELEFTX  (2)
+#define FFPARAM_MOUSELEFTY  (3)
+#define FFPARAM_RED         (4)
+#define FFPARAM_GREEN       (5)
+#define FFPARAM_BLUE        (6)
+#define FFPARAM_ALPHA       (7)
 
 #define STRINGIFY(A) #A
 
@@ -687,8 +687,49 @@ float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in v
 
 	return PrintValue(vStringCharCoords, fValue, fMaxDigits, fDecimalPlaces);
 }
+vec3 PRotateX(vec3 p, float theta)
+{
+   vec3 q;
+	 float r = sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+  //  q.x = p.x;
+  //  q.y = p.y * cos(theta) + p.z * sin(theta);
+  //  q.z = -p.y * sin(theta) + p.z * cos(theta);
+	q.x = p.x;
+	q.y = r*cos(theta) + p.y;
+	q.z = r*sin(theta) + p.z;
+  return(q);
+}
+vec3 PTranslateX(vec3 p, float theta)
+{
+   vec3 q;
 
-int DEBUG = 0;
+   q.x = p.x;
+   q.y = p.y + p.z * tan(theta);
+   q.z = p.z;
+   return(q);
+}
+
+vec3 PRotateY(vec3 p, float theta)
+{
+   vec3 q;
+
+   q.x = p.x * cos(theta) - p.z * sin(theta);
+   q.y = p.y;
+   q.z = p.x * sin(theta) + p.z * cos(theta);
+   return(q);
+}
+
+vec3 PRotateZ(vec3 p, float theta)
+{
+   vec3 q;
+
+   q.x = p.x * cos(theta) + p.y * sin(theta);
+   q.y = -p.x * sin(theta) + p.y * cos(theta);
+   q.z = p.z;
+   return(q);
+}
+
+int DEBUG = 1;
 float PI = 3.14159;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
@@ -701,8 +742,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 		return;
 	}
 	float aspectInput = (iMouse.y / iResolution.y);
-	float scaleXInput = inputColour.y * 2.0;
-	float scaleYInput = inputColour.z * 2.0;
+	float rotateXInput = inputColour.y * 180.0 - 90.0;
+	float rotateYInput = inputColour.z * 180.0 - 90.0;
+	float rotateZInput = inputColour.a * 360.0 - 180.0;
 	float ASPECT_RATIO = 2.0 * aspectInput; // 0.0 to 2.0
 	vec2 vFontSize = vec2(50.0, 100.0);
 	vec2 pos = 2.0*(fragCoord.xy / iResolution.xy - 0.5);
@@ -713,8 +755,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 		pos.x *= autoScale;
 		pos.y *= autoScale;
 	}
-	pos.x *= scaleXInput;
-	pos.y *= scaleYInput;
+	// pos.x *= scaleXInput;
+	// pos.y *= scaleYInput;
 	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
 	if (1.0 < r) {
 		return;
@@ -753,17 +795,28 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	p.y = sin(phi) * tan(PI / 2.0 - latitude);
 	p.z = 1.0;
 
-	if (p.x > (flatImgWidth / 2.0) || p.x < (-flatImgWidth / 2.0)
+	/*if (p.x > (flatImgWidth / 2.0) || p.x < (-flatImgWidth / 2.0)
 		|| (p.y > flatImgHeight / 2.0) || p.y < (-flatImgHeight / 2.0)) {
-		return;
-	}
+		return;int(iResolution.y)
+	}*/
 
 	percentX = p.x / ((float(flatImgWidth)) / 2.0);
 	percentY = p.y / ((float(flatImgHeight)) / 2.0);
+	if (rotateXInput != 0.0) {
+		p = PTranslateX(p, radians(rotateXInput));
+	}
+	if (rotateYInput != 0.0) {
+		p = PRotateY(p, radians(rotateYInput));
+	}
+	if (rotateZInput != 0.0) {
+		p = PRotateZ(p, radians(rotateZInput));
+	}
 
 	u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
 	v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
-
+	if (u < 0 || int(iResolution.x) < u || v < 0 || int(iResolution.y) < v) {
+		return;
+	}
 	vec2 outCoord;
 	outCoord.x = float(u);
 	outCoord.y = float(v);
@@ -774,13 +827,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	if (DEBUG == 1) {
 		// Plot Mouse Pos
 		float pointSize = 20.0;
-		float fDistToPointB = length(vec2(iMouse.x, iMouse.y) - fragCoord.xy) - pointSize;
+		float fDistToPointB = length(vec2(iMouse.z, iMouse.w) - fragCoord.xy) - pointSize;
 		col = mix(col, vec3(0.0, 1.0, 0.0), (1.0 - clamp(fDistToPointB, 0.0, 1.0)));
 		if (iMouse.x > 0.0)
 		{
 			// Print Mouse X
-			vec2 vPixelCoord2 = iMouse.xy + vec2(-52.0, 6.0);
-			vec2 mousePos = 2.0*(iMouse.xy / iResolution.xy - 0.5);
+			vec2 vPixelCoord2 = iMouse.zw + vec2(-52.0, 6.0);
+			vec2 mousePos = 2.0*(iMouse.zw / iResolution.xy - 0.5);
 			float mouseR = sqrt(mousePos.x*mousePos.x + mousePos.y*mousePos.y);
 			float mouseLat = (1.0 - mouseR)*(PI / 2.0);
 			float mouseLong;
@@ -819,6 +872,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 			mouseP.x = cos(mousePhi) * tan(PI / 2.0 - mouseLat);
 			mouseP.y = sin(mousePhi) * tan(PI / 2.0 - mouseLat);
 			mouseP.z = 1.0;
+			if (rotateXInput != 0.0) {
+				mouseP = PRotateX(p, radians(rotateXInput));
+			}
+			if (rotateYInput != 0.0) {
+				mouseP = PRotateY(p, radians(rotateYInput));
+			}
+			if (rotateZInput != 0.0) {
+				mouseP = PRotateZ(p, radians(rotateZInput));
+			}
 			mousePercentX = mouseP.x / (flatImgWidth / 2.0);
 			mousePercentY = mouseP.y / (flatImgHeight / 2.0);
 			mouseU = int(mousePercentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
@@ -826,7 +888,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 			mouseV = int(mousePercentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
 			mouseOutCoord.x = float(mouseU) / iResolution.x;
 			mouseOutCoord.y = float(mouseV) / iResolution.y;
-			float fValue2 = inputColour.a;
+			float fValue2 = mouseP.z;
 			float fDigits = 1.0;
 			float fDecimalPlaces = 3.0;
 			float fIsDigit2 = PrintValue((fragCoord - vPixelCoord2) / vFontSize, fValue2, fDigits, fDecimalPlaces);
@@ -875,12 +937,12 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 	//SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
 	SetParamInfo(FFPARAM_MOUSEX,        "FOV",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSEY,		"Aspect Ratio",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
-	/*SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;*/
+	SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
+	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
 	SetParamInfo(FFPARAM_RED,           "AutoCrop",           FF_TYPE_STANDARD, 1.0f); m_UserRed = 1.0f;
-	SetParamInfo(FFPARAM_GREEN,         "X Scale",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
-	SetParamInfo(FFPARAM_BLUE,          "Y Scale",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
-	// SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
+	SetParamInfo(FFPARAM_GREEN,         "X Rotation",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
+	SetParamInfo(FFPARAM_BLUE,          "Y Rotation",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
+	SetParamInfo(FFPARAM_ALPHA,         "Z Rotation",         FF_TYPE_STANDARD, 0.5f); m_UserAlpha = 0.5f;
 
 	// Set defaults
 	SetDefaults();
@@ -1283,13 +1345,13 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
 			return m_DisplayValue;
 
-		/*case FFPARAM_MOUSELEFTX:
+		case FFPARAM_MOUSELEFTX:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
 			return m_DisplayValue;
 
 		case FFPARAM_MOUSELEFTY:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
-			return m_DisplayValue;*/
+			return m_DisplayValue;
 
 		case FFPARAM_RED:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
@@ -1303,9 +1365,9 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserBlue*256.0));
 			return m_DisplayValue;
 
-		/*case FFPARAM_ALPHA:
+		case FFPARAM_ALPHA:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
-			return m_DisplayValue;*/
+			return m_DisplayValue;
 
 		default:
 			return m_DisplayValue;
@@ -1364,11 +1426,11 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		case FFPARAM_MOUSEY:
 			return  m_UserMouseY;
 
-		/*case FFPARAM_MOUSELEFTX:
+		case FFPARAM_MOUSELEFTX:
 			return m_UserMouseLeftX;
 
 		case FFPARAM_MOUSELEFTY:
-			return m_UserMouseLeftY;*/
+			return m_UserMouseLeftY;
 
 		case FFPARAM_RED:
 			return m_UserRed;
@@ -1379,8 +1441,8 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		case FFPARAM_BLUE:
 			return m_UserBlue;
 
-		/*case FFPARAM_ALPHA:
-			return m_UserAlpha;*/
+		case FFPARAM_ALPHA:
+			return m_UserAlpha;
 
 		default:
 			return FF_FAIL;
@@ -1402,13 +1464,13 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserMouseY = value;
 				break;
 
-			/*case FFPARAM_MOUSELEFTX:
+			case FFPARAM_MOUSELEFTX:
 				m_UserMouseLeftX = value;
 				break;
 
 			case FFPARAM_MOUSELEFTY:
 				m_UserMouseLeftY = value;
-				break;*/
+				break;
 
 			case FFPARAM_RED:
 				m_UserRed = value;
@@ -1422,9 +1484,9 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserBlue = value;
 				break;
 
-			/*case FFPARAM_ALPHA:
+			case FFPARAM_ALPHA:
 				m_UserAlpha = value;
-				break;*/
+				break;
 
 			default:
 				return FF_FAIL;

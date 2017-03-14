@@ -692,29 +692,8 @@ int DEBUG = 0;
 float PI = 3.14159;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
-	float fovInput = iMouse.x / iResolution.x; // 0.0 to 1.0
-	float FOV = 180.0 * fovInput; // 60 degrees to 180 degrees
-	bool cropInput = (inputColour.x > 0.5) ? true : false;
-	if (FOV == 0.0 && cropInput) {
-		vec3 col = texture2D(iChannel0, fragCoord.xy / iResolution.xy).xyz;
-		fragColor = vec4(col, 1.0);
-		return;
-	}
-	float aspectInput = (iMouse.y / iResolution.y);
-	float scaleXInput = inputColour.y * 2.0;
-	float scaleYInput = inputColour.z * 2.0;
-	float ASPECT_RATIO = 2.0 * aspectInput; // 0.0 to 2.0
 	vec2 vFontSize = vec2(50.0, 100.0);
 	vec2 pos = 2.0*(fragCoord.xy / iResolution.xy - 0.5);
-	float flatImgWidth = tan(radians(FOV / 2.0)) * 2.0;
-	float flatImgHeight = flatImgWidth / ASPECT_RATIO;
-	if (cropInput) {
-		float autoScale = FOV / 180.0;
-		pos.x *= autoScale;
-		pos.y *= autoScale;
-	}
-	pos.x *= scaleXInput;
-	pos.y *= scaleYInput;
 	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
 	if (1.0 < r) {
 		return;
@@ -745,21 +724,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	p.y = cos(latitude) * sin(longitude);
 	p.z = sin(latitude);
 
-	phi = atan(p.y, p.x);
-	if (phi < 0.0) {
-		phi += 2.0*PI;
-	}
-	p.x = cos(phi) * tan(PI / 2.0 - latitude);
-	p.y = sin(phi) * tan(PI / 2.0 - latitude);
-	p.z = 1.0;
-
-	if (p.x > (flatImgWidth / 2.0) || p.x < (-flatImgWidth / 2.0)
-		|| (p.y > flatImgHeight / 2.0) || p.y < (-flatImgHeight / 2.0)) {
-		return;
-	}
-
-	percentX = p.x / ((float(flatImgWidth)) / 2.0);
-	percentY = p.y / ((float(flatImgHeight)) / 2.0);
+	percentX = p.x / 2.0;
+	percentY = p.y;
 
 	u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
 	v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
@@ -819,8 +785,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 			mouseP.x = cos(mousePhi) * tan(PI / 2.0 - mouseLat);
 			mouseP.y = sin(mousePhi) * tan(PI / 2.0 - mouseLat);
 			mouseP.z = 1.0;
-			mousePercentX = mouseP.x / (flatImgWidth / 2.0);
-			mousePercentY = mouseP.y / (flatImgHeight / 2.0);
+			mousePercentX = mouseP.x / (iResolution.x / 2.0);
+			mousePercentY = mouseP.y / (iResolution.y / 2.0);
 			mouseU = int(mousePercentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
 			//mouseU = mousePercentX;
 			mouseV = int(mousePercentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
@@ -873,13 +839,13 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 
 	// Parameters
 	//SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEX,        "FOV",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEY,		"Aspect Ratio",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
+	SetParamInfo(FFPARAM_MOUSEX,        "unused",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
+	SetParamInfo(FFPARAM_MOUSEY,		"Unused",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
 	/*SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;*/
-	SetParamInfo(FFPARAM_RED,           "AutoCrop",           FF_TYPE_STANDARD, 1.0f); m_UserRed = 1.0f;
-	SetParamInfo(FFPARAM_GREEN,         "X Scale",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
-	SetParamInfo(FFPARAM_BLUE,          "Y Scale",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
+	SetParamInfo(FFPARAM_RED,           "Unused",           FF_TYPE_STANDARD, 1.0f); m_UserRed = 1.0f;
+	SetParamInfo(FFPARAM_GREEN,         "Unused",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
+	SetParamInfo(FFPARAM_BLUE,          "Unused",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
 	// SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
 
 	// Set defaults

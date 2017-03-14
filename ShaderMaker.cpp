@@ -720,16 +720,22 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	if (longitude < 0.0) {
 		longitude += 2.0*PI;
 	}
-	p.x = cos(latitude) * cos(longitude);
-	p.y = cos(latitude) * sin(longitude);
-	p.z = sin(latitude);
+	// p.x = cos(latitude) * cos(longitude);
+	// p.y = cos(latitude) * sin(longitude);
+	// p.z = sin(latitude);
+	// phi = atan(p.y, p.x);
+	// if (phi < 0.0) {
+	// 	phi += 2.0*PI;
+	// }
+	// p.x = cos(phi) * tan(PI / 2.0 - latitude);
+	// p.y = sin(phi) * tan(PI / 2.0 - latitude);
+	// percentX = p.x;
+	// percentY = p.y;
 
-	percentX = p.x * iMouse.x / iResolution.x;
-	percentY = p.y * iMouse.y / iResolution.y;
-
-	u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
-	v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
-
+	// u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
+	// v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
+	u = iResolution.x * (longitude + PI) / (2 * PI);
+	v = iResolution.y * (latitude + PI/2) / PI;
 	vec2 outCoord;
 	outCoord.x = float(u);
 	outCoord.y = float(v);

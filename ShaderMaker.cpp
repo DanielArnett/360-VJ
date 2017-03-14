@@ -54,8 +54,8 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 //#define FFPARAM_SPEED       (0)
 #define FFPARAM_MOUSEX      (0)
 #define FFPARAM_MOUSEY      (1)
-//#define FFPARAM_MOUSELEFTX  (3)
-//#define FFPARAM_MOUSELEFTY  (4)
+#define FFPARAM_MOUSELEFTX  (2)
+#define FFPARAM_MOUSELEFTY  (3)
 //#define FFPARAM_RED         (5)
 //#define FFPARAM_GREEN       (6)
 //#define FFPARAM_BLUE        (7)
@@ -731,6 +731,24 @@ float PI = 3.14159265359;
 bool DEBUG = true;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+	// Debug information
+	/*if (DEBUG) {
+		// Plot Mouse Pos
+		float pointSize = 20.0;
+		float fDistToPointB = length(vec2(iMouse.z, iMouse.w) - fragCoord.xy) - pointSize;
+		fragColor = mix(fragColor, vec3(0.0, 1.0, 0.0), (1.0 - clamp(fDistToPointB, 0.0, 1.0)));
+		if (iMouse.z > 0.0)
+		{
+			// Print Mouse X
+			vec2 vPixelCoord2 = iMouse.zw + vec2(-52.0, 6.0);
+			vec2 mousePos = 2.0*(iMouse.zw / iResolution.xy - 0.5);
+			float fValue2 = iMouse.z;
+			float fDigits = 1.0;
+			float fDecimalPlaces = 3.0;
+			float fIsDigit2 = PrintValue((fragCoord - vPixelCoord2) / vFontSize, fValue2, fDigits, fDecimalPlaces);
+			fragColor = mix(col, vec3(0.0, 1.0, 0.0), fIsDigit2);
+		}
+	} // Debug Information*/
 	// Get the value of the azimuth
 	float azimuthInput = iMouse.x / iResolution.x; // 0.0 to 1.0
 	// Get the number of tiles to make
@@ -794,9 +812,9 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 	//SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
 	SetParamInfo(FFPARAM_MOUSEX,        "Azimuth",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSEY,		"Tiles/10",		 FF_TYPE_STANDARD, 0.11f); m_UserMouseY = 0.11f;
-	/*SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
+	SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
-	SetParamInfo(FFPARAM_RED,           "Red",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
+	/*SetParamInfo(FFPARAM_RED,           "Red",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
 	SetParamInfo(FFPARAM_GREEN,         "Green",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
 	SetParamInfo(FFPARAM_BLUE,          "Blue",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
 	SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;*/
@@ -1202,7 +1220,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
 			return m_DisplayValue;
 
-		/*case FFPARAM_MOUSELEFTX:
+		case FFPARAM_MOUSELEFTX:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
 			return m_DisplayValue;
 
@@ -1210,7 +1228,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
 			return m_DisplayValue;
 
-		case FFPARAM_RED:
+		/*case FFPARAM_RED:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
 			return m_DisplayValue;
 
@@ -1274,7 +1292,7 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 {
 	switch (index) {
 
-		/*case FFPARAM_SPEED:
+		/*case 0D:
 			return  m_UserSpeed;*/
 
 		case FFPARAM_MOUSEX:
@@ -1283,13 +1301,13 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		case FFPARAM_MOUSEY:
 			return  m_UserMouseY;
 
-		/*case FFPARAM_MOUSELEFTX:
+		case FFPARAM_MOUSELEFTX:
 			return m_UserMouseLeftX;
 
 		case FFPARAM_MOUSELEFTY:
 			return m_UserMouseLeftY;
 
-		case FFPARAM_RED:
+		/*case FFPARAM_RED:
 			return m_UserRed;
 
 		case FFPARAM_GREEN:
@@ -1321,7 +1339,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserMouseY = value;
 				break;
 
-			/*case FFPARAM_MOUSELEFTX:
+			case FFPARAM_MOUSELEFTX:
 				m_UserMouseLeftX = value;
 				break;
 
@@ -1329,7 +1347,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserMouseLeftY = value;
 				break;
 
-			case FFPARAM_RED:
+			/*case FFPARAM_RED:
 				m_UserRed = value;
 				break;
 

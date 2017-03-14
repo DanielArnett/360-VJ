@@ -736,7 +736,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	float azimuthInput = iMouse.x / iResolution.x; // 0.0 to 1.0
 	// Get the number of tiles to make
 	float numOfTiles = float(int(iMouse.y * 10.0 / iResolution.y));
-	vec2 pos = (fragCoord / iResolution) - 0.5;
+	vec2 pos = fragCoord / iResolution;
 	vec3 ray;
 	vec2 outCoord;
 	// Y coordinate doesn't change.
@@ -750,9 +750,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	else if (iResolution.x < outCoord.x) {
 		outCoord.x -= iResolution.x;
 	}
-	ray.x = cos(pos.x*2.0*PI + PI/2);
-	ray.y = -2.0 * pos.y;
-	ray.z = cos(pos.x * 2.0 * PI);
+	ray.x = cos(pos.x*PI + PI/2.0);
+	ray.y = pos.y;
+	ray.z = cos(pos.x * PI) * cos(pos.y * PI);
+
+	pos.y = ray.y;
+	pos.x = (acos(ray.x) - PI/2.0) / PI;
+	outCoord.y = pos.y * iResolution.y;
+	outCoord.x = pos.x * iResolution.x;
 	// Get the color at the new coordinate
 	vec3 col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
 	// Debug information
@@ -765,11 +770,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 		{
 			// Print Mouse X
 			vec2 vPixelCoord2 = iMouse.zw + vec2(-52.0, 6.0);
-			vec2 mousePos = 2.0*(iMouse.zw / iResolution.xy - 0.5);
-			float fValue2 = iMouse.z;
+			vec2 m_pos = 2.0*(iMouse.zw / iResolution.xy - 0.5);
+			vec3 m_ray;
+			m_ray.x = cos(m_pos.x*2.0*PI + PI/2);
+			m_ray.y = -2.0 * m_pos.y;
+			m_ray.z = cos(m_pos.x * 2.0 * PI) * cos(m_pos.y * PI);
+			float fValue2 = m_ray.y;
 			float fDigits = 1.0;
 			float fDecimalPlaces = 3.0;
-			float vFontSize = 40.0;
+			vec2 vFontSize = vec2(50.0, 100.0);
 			float fIsDigit2 = PrintValue((fragCoord - vPixelCoord2) / vFontSize, fValue2, fDigits, fDecimalPlaces);
 			col = mix(col, vec3(0.0, 1.0, 0.0), fIsDigit2);
 		}

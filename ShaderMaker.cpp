@@ -642,13 +642,15 @@ void main( void ) {
 	gl_FragColor = vec4(vec3(.1-v,.9-v,1.-v)*w*ao,1.0);
 
 }*/
-
+float PI = 3.14159265359;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
 	// Get the value of the azimuth
 	float azimuthInput = iMouse.x / iResolution.x; // 0.0 to 1.0
 	// Get the number of tiles to make
 	float numOfTiles = float(int(iMouse.y * 10.0 / iResolution.y));
+	vec2 pos = (fragCoord / iResolution) - 0.5;
+	vec3 ray;
 	vec2 outCoord;
 	// Y coordinate doesn't change.
 	outCoord.y = fragCoord.y;
@@ -661,6 +663,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	else if (iResolution.x < outCoord.x) {
 		outCoord.x -= iResolution.x;
 	}
+	ray.x = cos(pos.x*2.0*PI + PI/2);
+	ray.y = -2.0 * pos.y;
+	ray.z = cos(pos.x * 2.0 * PI);
 	// Get the color at the new coordinate
 	vec3 col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
 	// Set the new pixel value

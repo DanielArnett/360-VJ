@@ -724,8 +724,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	p.y = cos(latitude) * sin(longitude);
 	p.z = sin(latitude);
 
-	percentX = p.x / 2.0;
-	percentY = p.y;
+	percentX = p.x * iMouse.x / iResolution.x;
+	percentY = p.y * iMouse.y / iResolution.y;
 
 	u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
 	v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
@@ -839,8 +839,8 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 
 	// Parameters
 	//SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEX,        "unused",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEY,		"Unused",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
+	SetParamInfo(FFPARAM_MOUSEX,        "iMouse.x",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
+	SetParamInfo(FFPARAM_MOUSEY,		"iMouse.y",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
 	/*SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;*/
 	SetParamInfo(FFPARAM_RED,           "Unused",           FF_TYPE_STANDARD, 1.0f); m_UserRed = 1.0f;

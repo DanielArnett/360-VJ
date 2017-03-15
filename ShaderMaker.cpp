@@ -689,14 +689,11 @@ float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in v
 vec3 PRotateX(vec3 p, float theta)
 {
    vec3 q;
-	 float r = sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
-  //  q.x = p.x;
-  //  q.y = p.y * cos(theta) + p.z * sin(theta);
-  //  q.z = -p.y * sin(theta) + p.z * cos(theta);
-	q.x = p.x;
-	q.y = r*cos(theta) + p.y;
-	q.z = r*sin(theta) + p.z;
-  return(q);
+
+   q.x = p.x;
+   q.y = p.y * cos(theta) + p.z * sin(theta);
+   q.z = -p.y * sin(theta) + p.z * cos(theta);
+   return(q);
 }
 vec3 PTranslateX(vec3 p, float theta)
 {
@@ -766,9 +763,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 
 
-	// if (xRotateInput != 0.5) {
-	// 	ray = PRotateX(ray, xRotateInput * 2*PI);
-	// }
+	if (xRotateInput != 0.5) {
+		ray = PRotateX(ray, xRotateInput * 2*PI);
+	}
 	if (yRotateInput != 0.5) {
 		ray = PRotateY(ray, yRotateInput * 2*PI);
 	}

@@ -52,13 +52,13 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 #endif
 
 //#define FFPARAM_SPEED       (0)
-#define FFPARAM_MOUSEX      (0)
-#define FFPARAM_MOUSEY      (1)
-#define FFPARAM_MOUSELEFTX  (2)
-#define FFPARAM_MOUSELEFTY  (3)
-#define FFPARAM_RED         (4)
-#define FFPARAM_GREEN       (5)
-#define FFPARAM_BLUE        (6)
+// #define FFPARAM_MOUSEX      (0)
+// #define FFPARAM_MOUSEY      (1)
+// #define FFPARAM_MOUSELEFTX  (2)
+// #define FFPARAM_MOUSELEFTY  (3)
+#define FFPARAM_RED         (0)
+#define FFPARAM_GREEN       (1)
+#define FFPARAM_BLUE        (2)
 //#define FFPARAM_ALPHA       (8)
 
 #define STRINGIFY(A) #A
@@ -68,15 +68,15 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 static CFFGLPluginInfo PluginInfo (
 	ShaderMaker::CreateInstance,		// Create method
-	"ADLA",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
-	"360 Azimuth",				// *** Plugin name - make it different for each plugin
+	"VRVJ",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
+	"360 VJ",				// *** Plugin name - make it different for each plugin
 	1,						   			// API major version number
 	006,								// API minor version number
 	1,									// *** Plugin major version number
 	004,								// *** Plugin minor version number
 	FF_EFFECT,							// Plugin type can always be an effect
 	// FF_SOURCE,						// or change this to FF_SOURCE for shaders that do not use a texture
-	"Tiles a 360 equirectangular video so the azimuth can be rotated seramlessly.", // *** Plugin description - you can expand on this
+	"Rotates a 360 VR video enabling the user to turn the camera.", // *** Plugin description - you can expand on this
 	"by Daniel Arnett"			// *** About - use your own name and details
 );
 
@@ -642,73 +642,23 @@ void main( void ) {
 	gl_FragColor = vec4(vec3(.1-v,.9-v,1.-v)*w*ao,1.0);
 
 }*/
-// Created by inigo quilez - iq/2013
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-float DigitBin(const int x)
-{
-	return x == 0 ? 480599.0 : x == 1 ? 139810.0 : x == 2 ? 476951.0 : x == 3 ? 476999.0 : x == 4 ? 350020.0 : x == 5 ? 464711.0 : x == 6 ? 464727.0 : x == 7 ? 476228.0 : x == 8 ? 481111.0 : x == 9 ? 481095.0 : 0.0;
-}
 
-float PrintValue(const vec2 vStringCoords, const float fValue, const float fMaxDigits, const float fDecimalPlaces)
-{
-	if ((vStringCoords.y < 0.0) || (vStringCoords.y >= 1.0)) return 0.0;
-	float fLog10Value = log2(abs(fValue)) / log2(10.0);
-	float fBiggestIndex = max(floor(fLog10Value), 0.0);
-	float fDigitIndex = fMaxDigits - floor(vStringCoords.x);
-	float fCharBin = 0.0;
-	if (fDigitIndex >(-fDecimalPlaces - 1.01)) {
-		if (fDigitIndex > fBiggestIndex) {
-			if ((fValue < 0.0) && (fDigitIndex < (fBiggestIndex + 1.5))) fCharBin = 1792.0;
-		}
-		else {
-			if (fDigitIndex == -1.0) {
-				if (fDecimalPlaces > 0.0) fCharBin = 2.0;
-			}
-			else {
-				float fReducedRangeValue = fValue;
-				if (fDigitIndex < 0.0) { fReducedRangeValue = fract(fValue); fDigitIndex += 1.0; }
-				float fDigitValue = (abs(fReducedRangeValue / (pow(10.0, fDigitIndex))));
-				fCharBin = DigitBin(int(floor(mod(fDigitValue, 10.0))));
-			}
-		}
-	}
-	return floor(mod((fCharBin / pow(2.0, floor(fract(vStringCoords.x) * 4.0) + (floor(vStringCoords.y * 5.0) * 4.0))), 2.0));
-}
-
-// ---- 8< -------- 8< -------- 8< -------- 8< ----
-
-
-// Original interface
-
-float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in vec2 vFontSize, const in float fValue, const in float fMaxDigits, const in float fDecimalPlaces)
-{
-	vec2 vStringCharCoords = (fragCoord.xy - vPixelCoords) / vFontSize;
-
-	return PrintValue(vStringCharCoords, fValue, fMaxDigits, fDecimalPlaces);
-}
+/*
+ * This is used to manipulate 360 VR videos, also known as equirectangular videos.
+ * This shader can pitch, roll, and yaw the camera within a 360 image.
+*/
 vec3 PRotateX(vec3 p, float theta)
 {
    vec3 q;
-
    q.x = p.x;
    q.y = p.y * cos(theta) + p.z * sin(theta);
    q.z = -p.y * sin(theta) + p.z * cos(theta);
-   return(q);
-}
-vec3 PTranslateX(vec3 p, float theta)
-{
-   vec3 q;
-
-   q.x = p.x;
-   q.y = p.y + p.z * tan(theta);
-   q.z = p.z;
    return(q);
 }
 
 vec3 PRotateY(vec3 p, float theta)
 {
    vec3 q;
-
    q.x = p.x * cos(theta) - p.z * sin(theta);
    q.y = p.y;
    q.z = p.x * sin(theta) + p.z * cos(theta);
@@ -718,51 +668,42 @@ vec3 PRotateY(vec3 p, float theta)
 vec3 PRotateZ(vec3 p, float theta)
 {
    vec3 q;
-
    q.x = p.x * cos(theta) + p.y * sin(theta);
    q.y = -p.x * sin(theta) + p.y * cos(theta);
    q.z = p.z;
    return(q);
 }
+
 float PI = 3.14159265359;
-bool DEBUG = false;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+	// Given a destination pixel on the screen, we need to find the color of a source pixel used to fill this destination pixel.
 
-	// Get the value of the azimuth
-	float azimuthInput = iMouse.x / iResolution.x; // 0.0 to 1.0
-	// Get the number of tiles to make
-	float tilesInput = 2.0 * iMouse.y / iResolution.y;
+	// Position of the destination pixel in xy coordinates in the range [0,1]
 	vec2 pos;
-	vec3 ray;
+	// Position of the source pixel in xy coordinates
 	vec2 outCoord;
+	// The ray from the camera into the 360 virtual screen
+	// X increases from left to right [-1 to 1]
+	// Y increases from bottom to top [-1 to 1]
+	// Z increases from back to front [-1 to 1]
+	vec3 ray;
+	// The input given by the user in Resolume
 	float xRotateInput = inputColour.x - 0.5;
-	float yRotateInput = inputColour.y - 0.5 ;
-	float zRotateInput = inputColour.z - 0.5;
-	// Y coordinate doesn't change.
-	outCoord.y = fragCoord.y;
-	// Move the x coordinate to its new value.
-	outCoord.x = fragCoord.x + 2.0*iResolution.x*(azimuthInput - 0.5);
-	// Correct it if the coordinate is off screen
-	if (outCoord.x < 0.0) {
-		outCoord.x += iResolution.x;
-	}
-	else if (iResolution.x < outCoord.x) {
-		outCoord.x -= iResolution.x;
-	}
-
-	pos.x = outCoord.x / iResolution.x;
-	pos.y = outCoord.y / iResolution.y;
+	float yRotateInput = inputColour.z - 0.5;
+	float zRotateInput = inputColour.y - 0.5;
+	// Normalize the xy coordinates in the range [0,1]
+	pos.x = fragCoord.x / iResolution.x;
+	pos.y = fragCoord.y / iResolution.y;
 
 	float latitude = pos.y * PI - PI/2.0;
-	float longitude = tilesInput * pos.x * 2.0*PI - PI;
-	// Create a ray from the pixel coordinate
+	float longitude = pos.x * 2.0*PI - PI;
+	// Create a ray from the latitude and longitude
 	ray.x = cos(latitude) * sin(longitude);
 	ray.y = sin(latitude);
 	ray.z = cos(latitude) * cos(longitude);
 
-
-
+	// Rotate the ray based on the user input
 	if (xRotateInput != 0.5) {
 		ray = PRotateX(ray, xRotateInput * 2*PI);
 	}
@@ -772,73 +713,21 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	if (zRotateInput != 0.5) {
 		ray = PRotateZ(ray, zRotateInput * 2*PI);
 	}
+
+	// Convert back to latitude and longitude
 	latitude = asin(ray.y);
 	longitude = atan2(ray.x, ray.z);
+	// Convert back to the normalized pixel coordinate
 	pos.x = (longitude + PI)/(2.0*PI);
 	pos.y = (latitude + PI/2.0)/PI;
 
-	// pos.y = ray.y;
-	//pos.x = (acos(ray.x) - PI/2.0) / PI;
+	// Convert to xy source pixel coordinate
 	outCoord.y = pos.y * iResolution.y;
 	outCoord.x = pos.x * iResolution.x;
-	// Get the color at the new coordinate
+
+	// Get the color from that coordinate and set the color of the destination pixel to the value from the source pixel we've found.
 	vec3 col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
-	if (false) {
-		col = vec3(0,255,0);
-	}
-	// Debug information
-	if (DEBUG) {
-		// Plot Mouse Pos
-		float pointSize = 20.0;
-		float fDistToPointB = length(vec2(iMouse.z, iMouse.w) - fragCoord.xy) - pointSize;
-		col = mix(col, vec3(0.0, 1.0, 0.0), (1.0 - clamp(fDistToPointB, 0.0, 1.0)));
-		if (iMouse.z > 0.0)
-		{
-			// Print Mouse X
-			vec2 m_coord = iMouse.zw + vec2(-52.0, 6.0);
-			vec2 m_pos;
-			vec3 m_ray;
-			m_pos.x = outCoord.x / iResolution.x;
-			m_pos.y = outCoord.y / iResolution.y;
-			// Create a ray from the pixel coordinate
-			float m_latitude = m_pos.y * PI - PI/2.0;
-			float m_longitude = m_pos.x * 2.0*PI - PI;
-			m_ray.x = cos(m_latitude) * sin(m_longitude);
-			m_ray.y = cos(m_latitude) * cos(m_longitude);
-			m_ray.z = sin(m_latitude);
-
-			if (xRotateInput != 0.5) {
-				m_ray = PRotateX(m_ray, xRotateInput * 2*PI - PI);
-			}
-			if (yRotateInput != 0.5) {
-				m_ray = PRotateY(ray, yRotateInput * 2*PI - PI);
-			}
-			if (zRotateInput != 0.5) {
-				m_ray = PRotateZ(ray, zRotateInput * 2*PI - PI);
-			}
-			m_latitude = asin(m_ray.z);
-			m_longitude = atan2(m_ray.y, m_ray.x);
-			m_pos.x = (m_longitude + PI)/(2.0*PI);
-			m_pos.y = (m_latitude + PI/2.0)/PI;
-
-			// if (xRotateInput != 0.5) {
-			// 	m_ray = PRotateX(m_ray, xRotateInput * 2*PI - PI);
-			// }
-			// if (yRotateInput != 0.5) {
-			// 	m_ray = PRotateY(m_ray, yRotateInput * 2*PI - PI);
-			// }
-			// if (zRotateInput != 0.5) {
-			// 	m_ray = PRotateZ(m_ray, zRotateInput * 2*PI - PI);
-			// }
-			float fValue2 = m_ray.y;
-			float fDigits = 1.0;
-			float fDecimalPlaces = 3.0;
-			vec2 vFontSize = vec2(50.0, 100.0);
-			float fIsDigit2 = PrintValue((fragCoord - m_coord) / vFontSize, fValue2, fDigits, fDecimalPlaces);
-			col = mix(col, vec3(0.0, 1.0, 0.0), fIsDigit2);
-		}
-	} // Debug Information
-	// Set the new pixel value
+	// Set the pixel value
 	fragColor = vec4(col, 1.0);
 }
 
@@ -876,13 +765,13 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 
 	// Parameters
 	//SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEX,        "Yaw",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEY,		"Tiles/10",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
-	SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
-	SetParamInfo(FFPARAM_RED,           "Red",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
-	SetParamInfo(FFPARAM_GREEN,         "Green",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
-	SetParamInfo(FFPARAM_BLUE,          "Blue",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
+	// SetParamInfo(FFPARAM_MOUSEX,        "Yaw",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
+	// SetParamInfo(FFPARAM_MOUSEY,		"Tiles/10",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
+	// SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
+	// SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
+	SetParamInfo(FFPARAM_RED,           "Pitch",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
+	SetParamInfo(FFPARAM_GREEN,         "Roll",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
+	SetParamInfo(FFPARAM_BLUE,          "Yaw",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
 	//SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
 
 	// Set defaults
@@ -1278,21 +1167,21 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserSpeed*100.0));
 			return m_DisplayValue;*/
 
-		case FFPARAM_MOUSEX:
-			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseX*m_vpWidth));
-			return m_DisplayValue;
-
-		case FFPARAM_MOUSEY:
-			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
-			return m_DisplayValue;
-
-		case FFPARAM_MOUSELEFTX:
-			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
-			return m_DisplayValue;
-
-		case FFPARAM_MOUSELEFTY:
-			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
-			return m_DisplayValue;
+		// case FFPARAM_MOUSEX:
+		// 	cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseX*m_vpWidth));
+		// 	return m_DisplayValue;
+		//
+		// case FFPARAM_MOUSEY:
+		// 	cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
+		// 	return m_DisplayValue;
+		//
+		// case FFPARAM_MOUSELEFTX:
+		// 	cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftX*m_vpWidth));
+		// 	return m_DisplayValue;
+		//
+		// case FFPARAM_MOUSELEFTY:
+		// 	cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
+		// 	return m_DisplayValue;
 
 		case FFPARAM_RED:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
@@ -1361,17 +1250,17 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		/*case 0D:
 			return  m_UserSpeed;*/
 
-		case FFPARAM_MOUSEX:
-			return  m_UserMouseX;
-
-		case FFPARAM_MOUSEY:
-			return  m_UserMouseY;
-
-		case FFPARAM_MOUSELEFTX:
-			return m_UserMouseLeftX;
-
-		case FFPARAM_MOUSELEFTY:
-			return m_UserMouseLeftY;
+		// case FFPARAM_MOUSEX:
+		// 	return  m_UserMouseX;
+		//
+		// case FFPARAM_MOUSEY:
+		// 	return  m_UserMouseY;
+		//
+		// case FFPARAM_MOUSELEFTX:
+		// 	return m_UserMouseLeftX;
+		//
+		// case FFPARAM_MOUSELEFTY:
+		// 	return m_UserMouseLeftY;
 
 		case FFPARAM_RED:
 			return m_UserRed;
@@ -1397,21 +1286,21 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 			/*case FFPARAM_SPEED:
 				m_UserSpeed = value;
 				break;*/
-			case FFPARAM_MOUSEX:
-				m_UserMouseX = value;
-				break;
-
-			case FFPARAM_MOUSEY:
-				m_UserMouseY = value;
-				break;
-
-			case FFPARAM_MOUSELEFTX:
-				m_UserMouseLeftX = value;
-				break;
-
-			case FFPARAM_MOUSELEFTY:
-				m_UserMouseLeftY = value;
-				break;
+			// case FFPARAM_MOUSEX:
+			// 	m_UserMouseX = value;
+			// 	break;
+			//
+			// case FFPARAM_MOUSEY:
+			// 	m_UserMouseY = value;
+			// 	break;
+			//
+			// case FFPARAM_MOUSELEFTX:
+			// 	m_UserMouseLeftX = value;
+			// 	break;
+			//
+			// case FFPARAM_MOUSELEFTY:
+			// 	m_UserMouseLeftY = value;
+			// 	break;
 
 			case FFPARAM_RED:
 				m_UserRed = value;

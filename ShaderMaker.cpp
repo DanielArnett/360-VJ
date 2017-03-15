@@ -56,9 +56,9 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 #define FFPARAM_MOUSEY      (1)
 #define FFPARAM_MOUSELEFTX  (2)
 #define FFPARAM_MOUSELEFTY  (3)
-//#define FFPARAM_RED         (5)
-//#define FFPARAM_GREEN       (6)
-//#define FFPARAM_BLUE        (7)
+#define FFPARAM_RED         (4)
+#define FFPARAM_GREEN       (5)
+#define FFPARAM_BLUE        (6)
 //#define FFPARAM_ALPHA       (8)
 
 #define STRINGIFY(A) #A
@@ -735,14 +735,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	// Get the value of the azimuth
 	float azimuthInput = iMouse.x / iResolution.x; // 0.0 to 1.0
 	// Get the number of tiles to make
-	float numOfTiles = float(int(iMouse.y * 10.0 / iResolution.y));
-	vec2 pos = fragCoord / iResolution;
+	float tilesInput = 2.0 * iMouse.y / iResolution.y;
+	vec2 pos;
 	vec3 ray;
 	vec2 outCoord;
+	float xRotateInput = inputColour.x;
+	float yRotateInput = inputColour.y;
+	float zRotateInput = inputColour.z;
 	// Y coordinate doesn't change.
 	outCoord.y = fragCoord.y;
 	// Move the x coordinate to its new value.
-	outCoord.x = fragCoord.x + 2.0*numOfTiles*iResolution.x*(azimuthInput - 0.5);
+	outCoord.x = fragCoord.x + 2.0*iResolution.x*(azimuthInput - 0.5);
 	// Correct it if the coordinate is off screen
 	if (outCoord.x < 0.0) {
 		outCoord.x += iResolution.x;
@@ -750,16 +753,42 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	else if (iResolution.x < outCoord.x) {
 		outCoord.x -= iResolution.x;
 	}
-	ray.x = cos(pos.x*PI + PI/2.0);
-	ray.y = pos.y;
-	ray.z = cos(pos.x * PI) * cos(pos.y * PI);
 
-	pos.y = ray.y;
-	pos.x = (acos(ray.x) - PI/2.0) / PI;
+	pos.x = outCoord.x / iResolution.x;
+	pos.y = outCoord.y / iResolution.y;
+
+	float latitude = pos.y * PI - PI/2.0;
+	float longitude = tilesInput * pos.x * 2.0*PI - PI;
+	// Create a ray from the pixel coordinate
+	ray.x = cos(latitude) * sin(longitude);
+	ray.y = sin(latitude);
+	ray.z = cos(latitude) * cos(longitude);
+
+
+
+	if (xRotateInput != 0.5) {
+		ray = PRotateX(ray, xRotateInput * 2*PI - PI);
+	}
+	if (yRotateInput != 0.5) {
+		ray = PRotateY(ray, yRotateInput * 2*PI - PI);
+	}
+	if (zRotateInput != 0.5) {
+		ray = PRotateZ(ray, zRotateInput * 2*PI - PI);
+	}
+	latitude = asin(ray.z);
+	longitude = atan2(ray.x, ray.y);
+	pos.x = (longitude + PI)/(2.0*PI);
+	pos.y = (latitude + PI/2.0)/PI;
+
+	// pos.y = ray.y;
+	//pos.x = (acos(ray.x) - PI/2.0) / PI;
 	outCoord.y = pos.y * iResolution.y;
 	outCoord.x = pos.x * iResolution.x;
 	// Get the color at the new coordinate
 	vec3 col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
+	if (latitude < radians(-90.0) || radians(90.0) < latitude) {
+		col = vec3(0,255,0);
+	}
 	// Debug information
 	if (DEBUG) {
 		// Plot Mouse Pos
@@ -769,17 +798,46 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 		if (iMouse.z > 0.0)
 		{
 			// Print Mouse X
-			vec2 vPixelCoord2 = iMouse.zw + vec2(-52.0, 6.0);
-			vec2 m_pos = 2.0*(iMouse.zw / iResolution.xy - 0.5);
+			vec2 m_coord = iMouse.zw + vec2(-52.0, 6.0);
+			vec2 m_pos;
 			vec3 m_ray;
-			m_ray.x = cos(m_pos.x*2.0*PI + PI/2);
-			m_ray.y = -2.0 * m_pos.y;
-			m_ray.z = cos(m_pos.x * 2.0 * PI) * cos(m_pos.y * PI);
-			float fValue2 = m_ray.y;
+			m_pos.x = outCoord.x / iResolution.x;
+			m_pos.y = outCoord.y / iResolution.y;
+			// Create a ray from the pixel coordinate
+			float m_latitude = m_pos.y * PI - PI/2.0;
+			float m_longitude = m_pos.x * 2.0*PI - PI;
+			m_ray.x = cos(m_latitude) * sin(m_longitude);
+			m_ray.y = cos(m_latitude) * cos(m_longitude);
+			m_ray.z = sin(m_latitude);
+
+			if (xRotateInput != 0.5) {
+				m_ray = PRotateX(m_ray, xRotateInput * 2*PI - PI);
+			}
+			if (yRotateInput != 0.5) {
+				m_ray = PRotateY(m_ray, yRotateInput * 2*PI - PI);
+			}
+			if (zRotateInput != 0.5) {
+				m_ray = PRotateZ(m_ray, zRotateInput * 2*PI - PI);
+			}
+			m_latitude = asin(ray.z);
+			m_longitude = asin(ray.x / cos(m_latitude));
+			m_pos.x = (m_latitude + PI)/(2.0*PI);
+			m_pos.y = (m_longitude + PI/2.0)/PI;
+
+			// if (xRotateInput != 0.5) {
+			// 	m_ray = PRotateX(m_ray, xRotateInput * 2*PI - PI);
+			// }
+			// if (yRotateInput != 0.5) {
+			// 	m_ray = PRotateY(m_ray, yRotateInput * 2*PI - PI);
+			// }
+			// if (zRotateInput != 0.5) {
+			// 	m_ray = PRotateZ(m_ray, zRotateInput * 2*PI - PI);
+			// }
+			float fValue2 = degrees(m_longitude);
 			float fDigits = 1.0;
 			float fDecimalPlaces = 3.0;
 			vec2 vFontSize = vec2(50.0, 100.0);
-			float fIsDigit2 = PrintValue((fragCoord - vPixelCoord2) / vFontSize, fValue2, fDigits, fDecimalPlaces);
+			float fIsDigit2 = PrintValue((fragCoord - m_coord) / vFontSize, fValue2, fDigits, fDecimalPlaces);
 			col = mix(col, vec3(0.0, 1.0, 0.0), fIsDigit2);
 		}
 	} // Debug Information
@@ -821,14 +879,14 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 
 	// Parameters
 	//SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEX,        "Azimuth",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEY,		"Tiles/10",		 FF_TYPE_STANDARD, 0.11f); m_UserMouseY = 0.11f;
+	SetParamInfo(FFPARAM_MOUSEX,        "Yaw",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
+	SetParamInfo(FFPARAM_MOUSEY,		"Tiles/10",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTX,    "X mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTY,    "Y mouse left",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
-	/*SetParamInfo(FFPARAM_RED,           "Red",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
+	SetParamInfo(FFPARAM_RED,           "Red",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
 	SetParamInfo(FFPARAM_GREEN,         "Green",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
 	SetParamInfo(FFPARAM_BLUE,          "Blue",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;
-	SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;*/
+	//SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
 
 	// Set defaults
 	SetDefaults();
@@ -1239,7 +1297,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
 			return m_DisplayValue;
 
-		/*case FFPARAM_RED:
+		case FFPARAM_RED:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
 			return m_DisplayValue;
 
@@ -1251,7 +1309,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserBlue*256.0));
 			return m_DisplayValue;
 
-		case FFPARAM_ALPHA:
+		/*case FFPARAM_ALPHA:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserAlpha*256.0));
 			return m_DisplayValue;*/
 
@@ -1318,7 +1376,7 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		case FFPARAM_MOUSELEFTY:
 			return m_UserMouseLeftY;
 
-		/*case FFPARAM_RED:
+		case FFPARAM_RED:
 			return m_UserRed;
 
 		case FFPARAM_GREEN:
@@ -1327,7 +1385,7 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		case FFPARAM_BLUE:
 			return m_UserBlue;
 
-		case FFPARAM_ALPHA:
+		/*case FFPARAM_ALPHA:
 			return m_UserAlpha;*/
 
 		default:
@@ -1358,7 +1416,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserMouseLeftY = value;
 				break;
 
-			/*case FFPARAM_RED:
+			case FFPARAM_RED:
 				m_UserRed = value;
 				break;
 
@@ -1370,7 +1428,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserBlue = value;
 				break;
 
-			case FFPARAM_ALPHA:
+			/*case FFPARAM_ALPHA:
 				m_UserAlpha = value;
 				break;*/
 

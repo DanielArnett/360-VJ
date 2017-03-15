@@ -728,7 +728,7 @@ vec3 PRotateZ(vec3 p, float theta)
    return(q);
 }
 float PI = 3.14159265359;
-bool DEBUG = true;
+bool DEBUG = false;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
 
@@ -739,9 +739,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	vec2 pos;
 	vec3 ray;
 	vec2 outCoord;
-	float xRotateInput = inputColour.x;
-	float yRotateInput = inputColour.y;
-	float zRotateInput = inputColour.z;
+	float xRotateInput = inputColour.x - 0.5;
+	float yRotateInput = inputColour.y - 0.5 ;
+	float zRotateInput = inputColour.z - 0.5;
 	// Y coordinate doesn't change.
 	outCoord.y = fragCoord.y;
 	// Move the x coordinate to its new value.
@@ -766,17 +766,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 
 
-	if (xRotateInput != 0.5) {
-		ray = PRotateX(ray, xRotateInput * 2*PI - PI);
-	}
+	// if (xRotateInput != 0.5) {
+	// 	ray = PRotateX(ray, xRotateInput * 2*PI);
+	// }
 	if (yRotateInput != 0.5) {
-		ray = PRotateY(ray, yRotateInput * 2*PI - PI);
+		ray = PRotateY(ray, yRotateInput * 2*PI);
 	}
 	if (zRotateInput != 0.5) {
-		ray = PRotateZ(ray, zRotateInput * 2*PI - PI);
+		ray = PRotateZ(ray, zRotateInput * 2*PI);
 	}
-	latitude = asin(ray.z);
-	longitude = atan2(ray.x, ray.y);
+	latitude = asin(ray.y);
+	longitude = atan2(ray.x, ray.z);
 	pos.x = (longitude + PI)/(2.0*PI);
 	pos.y = (latitude + PI/2.0)/PI;
 
@@ -786,7 +786,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	outCoord.x = pos.x * iResolution.x;
 	// Get the color at the new coordinate
 	vec3 col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
-	if (latitude < radians(-90.0) || radians(90.0) < latitude) {
+	if (false) {
 		col = vec3(0,255,0);
 	}
 	// Debug information
@@ -814,15 +814,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 				m_ray = PRotateX(m_ray, xRotateInput * 2*PI - PI);
 			}
 			if (yRotateInput != 0.5) {
-				m_ray = PRotateY(m_ray, yRotateInput * 2*PI - PI);
+				m_ray = PRotateY(ray, yRotateInput * 2*PI - PI);
 			}
 			if (zRotateInput != 0.5) {
-				m_ray = PRotateZ(m_ray, zRotateInput * 2*PI - PI);
+				m_ray = PRotateZ(ray, zRotateInput * 2*PI - PI);
 			}
-			m_latitude = asin(ray.z);
-			m_longitude = asin(ray.x / cos(m_latitude));
-			m_pos.x = (m_latitude + PI)/(2.0*PI);
-			m_pos.y = (m_longitude + PI/2.0)/PI;
+			m_latitude = asin(m_ray.z);
+			m_longitude = atan2(m_ray.y, m_ray.x);
+			m_pos.x = (m_longitude + PI)/(2.0*PI);
+			m_pos.y = (m_latitude + PI/2.0)/PI;
 
 			// if (xRotateInput != 0.5) {
 			// 	m_ray = PRotateX(m_ray, xRotateInput * 2*PI - PI);
@@ -833,7 +833,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 			// if (zRotateInput != 0.5) {
 			// 	m_ray = PRotateZ(m_ray, zRotateInput * 2*PI - PI);
 			// }
-			float fValue2 = degrees(m_longitude);
+			float fValue2 = m_ray.y;
 			float fDigits = 1.0;
 			float fDecimalPlaces = 3.0;
 			vec2 vFontSize = vec2(50.0, 100.0);

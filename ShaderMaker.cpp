@@ -678,7 +678,8 @@ float PI = 3.14159265359;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
 	// Given a destination pixel on the screen, we need to find the color of a source pixel used to fill this destination pixel.
-
+	// The color of the destination pixel
+	vec3 col = texture2D(iChannel0, fragCoord.xy / iResolution.xy).xyz;
 	// Position of the destination pixel in xy coordinates in the range [0,1]
 	vec2 pos;
 	// Position of the source pixel in xy coordinates
@@ -705,18 +706,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 	// Rotate the ray based on the user input
 	if (xRotateInput != 0.5) {
-		ray = PRotateX(ray, xRotateInput * 2*PI);
+		ray = PRotateX(ray, xRotateInput * 2.0*PI);
 	}
 	if (yRotateInput != 0.5) {
-		ray = PRotateY(ray, yRotateInput * 2*PI);
+		ray = PRotateY(ray, yRotateInput * 2.0*PI);
 	}
 	if (zRotateInput != 0.5) {
-		ray = PRotateZ(ray, zRotateInput * 2*PI);
+		ray = PRotateZ(ray, zRotateInput * 2.0*PI);
 	}
 
 	// Convert back to latitude and longitude
 	latitude = asin(ray.y);
-	longitude = atan2(ray.x, ray.z);
+	// longitude = atan2(ray.x, ray.z);
+	longitude = PI/2.0;
 	// Convert back to the normalized pixel coordinate
 	pos.x = (longitude + PI)/(2.0*PI);
 	pos.y = (latitude + PI/2.0)/PI;
@@ -726,7 +728,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	outCoord.x = pos.x * iResolution.x;
 
 	// Get the color from that coordinate and set the color of the destination pixel to the value from the source pixel we've found.
-	vec3 col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
+	col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
 	// Set the pixel value
 	fragColor = vec4(col, 1.0);
 }

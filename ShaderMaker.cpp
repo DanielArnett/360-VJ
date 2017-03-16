@@ -717,8 +717,22 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 	// Convert back to latitude and longitude
 	latitude = asin(ray.y);
-	// longitude = atan2(ray.x, ray.z);
-	longitude = PI/2.0;
+	// Manually implement `longitude = atan2(ray.x, ray.z);`
+	if (ray.z > 0.0) {
+		longitude = atan(ray.x/ray.z);
+	}
+	else if (ray.z < 0.0 && ray.x >= 0.0) {
+		longitude = atan(ray.x/ray.z) + PI;
+	}
+	else if (ray.z < 0.0 && ray.x < 0.0) {
+		longitude = atan(ray.x/ray.z) - PI;
+	}
+	else if (ray.z == 0.0 && ray.x > 0.0) {
+		longitude = PI/2.0;
+	}
+	else if (ray.z == 0.0 && ray.x < 0.0) {
+		longitude = -PI/2.0;
+	}
 	// Convert back to the normalized pixel coordinate
 	pos.x = (longitude + PI)/(2.0*PI);
 	pos.y = (latitude + PI/2.0)/PI;

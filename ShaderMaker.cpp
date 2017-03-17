@@ -771,7 +771,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	longitude += rotateYInput * 2.0 * PI;
 
 	r = 1.0 - latitude/(PI / 2.0);
-
+	if (r > 1.0) {
+		return;
+	}
 	phi = atan2(p.y, p.x);
 	if (phi < 0.0) {
 		phi += 2.0*PI;
@@ -779,8 +781,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	u = iResolution.x * r * cos(phi);
 	v = iResolution.y * r * sin(phi);
 	vec2 outCoord;
-	outCoord.x = float(u);
-	outCoord.y = float(v);
+	outCoord.x = float(u) / 2.0 + iResolution.x / 2.0;
+	outCoord.y = float(v) / 2.0 + iResolution.x / 2.0;
 
 	col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
 

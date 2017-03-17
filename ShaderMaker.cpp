@@ -68,8 +68,8 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 static CFFGLPluginInfo PluginInfo (
 	ShaderMaker::CreateInstance,		// Create method
-	"STOF",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
-	"360 to Fisheye",					// *** Plugin name - make it different for each plugin
+	"TEST",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
+	" Fisheye Rotation",					// *** Plugin name - make it different for each plugin
 	1,						   			// API major version number
 	006,								// API minor version number
 	1,									// *** Plugin major version number
@@ -750,7 +750,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	int v;
 	vec3 p;
 	vec3 col;
+	// 
 
+	//
 	if (r == 0.0) {
 		longitude = 0.0;
 	}
@@ -775,7 +777,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	longitude = -acos(p.x / cos(latitude));
 	longitude += rotateYInput * 2.0 * PI;
 	// Rotate by a quarter turn to align the fisheye image with the center of the 360 image
-	longitude += PI/2.0;
+	//longitude += PI/2.0;
 	// phi = atan(p.y, p.x);
 	// if (phi < 0.0) {
 	// 	phi += 2.0*PI;
@@ -787,6 +789,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 	// u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
 	// v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
+	r = 1.0 - latitude/(PI / 2.0);
+
 	u = iResolution.x * (longitude + PI) / (2 * PI);
 	v = iResolution.y * (latitude + PI/2) / PI;
 	vec2 outCoord;

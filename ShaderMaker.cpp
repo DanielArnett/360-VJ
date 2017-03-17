@@ -52,10 +52,10 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 #endif
 
 //#define FFPARAM_SPEED       (0)
-//#define FFPARAM_MOUSEX      (0)
+#define FFPARAM_MOUSEX      (0)
 //#define FFPARAM_MOUSEY      (1)
-#define FFPARAM_MOUSELEFTX  (0)
-#define FFPARAM_MOUSELEFTY  (1)
+#define FFPARAM_MOUSELEFTX  (1)
+#define FFPARAM_MOUSELEFTY  (2)
 // #define FFPARAM_RED         (2)
 // #define FFPARAM_GREEN       (3)
 // #define FFPARAM_BLUE        (4)
@@ -690,13 +690,10 @@ float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in v
 vec3 PRotateX(vec3 p, float theta)
 {
    vec3 q;
-	 float r = sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
-  //  q.x = p.x;
-  //  q.y = p.y * cos(theta) + p.z * sin(theta);
-  //  q.z = -p.y * sin(theta) + p.z * cos(theta);
-	q.x = p.x;
-	q.y = r*cos(theta) + p.y;
-	q.z = r*sin(theta) + p.z;
+   q.x = p.x;
+   q.y = p.y * cos(theta) + p.z * sin(theta);
+   q.z = -p.y * sin(theta) + p.z * cos(theta);
+   return(q);
   return(q);
 }
 vec3 PTranslateX(vec3 p, float theta)
@@ -733,6 +730,7 @@ int DEBUG = 0;
 float PI = 3.14159;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+	float rotateXInput = iMouse.x / iResolution.x - 0.5;
 	float rotateZInput = (iMouse.z / iResolution.x) - 0.5; // -0.5 to 0.5
 	float rotateYInput = (iMouse.w / iResolution.y) - 0.5; // -0.5 to 0.5
 	vec2 vFontSize = vec2(50.0, 100.0);
@@ -750,9 +748,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	int v;
 	vec3 p;
 	vec3 col;
-	// 
-
-	//
 	if (r == 0.0) {
 		longitude = 0.0;
 	}
@@ -769,30 +764,20 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	p.x = cos(latitude) * cos(longitude);
 	p.y = cos(latitude) * sin(longitude);
 	p.z = sin(latitude);
-	float temp = p.y;
-	p.z = p.y;
-	p.y = p.z;
-	// p = PRotateX(p, PI * iMouse.x / iResolution.x);
+	p = PRotateX(p, PI * rotateXInput * 2.0);
+	p = PRotateY(p, PI * rotateYInput * 2.0);
 	latitude = asin(p.z);
 	longitude = -acos(p.x / cos(latitude));
 	longitude += rotateYInput * 2.0 * PI;
-	// Rotate by a quarter turn to align the fisheye image with the center of the 360 image
-	//longitude += PI/2.0;
-	// phi = atan(p.y, p.x);
-	// if (phi < 0.0) {
-	// 	phi += 2.0*PI;
-	// }
-	// p.x = cos(phi) * tan(PI / 2.0 - latitude);
-	// p.y = sin(phi) * tan(PI / 2.0 - latitude);
-	// percentX = p.x;
-	// percentY = p.y;
 
-	// u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
-	// v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
 	r = 1.0 - latitude/(PI / 2.0);
 
-	u = iResolution.x * (longitude + PI) / (2 * PI);
-	v = iResolution.y * (latitude + PI/2) / PI;
+	phi = atan2(p.y, p.x);
+	if (phi < 0.0) {
+		phi += 2.0*PI;
+	}
+	u = iResolution.x * r * cos(phi);
+	v = iResolution.y * r * sin(phi);
 	vec2 outCoord;
 	outCoord.x = float(u);
 	outCoord.y = float(v);
@@ -902,8 +887,8 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 
 	// Parameters
 	//SetParamInfo(FFPARAM_SPEED,         "Speed",         FF_TYPE_STANDARD, 0.5f); m_UserSpeed = 0.5f;
-	/*SetParamInfo(FFPARAM_MOUSEX,        "iMouse.x",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
-	SetParamInfo(FFPARAM_MOUSEY,		"iMouse.y",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;*/
+	SetParamInfo(FFPARAM_MOUSEX,        "Pitch",       FF_TYPE_STANDARD, 0.5f); m_UserMouseX = 0.5f;
+	//SetParamInfo(FFPARAM_MOUSEY,		"iMouse.y",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTX,    "Roll",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTY,    "Yaw",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
 	/*SetParamInfo(FFPARAM_RED,           "Unused",           FF_TYPE_STANDARD, 1.0f); m_UserRed = 1.0f;
@@ -1304,11 +1289,11 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserSpeed*100.0));
 			return m_DisplayValue;*/
 
-		/*case FFPARAM_MOUSEX:
+		case FFPARAM_MOUSEX:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseX*m_vpWidth));
 			return m_DisplayValue;
 
-		case FFPARAM_MOUSEY:
+		/*case FFPARAM_MOUSEY:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseY*m_vpHeight));
 			return m_DisplayValue;*/
 
@@ -1387,10 +1372,10 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		/*case FFPARAM_SPEED:
 			return  m_UserSpeed;*/
 
-		/*case FFPARAM_MOUSEX:
+		case FFPARAM_MOUSEX:
 			return  m_UserMouseX;
 
-		case FFPARAM_MOUSEY:
+		/*case FFPARAM_MOUSEY:
 			return  m_UserMouseY;*/
 
 		case FFPARAM_MOUSELEFTX:
@@ -1423,11 +1408,11 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 			/*case FFPARAM_SPEED:
 				m_UserSpeed = value;
 				break;*/
-			/*case FFPARAM_MOUSEX:
+			case FFPARAM_MOUSEX:
 				m_UserMouseX = value;
 				break;
 
-			case FFPARAM_MOUSEY:
+			/*case FFPARAM_MOUSEY:
 				m_UserMouseY = value;
 				break;*/
 

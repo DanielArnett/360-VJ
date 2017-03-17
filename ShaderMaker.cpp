@@ -68,15 +68,15 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 static CFFGLPluginInfo PluginInfo (
 	ShaderMaker::CreateInstance,		// Create method
-	"TEST",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
-	" Fisheye Rotation",					// *** Plugin name - make it different for each plugin
+	"FROT",								// *** Plugin unique ID (4 chars) - this must be unique for each plugin
+	"Fisheye Rotation",					// *** Plugin name - make it different for each plugin
 	1,						   			// API major version number
 	006,								// API minor version number
 	1,									// *** Plugin major version number
 	004,								// *** Plugin minor version number
 	FF_EFFECT,							// Plugin type can always be an effect
 	// FF_SOURCE,						// or change this to FF_SOURCE for shaders that do not use a texture
-	"Converts a 360 VR, Equirectangular image into a fisheye image suitable for a planetarium dome.", // *** Plugin description - you can expand on this
+	"Rotates a full circle fisheye image such as one for use in planetarium domes.", // *** Plugin description - you can expand on this
 	"by Daniel Arnett"			// *** About - use your own name and details
 );
 

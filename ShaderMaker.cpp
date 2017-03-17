@@ -643,50 +643,6 @@ void main( void ) {
 
 }*/
 
-// Created by inigo quilez - iq/2013
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-float DigitBin(const int x)
-{
-	return x == 0 ? 480599.0 : x == 1 ? 139810.0 : x == 2 ? 476951.0 : x == 3 ? 476999.0 : x == 4 ? 350020.0 : x == 5 ? 464711.0 : x == 6 ? 464727.0 : x == 7 ? 476228.0 : x == 8 ? 481111.0 : x == 9 ? 481095.0 : 0.0;
-}
-
-float PrintValue(const vec2 vStringCoords, const float fValue, const float fMaxDigits, const float fDecimalPlaces)
-{
-	if ((vStringCoords.y < 0.0) || (vStringCoords.y >= 1.0)) return 0.0;
-	float fLog10Value = log2(abs(fValue)) / log2(10.0);
-	float fBiggestIndex = max(floor(fLog10Value), 0.0);
-	float fDigitIndex = fMaxDigits - floor(vStringCoords.x);
-	float fCharBin = 0.0;
-	if (fDigitIndex >(-fDecimalPlaces - 1.01)) {
-		if (fDigitIndex > fBiggestIndex) {
-			if ((fValue < 0.0) && (fDigitIndex < (fBiggestIndex + 1.5))) fCharBin = 1792.0;
-		}
-		else {
-			if (fDigitIndex == -1.0) {
-				if (fDecimalPlaces > 0.0) fCharBin = 2.0;
-			}
-			else {
-				float fReducedRangeValue = fValue;
-				if (fDigitIndex < 0.0) { fReducedRangeValue = fract(fValue); fDigitIndex += 1.0; }
-				float fDigitValue = (abs(fReducedRangeValue / (pow(10.0, fDigitIndex))));
-				fCharBin = DigitBin(int(floor(mod(fDigitValue, 10.0))));
-			}
-		}
-	}
-	return floor(mod((fCharBin / pow(2.0, floor(fract(vStringCoords.x) * 4.0) + (floor(vStringCoords.y * 5.0) * 4.0))), 2.0));
-}
-
-// ---- 8< -------- 8< -------- 8< -------- 8< ----
-
-
-// Original interface
-
-float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in vec2 vFontSize, const in float fValue, const in float fMaxDigits, const in float fDecimalPlaces)
-{
-	vec2 vStringCharCoords = (fragCoord.xy - vPixelCoords) / vFontSize;
-
-	return PrintValue(vStringCharCoords, fValue, fMaxDigits, fDecimalPlaces);
-}
 vec3 PRotateX(vec3 p, float theta)
 {
    vec3 q;
@@ -695,15 +651,6 @@ vec3 PRotateX(vec3 p, float theta)
    q.z = -p.y * sin(theta) + p.z * cos(theta);
    return(q);
   return(q);
-}
-vec3 PTranslateX(vec3 p, float theta)
-{
-   vec3 q;
-
-   q.x = p.x;
-   q.y = p.y + p.z * tan(theta);
-   q.z = p.z;
-   return(q);
 }
 
 vec3 PRotateY(vec3 p, float theta)
@@ -726,28 +673,31 @@ vec3 PRotateZ(vec3 p, float theta)
    return(q);
 }
 
-int DEBUG = 0;
-float PI = 3.14159;
+float PI = 3.141592653589;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+	// Get inputs from Resolume
 	float rotateXInput = iMouse.x / iResolution.x - 0.5;
 	float rotateZInput = (iMouse.z / iResolution.x) - 0.5; // -0.5 to 0.5
 	float rotateYInput = (iMouse.w / iResolution.y) - 0.5; // -0.5 to 0.5
-	vec2 vFontSize = vec2(50.0, 100.0);
+	// Normalize the position of the destination pixel from -1.0 to 1.0
 	vec2 pos = 2.0*(fragCoord.xy / iResolution.xy - 0.5);
+	// Radius of the pixel from the center
 	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
+	// Don't bother with pixels outside of the fisheye circle
 	if (1.0 < r) {
 		return;
 	}
+	float phi;
 	float latitude = (1.0 - r)*(PI / 2.0);
 	float longitude;
-	float phi;
-	float percentX;
-	float percentY;
 	int u;
 	int v;
+	// The ray into the scene
 	vec3 p;
+	// Output color. In our case the color of the source pixel
 	vec3 col;
+	// Calculate longitude
 	if (r == 0.0) {
 		longitude = 0.0;
 	}
@@ -757,101 +707,58 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	else if (pos.x >= 0.0) {
 		longitude = asin(pos.y / r);
 	}
+	// Perform z rotation.
 	longitude += rotateZInput * 2.0 * PI;
 	if (longitude < 0.0) {
 		longitude += 2.0*PI;
 	}
+	// Turn the latitude and longitude into a 3D ray
 	p.x = cos(latitude) * cos(longitude);
 	p.y = cos(latitude) * sin(longitude);
 	p.z = sin(latitude);
-	p = PRotateX(p, PI * rotateXInput * 2.0);
-	p = PRotateY(p, PI * rotateYInput * 2.0);
+	// Rotate the value based on the user input
+	p = PRotateX(p, 2.0 * PI * rotateXInput);
+	p = PRotateY(p, 2.0 * PI * rotateYInput);
+	// Get the source pixel latitude and longitude
 	latitude = asin(p.z);
 	longitude = -acos(p.x / cos(latitude));
-	longitude += rotateYInput * 2.0 * PI;
-
+	// Get the source pixel radius from center
 	r = 1.0 - latitude/(PI / 2.0);
+	// Disregard all images outside of the fisheye circle
 	if (r > 1.0) {
 		return;
 	}
-	phi = atan2(p.y, p.x);
+	
+	// Manually implement `phi = atan2(p.y, p.x);`
+	if (p.x > 0.0) {
+		phi = atan(p.y / p.x);
+	}
+	else if (p.x < 0.0 && p.y >= 0.0) {
+		phi = atan(p.y / p.x) + PI;
+	}
+	else if (p.x < 0.0 && p.y < 0.0) {
+		phi = atan(p.y / p.x) - PI;
+	}
+	else if (p.x == 0.0 && p.y > 0.0) {
+		phi = PI / 2.0;
+	}
+	else if (p.x == 0.0 && p.y < 0.0) {
+		phi = -PI / 2.0;
+	}
 	if (phi < 0.0) {
 		phi += 2.0*PI;
 	}
+
+	// Get the position of the output pixel
 	u = iResolution.x * r * cos(phi);
 	v = iResolution.y * r * sin(phi);
+	// Set the source pixel's coordinates
 	vec2 outCoord;
 	outCoord.x = float(u) / 2.0 + iResolution.x / 2.0;
 	outCoord.y = float(v) / 2.0 + iResolution.x / 2.0;
-
+	// Get the color of the source pixel
 	col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
-
-	// Debug information
-	if (DEBUG == 1) {
-		// Plot Mouse Pos
-		float pointSize = 20.0;
-		float fDistToPointB = length(vec2(iMouse.x, iMouse.y) - fragCoord.xy) - pointSize;
-		col = mix(col, vec3(0.0, 1.0, 0.0), (1.0 - clamp(fDistToPointB, 0.0, 1.0)));
-		if (iMouse.x > 0.0)
-		{
-			// Print Mouse X
-			vec2 vPixelCoord2 = iMouse.xy + vec2(-52.0, 6.0);
-			vec2 mousePos = 2.0*(iMouse.xy / iResolution.xy - 0.5);
-			float mouseR = sqrt(mousePos.x*mousePos.x + mousePos.y*mousePos.y);
-			float mouseLat = (1.0 - mouseR)*(PI / 2.0);
-			float mouseLong;
-			vec3 mouseP;
-			float mousePhi;
-			float mousePercentX;
-			float mousePercentY;
-			int mouseU;
-			int mouseV;
-			vec2 mouseOutCoord;
-			if (mouseR == 0.0) {
-				mouseLong = 0.0;
-			}
-			else if (mousePos.x < 0.0) {
-				mouseLong = PI - asin(mousePos.y / mouseR);
-			}
-			else if (mousePos.x >= 0.0) {
-				mouseLong = asin(mousePos.y / mouseR);
-			}
-			if (mouseLong < 0.0) {
-				mouseLong += 2.0*PI;
-			}
-			mouseP.x = cos(mouseLat) * cos(mouseLong);
-			mouseP.y = cos(mouseLat) * sin(mouseLong);
-			mouseP.z = sin(mouseLat);
-			// if (mousePos.x < 0.0) {
-			// 	mouseP.x = -1 - mouseP.x;
-			// }
-			// if (mousePos.y < 0.0) {
-			// 	mouseP.y = -1 - mouseP.y;
-			// }
-			mousePhi = atan(mouseP.y, mouseP.x);
-			if (mousePhi < 0.0) {
-				mousePhi += 2.0*PI;
-			}
-			mouseP.x = cos(mousePhi) * tan(PI / 2.0 - mouseLat);
-			mouseP.y = sin(mousePhi) * tan(PI / 2.0 - mouseLat);
-			mouseP.z = 1.0;
-			mousePercentX = mouseP.x / (iResolution.x / 2.0);
-			mousePercentY = mouseP.y / (iResolution.y / 2.0);
-			mouseU = int(mousePercentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
-			//mouseU = mousePercentX;
-			mouseV = int(mousePercentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
-			mouseOutCoord.x = float(mouseU) / iResolution.x;
-			mouseOutCoord.y = float(mouseV) / iResolution.y;
-			float fValue2 = inputColour.a;
-			float fDigits = 1.0;
-			float fDecimalPlaces = 3.0;
-			float fIsDigit2 = PrintValue((fragCoord - vPixelCoord2) / vFontSize, fValue2, fDigits, fDecimalPlaces);
-			col = mix(col, vec3(0.0, 1.0, 0.0), fIsDigit2);
-		}
-		// Print Date
-		col = mix(col, vec3(1.0, 1.0, 0.0), PrintValue((fragCoord - vec2(0.0, 5.0)) / vFontSize, iResolution.x, 4.0, 0.0));
-	} // Debug Information
-
+	// Set the color of the destination pixel to the color of the source pixel.
 	fragColor = vec4(col, 1.0);
 }
 

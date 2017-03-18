@@ -691,12 +691,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	float phi;
 	float latitude = (1.0 - r)*(PI / 2.0);
 	float longitude;
-	int u;
-	int v;
+	float u;
+	float v;
 	// The ray into the scene
 	vec3 p;
 	// Output color. In our case the color of the source pixel
 	vec3 col;
+	// Set the source pixel's coordinates
+	vec2 outCoord;
 	// Calculate longitude
 	if (r == 0.0) {
 		longitude = 0.0;
@@ -728,7 +730,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	if (r > 1.0) {
 		return;
 	}
-	
+
 	// Manually implement `phi = atan2(p.y, p.x);`
 	if (p.x > 0.0) {
 		phi = atan(p.y / p.x);
@@ -752,14 +754,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	// Get the position of the output pixel
 	u = iResolution.x * r * cos(phi);
 	v = iResolution.y * r * sin(phi);
-	// Set the source pixel's coordinates
-	vec2 outCoord;
 	outCoord.x = float(u) / 2.0 + iResolution.x / 2.0;
 	outCoord.y = float(v) / 2.0 + iResolution.x / 2.0;
 	// Get the color of the source pixel
 	col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
 	// Set the color of the destination pixel to the color of the source pixel.
 	fragColor = vec4(col, 1.0);
+	// fragColor = vec4(0.0,255.0,0.0,1.0);
 }
 
 /*

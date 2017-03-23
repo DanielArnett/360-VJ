@@ -690,13 +690,10 @@ float PrintValue(const in vec2 fragCoord, const in vec2 vPixelCoords, const in v
 vec3 PRotateX(vec3 p, float theta)
 {
    vec3 q;
-	 float r = sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
-  //  q.x = p.x;
-  //  q.y = p.y * cos(theta) + p.z * sin(theta);
-  //  q.z = -p.y * sin(theta) + p.z * cos(theta);
-	q.x = p.x;
-	q.y = r*cos(theta) + p.y;
-	q.z = r*sin(theta) + p.z;
+   q.x = p.x;
+   q.y = p.y * cos(theta) + p.z * sin(theta);
+   q.z = -p.y * sin(theta) + p.z * cos(theta);
+   return(q);
   return(q);
 }
 vec3 PTranslateX(vec3 p, float theta)
@@ -786,7 +783,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	p.x = cos(latitude) * cos(longitude);
 	p.y = cos(latitude) * sin(longitude);
 	p.z = sin(latitude);
-
+	if (rotateXInput != 0.0) {
+		p = PTranslateX(p, radians(rotateXInput));
+	}
+	if (rotateYInput != 0.0) {
+		p = PRotateY(p, radians(rotateYInput));
+	}
+	if (rotateZInput != 0.0) {
+		p = PRotateZ(p, radians(rotateZInput));
+	}
 	phi = atan(p.y, p.x);
 	if (phi < 0.0) {
 		phi += 2.0*PI;
@@ -802,19 +807,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 	percentX = p.x / ((float(flatImgWidth)) / 2.0);
 	percentY = p.y / ((float(flatImgHeight)) / 2.0);
-	if (rotateXInput != 0.0) {
-		p = PTranslateX(p, radians(rotateXInput));
-	}
-	if (rotateYInput != 0.0) {
-		p = PRotateY(p, radians(rotateYInput));
-	}
-	if (rotateZInput != 0.0) {
-		p = PRotateZ(p, radians(rotateZInput));
-	}
+
 
 	u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
 	v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
 	if (u < 0 || int(iResolution.x) < u || v < 0 || int(iResolution.y) < v) {
+		fragColor = vec4(0.0,0.0,0.0,1.0);
 		return;
 	}
 	vec2 outCoord;

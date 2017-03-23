@@ -56,8 +56,8 @@ int (*cross_secure_sprintf)(char *, size_t, const char *, ...) = snprintf;
 //#define FFPARAM_MOUSEY      (1)
 #define FFPARAM_MOUSELEFTX  (1)
 #define FFPARAM_MOUSELEFTY  (2)
-// #define FFPARAM_RED         (2)
-// #define FFPARAM_GREEN       (3)
+#define FFPARAM_RED         (3)
+#define FFPARAM_GREEN       (4)
 // #define FFPARAM_BLUE        (4)
 // #define FFPARAM_ALPHA       (5)
 
@@ -676,6 +676,7 @@ vec3 PRotateZ(vec3 p, float theta)
 float PI = 3.141592653589;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+	vec2 shiftXYInput = (vec2(2.0,2.0) * vec2(inputColour.r, inputColour.g) - vec2(1.0,1.0)) * iResolution.xy;
 	// Get inputs from Resolume
 	float rotateXInput = iMouse.x / iResolution.x - 0.5;
 	float rotateZInput = (iMouse.z / iResolution.x) - 0.5; // -0.5 to 0.5
@@ -756,6 +757,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	v = iResolution.y * r * sin(phi);
 	outCoord.x = float(u) / 2.0 + iResolution.x / 2.0;
 	outCoord.y = float(v) / 2.0 + iResolution.x / 2.0;
+	outCoord += shiftXYInput;
 	// Get the color of the source pixel
 	col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
 	// Set the color of the destination pixel to the color of the source pixel.
@@ -801,9 +803,9 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 	//SetParamInfo(FFPARAM_MOUSEY,		"iMouse.y",		 FF_TYPE_STANDARD, 0.5f); m_UserMouseY = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTX,    "Roll",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftX = 0.5f;
 	SetParamInfo(FFPARAM_MOUSELEFTY,    "Yaw",  FF_TYPE_STANDARD, 0.5f); m_UserMouseLeftY = 0.5f;
-	/*SetParamInfo(FFPARAM_RED,           "Unused",           FF_TYPE_STANDARD, 1.0f); m_UserRed = 1.0f;
-	SetParamInfo(FFPARAM_GREEN,         "Unused",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
-	SetParamInfo(FFPARAM_BLUE,          "Unused",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;*/
+	SetParamInfo(FFPARAM_RED,           "X Shift",           FF_TYPE_STANDARD, 0.5f); m_UserRed = 0.5f;
+	SetParamInfo(FFPARAM_GREEN,         "Y Shift",         FF_TYPE_STANDARD, 0.5f); m_UserGreen = 0.5f;
+	/*SetParamInfo(FFPARAM_BLUE,          "Unused",          FF_TYPE_STANDARD, 0.5f); m_UserBlue = 0.5f;*/
 	// SetParamInfo(FFPARAM_ALPHA,         "Alpha",         FF_TYPE_STANDARD, 1.0f); m_UserAlpha = 1.0f;
 
 	// Set defaults
@@ -1215,7 +1217,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserMouseLeftY*m_vpHeight));
 			return m_DisplayValue;
 
-		/*case FFPARAM_RED:
+		case FFPARAM_RED:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserRed*256.0));
 			return m_DisplayValue;
 
@@ -1223,7 +1225,7 @@ char * ShaderMaker::GetParameterDisplay(DWORD dwIndex) {
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserGreen*256.0));
 			return m_DisplayValue;
 
-		case FFPARAM_BLUE:
+		/*case FFPARAM_BLUE:
 			cross_secure_sprintf(m_DisplayValue, 16, "%d", (int)(m_UserBlue*256.0));
 			return m_DisplayValue;*/
 
@@ -1294,13 +1296,13 @@ float ShaderMaker::GetFloatParameter(unsigned int index)
 		case FFPARAM_MOUSELEFTY:
 			return m_UserMouseLeftY;
 
-		/*case FFPARAM_RED:
+		case FFPARAM_RED:
 			return m_UserRed;
 
 		case FFPARAM_GREEN:
 			return m_UserGreen;
 
-		case FFPARAM_BLUE:
+		/*case FFPARAM_BLUE:
 			return m_UserBlue;*/
 
 		/*case FFPARAM_ALPHA:
@@ -1334,7 +1336,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserMouseLeftY = value;
 				break;
 
-			/*case FFPARAM_RED:
+			case FFPARAM_RED:
 				m_UserRed = value;
 				break;
 
@@ -1342,7 +1344,7 @@ FFResult ShaderMaker::SetFloatParameter(unsigned int index, float value)
 				m_UserGreen = value;
 				break;
 
-			case FFPARAM_BLUE:
+			/*case FFPARAM_BLUE:
 				m_UserBlue = value;
 				break;*/
 

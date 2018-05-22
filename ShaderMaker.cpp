@@ -893,7 +893,7 @@ ShaderMaker::ShaderMaker():CFreeFrameGLPlugin()
 	*/
 
 	// Input properties allow for no texture or for four textures
-	SetMinInputs(0);
+	SetMinInputs(1);
 	SetMaxInputs(2); // TODO - 4 inputs
 
 	// Parameters

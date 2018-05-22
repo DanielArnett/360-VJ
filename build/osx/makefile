@@ -1,7 +1,7 @@
 DIR_SRC = ../../
 DIR_FFGL = ../../FFGL
 DIR_BUNDLE = ../../Binaries/osx
-NAME = FlatToFisheye
+NAME = 360-to-Fisheye
 
 DEBUG = 0
 

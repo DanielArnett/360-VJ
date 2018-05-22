@@ -729,13 +729,11 @@ vec3 PRotateZ(vec3 p, float theta)
    return(q);
 }
 
-int DEBUG = 0;
 float PI = 3.14159;
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
 	float rotateZInput = (iMouse.z / iResolution.x) - 0.5; // -0.5 to 0.5
 	float rotateYInput = (iMouse.w / iResolution.y) - 0.5; // -0.5 to 0.5
-	vec2 vFontSize = vec2(50.0, 100.0);
 	vec2 pos = 2.0*(fragCoord.xy / iResolution.xy - 0.5);
 	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
 	if (1.0 < r) {
@@ -746,10 +744,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	float phi;
 	float percentX;
 	float percentY;
-	int u;
-	int v;
+	float u;
+	float v;
 	vec3 p;
 	vec3 col;
+	vec2 outCoord = fragCoord;
 
 	if (r == 0.0) {
 		longitude = 0.0;
@@ -770,97 +769,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 	float temp = p.y;
 	p.z = p.y;
 	p.y = p.z;
-	// p = PRotateX(p, PI * iMouse.x / iResolution.x);
 	latitude = asin(p.z);
 	longitude = -acos(p.x / cos(latitude));
 	longitude += rotateYInput * 2.0 * PI;
 	// Rotate by a quarter turn to align the fisheye image with the center of the 360 image
 	longitude += PI/2.0;
-	// phi = atan(p.y, p.x);
-	// if (phi < 0.0) {
-	// 	phi += 2.0*PI;
-	// }
-	// p.x = cos(phi) * tan(PI / 2.0 - latitude);
-	// p.y = sin(phi) * tan(PI / 2.0 - latitude);
-	// percentX = p.x;
-	// percentY = p.y;
 
-	// u = int(percentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
-	// v = int(percentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
-	u = iResolution.x * (longitude + PI) / (2 * PI);
-	v = iResolution.y * (latitude + PI/2) / PI;
-	vec2 outCoord;
-	outCoord.x = float(u);
-	outCoord.y = float(v);
+	u = iResolution.x * (longitude + PI) / (2.0 * PI);
+	v = iResolution.y * (latitude + PI/2.0) / PI;
+	outCoord = vec2(u,v);
+	// outCoord.x = u;
+	// outCoord.y = v;
 
 	col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
-
-	// Debug information
-	if (DEBUG == 1) {
-		// Plot Mouse Pos
-		float pointSize = 20.0;
-		float fDistToPointB = length(vec2(iMouse.x, iMouse.y) - fragCoord.xy) - pointSize;
-		col = mix(col, vec3(0.0, 1.0, 0.0), (1.0 - clamp(fDistToPointB, 0.0, 1.0)));
-		if (iMouse.x > 0.0)
-		{
-			// Print Mouse X
-			vec2 vPixelCoord2 = iMouse.xy + vec2(-52.0, 6.0);
-			vec2 mousePos = 2.0*(iMouse.xy / iResolution.xy - 0.5);
-			float mouseR = sqrt(mousePos.x*mousePos.x + mousePos.y*mousePos.y);
-			float mouseLat = (1.0 - mouseR)*(PI / 2.0);
-			float mouseLong;
-			vec3 mouseP;
-			float mousePhi;
-			float mousePercentX;
-			float mousePercentY;
-			int mouseU;
-			int mouseV;
-			vec2 mouseOutCoord;
-			if (mouseR == 0.0) {
-				mouseLong = 0.0;
-			}
-			else if (mousePos.x < 0.0) {
-				mouseLong = PI - asin(mousePos.y / mouseR);
-			}
-			else if (mousePos.x >= 0.0) {
-				mouseLong = asin(mousePos.y / mouseR);
-			}
-			if (mouseLong < 0.0) {
-				mouseLong += 2.0*PI;
-			}
-			mouseP.x = cos(mouseLat) * cos(mouseLong);
-			mouseP.y = cos(mouseLat) * sin(mouseLong);
-			mouseP.z = sin(mouseLat);
-			// if (mousePos.x < 0.0) {
-			// 	mouseP.x = -1 - mouseP.x;
-			// }
-			// if (mousePos.y < 0.0) {
-			// 	mouseP.y = -1 - mouseP.y;
-			// }
-			mousePhi = atan(mouseP.y, mouseP.x);
-			if (mousePhi < 0.0) {
-				mousePhi += 2.0*PI;
-			}
-			mouseP.x = cos(mousePhi) * tan(PI / 2.0 - mouseLat);
-			mouseP.y = sin(mousePhi) * tan(PI / 2.0 - mouseLat);
-			mouseP.z = 1.0;
-			mousePercentX = mouseP.x / (iResolution.x / 2.0);
-			mousePercentY = mouseP.y / (iResolution.y / 2.0);
-			mouseU = int(mousePercentX * ((float(iResolution.x)) / 2.0)) + int(iResolution.x) / 2;
-			//mouseU = mousePercentX;
-			mouseV = int(mousePercentY * ((float(iResolution.y)) / 2.0)) + int(iResolution.y) / 2;
-			mouseOutCoord.x = float(mouseU) / iResolution.x;
-			mouseOutCoord.y = float(mouseV) / iResolution.y;
-			float fValue2 = inputColour.a;
-			float fDigits = 1.0;
-			float fDecimalPlaces = 3.0;
-			float fIsDigit2 = PrintValue((fragCoord - vPixelCoord2) / vFontSize, fValue2, fDigits, fDecimalPlaces);
-			col = mix(col, vec3(0.0, 1.0, 0.0), fIsDigit2);
-		}
-		// Print Date
-		col = mix(col, vec3(1.0, 1.0, 0.0), PrintValue((fragCoord - vec2(0.0, 5.0)) / vFontSize, iResolution.x, 4.0, 0.0));
-	} // Debug Information
-
 	fragColor = vec4(col, 1.0);
 }
 

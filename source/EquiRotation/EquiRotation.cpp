@@ -137,12 +137,8 @@ void main()
 	// Convert back to the normalized pixel coordinate
 	pos.x = (longitude + PI)/(2.0*PI);
 	pos.y = (latitude + PI/2.0)/PI;
-	//col = texture2D(iChannel0, outCoord.xy / iResolution.xy).xyz;
-	vec4 color = texture( InputTexture, pos );
 
-	//The plugin has to output premultiplied colors, this is how we're premultiplying our straight color while also
-	//ensuring we aren't going out of the LDR the video engine is working in.
-	color.rgb = clamp( color.rgb * color.a, vec3( 0.0 ), vec3( color.a ) );
+	vec4 color = texture( InputTexture, pos );
 	fragColor = color;
 }
 )";

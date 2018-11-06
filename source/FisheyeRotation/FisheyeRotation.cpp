@@ -1,4 +1,4 @@
-#include "EquiRotation.h"
+#include "FisheyeRotation.h"
 #include <ffgl/FFGLLib.h>
 #include <ffglex/FFGLScopedShaderBinding.h>
 #include <ffglex/FFGLScopedSamplerActivation.h>
@@ -11,14 +11,14 @@ using namespace ffglex;
 
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< FisheyeRotation >,// Create method
-	"360V",                       // Plugin unique ID of maximum length 4.
-	"360 VJ",				 	  // Plugin name
+	"FROT",                       // Plugin unique ID of maximum length 4.
+	"Fisheye Rotation",		 	  // Plugin name
 	2,                            // API major version number
 	1,                            // API minor version number
 	1,                            // Plugin major version number
 	0,                            // Plugin minor version number
 	FF_EFFECT,                    // Plugin type
-	"Rotate 360 videos",		  // Plugin description
+	"Rotate Fisheye videos",	  // Plugin description
 	"Written by Daniel Arnett, go to https://github.com/DanielArnett/360-VJ/releases for more detail."      // About
 );
 

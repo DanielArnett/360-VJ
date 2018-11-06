@@ -5,12 +5,12 @@
 #include <ffglex/FFGLScopedTextureBinding.h>
 using namespace ffglex;
 
-#define FFPARAM_Field_Of_View ( 0 )
+#define FFPARAM_Roll ( 0 )
 //#define FFPARAM_Aspect_Ratio ( 1 )
 //#define FFPARAM_Yaw ( 2 )
 
 static CFFGLPluginInfo PluginInfo(
-	PluginFactory< FlatToFisheye >,// Create method
+	PluginFactory< FisheyeRotation >,// Create method
 	"FTFV",                       // Plugin unique ID of maximum length 4.
 	" Flat to Fisheye",				 	  // Plugin name
 	2,                            // API major version number
@@ -127,7 +127,7 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 	}
 	)";
 
-FlatToFisheye::FlatToFisheye() :
+FisheyeRotation::FisheyeRotation() :
 	maxUVLocation( -1 ),
 	fieldOfViewLocation( -1 ),
 	fieldOfView( 0.5f )
@@ -139,15 +139,15 @@ FlatToFisheye::FlatToFisheye() :
 	SetMaxInputs( 1 );
 
 	// Parameters
-	SetParamInfof( FFPARAM_Field_Of_View, "Field of View", FF_TYPE_STANDARD );
+	SetParamInfof( FFPARAM_Roll, "Field of View", FF_TYPE_STANDARD );
 	//SetParamInfof( FFPARAM_Aspect_Ratio, "Aspect Ratio", FF_TYPE_STANDARD );
 	//SetParamInfof( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD );
 }
-FlatToFisheye::~FlatToFisheye()
+FisheyeRotation::~FisheyeRotation()
 {
 }
 
-FFResult FlatToFisheye::InitGL( const FFGLViewportStruct* vp )
+FFResult FisheyeRotation::InitGL( const FFGLViewportStruct* vp )
 {
 	if( !shader.Compile( vertexShaderCode, fragmentShaderCode ) )
 	{
@@ -174,7 +174,7 @@ FFResult FlatToFisheye::InitGL( const FFGLViewportStruct* vp )
 	//Use base-class init as success result so that it retains the viewport.
 	return CFreeFrameGLPlugin::InitGL( vp );
 }
-FFResult FlatToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
+FFResult FisheyeRotation::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 {
 	if( pGL->numInputTextures < 1 )
 		return FF_FAIL;
@@ -204,7 +204,7 @@ FFResult FlatToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 
 	return FF_SUCCESS;
 }
-FFResult FlatToFisheye::DeInitGL()
+FFResult FisheyeRotation::DeInitGL()
 {
 	shader.FreeGLResources();
 	quad.Release();
@@ -214,7 +214,7 @@ FFResult FlatToFisheye::DeInitGL()
 	return FF_SUCCESS;
 }
 
-FFResult FlatToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
+FFResult FisheyeRotation::SetFloatParameter( unsigned int dwIndex, float value )
 {
 	switch( dwIndex )
 	{
@@ -224,7 +224,7 @@ FFResult FlatToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 	case FFPARAM_Yaw:
 		yaw = value;
 		break;*/
-	case FFPARAM_Field_Of_View:
+	case FFPARAM_Roll:
 		fieldOfView = value;
 		break;
 	default:
@@ -234,7 +234,7 @@ FFResult FlatToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 	return FF_SUCCESS;
 }
 
-float FlatToFisheye::GetFloatParameter( unsigned int dwIndex )
+float FisheyeRotation::GetFloatParameter( unsigned int dwIndex )
 {
 	switch( dwIndex )
 	{
@@ -242,7 +242,7 @@ float FlatToFisheye::GetFloatParameter( unsigned int dwIndex )
 		return aspectRatio;
 	case FFPARAM_Yaw:
 		return yaw;*/
-	case FFPARAM_Field_Of_View:
+	case FFPARAM_Roll:
 		return fieldOfView;
 
 	default:

@@ -54,7 +54,6 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 		float ASPECT_RATIO = textureSize.x / textureSize.y;
 		float fovInput = fieldOfView; // 0.0 to 1.0
 		float FOV = 180.0 * fovInput; // 60 degrees to 180 degrees
-		bool cropInput = false;
 
 		// Position of the destination pixel in xy coordinates in the range [0,1]
 		vec2 pos;
@@ -63,18 +62,16 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 
 		float flatImgWidth = tan(radians(FOV / 2.0)) * 2.0;
 		float flatImgHeight = flatImgWidth / ASPECT_RATIO;
-		if (cropInput) {
-			float autoScale = FOV / 180.0;
-			pos.x *= autoScale;
-			pos.y *= autoScale;
-		}
 
+		// Distance from the center to this pixel. The 'radius' of the pixel.
 		float r = distance(vec2(0.0, 0.0), pos);
 		// Mask off the fisheye ring.
 		if (r > 1.0) {
+			// Return a transparent pixel
 			fragColor = vec4(0.0,0.0,0.0,0.0);
 			return;
 		}
+		// Calculate the 3D position of the source pixel on the image plane
 		float latitude = (1.0 - r)*(PI / 2.0);
 		float longitude;
 		float phi;
@@ -107,7 +104,8 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 		p.x = cos(phi) * tan(PI / 2.0 - latitude);
 		p.y = sin(phi) * tan(PI / 2.0 - latitude);
 		p.z = 1.0;
-
+		
+		// Position of the source pixel in the source image in the range [-1,1]
 		percentX = p.x / (float(flatImgWidth) / 2.0);
 		percentY = p.y / (float(flatImgHeight) / 2.0);
 		if (!(-1.0 <= percentX && percentX <= 1.0 && -1.0 <= percentY && percentY <= 1.0)) 
@@ -115,18 +113,16 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 			fragColor = vec4(0.0, 0.0, 0.0, 0.0);
 			return;
 		}
-
+		// Normalize the pixel coordinates to [0,1]
 		percentX = (percentX + 1.0) / 2.0;
 		percentY = (percentY + 1.0) / 2.0;
-		
-		if (u < 0 || int(textureSize.x) < u || v < 0 || int(textureSize.y) < v) {
-			fragColor = vec4(0.0,0.0,0.0,0.0);
-			return;
-		}
+
+		// u, v position of the source pixel in the source image
 		vec2 outCoord;
 		outCoord.x = float(percentX);
 		outCoord.y = float(percentY);
 
+		// Return the source pixel as a vec4 with the r, g, b, and alpha values
 		fragColor = texture( InputTexture, outCoord );
 	}
 	)";

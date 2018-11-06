@@ -1,35 +1,27 @@
-## Flat to Fisheye
-This FFGL Shader will convert a flat, rectilinear video into a fisheye video suitable for playback on part of a planetarium dome. 
+# 360-VJ
+360-VJ is a collection of FFGL shaders for Resolume and other VJing applications. 360-VJ includes shaders for:
+
+* Rotating 360 videos
+* Converting 360 videos into Fisheye videos
+* Rotating Fisheye videos
+* Projecting Flat, Rectilinear (normal), videos into a Fisheye view. Imagine looking at a TV through a fisheye lens.
 
 ### Installation
-Download the shader from our [Releases page](https://github.com/DanielArnett/flat-to-fisheye-ffgl/releases/), unizip it, and install it into your Resolume Plugin Directory. You can find this directory by looking in Resolume->Preferences->Video->FFGL Plugin Directories. Restart Resolume and look for the new shader in the Effects tab titled "Flat to Fisheye".
+Download the shader from our [Releases page](https://github.com/DanielArnett/flat-to-fisheye-ffgl/releases/), unizip it, and install it into your Resolume Plugin Directory. You can find this directory by looking in Resolume->Preferences->Video->FFGL Plugin Directories. Restart Resolume and look in the Effects tab for the new effects "360 VJ", "360 to Fisheye", "Flat to Fisheye", and "Fisheye Rotation". If they do not appear it is likely because you're using incompatible versions of FFGL. Resolume versions older than 6.0.0 use FFGL 1.5 compiled as 32-bit binaries. Resolume versions 6.0.0-6.1.2 use FFGL 1.5 compiled as 64-bit binaries. Resolume versions 6.1.2 or newer use FFGL 2.0 compiled as 64-bit. TODO: Right now I'm only compiling FFGL 2.0 64-bit. Need to add branches to compile for different Resolume versions.
 
-This project is based on ShaderMaker by Lynn Jarvis. See the [source project](https://github.com/leadedge/ShaderMaker) for more information.
-
-# ShaderMaker
-A source code template to create FreeframeGL plugins from GLSL Sandbox and ShaderToy shaders.
-
-For the shaders that you find useful with "ShaderLoader" and will use a lot,
-it is useful to have a dedicated FreeFrameGL plugin that does not not rely on a shader file.
-
-##Windows
+###Windows
 This is a Visual Studio C++ project that can make any number of them.
-Download everything and unzip into in any folder, open the VS2010 solution file with
-Visual Studio and change to "release", it should build OK as-is. More examples are in the source file.
+Download everything and unzip into in any folder, open the VS2017 solution file with
+Visual Studio and change to "release", it should build OK as-is.
 
-##Mac
-In build/osx there are both and XCode project and a makefile. In both cases, the resulting bundle will be created in
-Binaries/osx. 
-
-##How to use
-To make your own shader plugin, all you do is copy/paste the shader code into the source file,
-change the plugin information and rename the resulting dll. There are some things to take note of, 
-but hopefully the code and documentation are clear enough.
-
-Refer to the documentation for further details.
+###Mac
+TODO:  
 
 ##Credits
-Implementation by Lynn Jarvis leadedge@adam.com.au
-MacOSX port by Amaury Hazan amaury@billaboop.com
-The MacOSX port was supported by Coldcut/Ninja Tune as a contribution to the Visuals Community
+Developed and Implemented by Daniel Arnett for the Slippery Rock University Planetarium.
 
+Algorithms developed by Paul Bourke from the University of Western Australia.
+http://paulbourke.net/miscellaneous/sphere2sphere/
+
+Thanks to Lynn Jarvis for helping this project initially get off the ground.
+https://github.com/leadedge/ShaderMaker

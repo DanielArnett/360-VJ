@@ -1,0 +1,3 @@
+[submodule "ffgl"]
+	path = ffgl
+	url = https://github.com/resolume/ffgl.git

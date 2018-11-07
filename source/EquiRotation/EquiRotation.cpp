@@ -79,10 +79,11 @@ void main()
 	ivec2 textureSize2d = textureSize(InputTexture,0);
     vec2 textureSize = textureSize2d.xy;
 	vec2 rotation = vec2(InputRotation.r, InputRotation.g);
+	vec3 input = InputRotation.rgb / 2.0;
+	if (input.r == 0.5) { input.r -= 0.00001; }
+	if (input.g == 0.5) { input.g -= 0.00001; }
+	if (input.b == 0.5) { input.b -= 0.00001; }
 
-	// Given a destination pixel on the screen, we need to find the color of a source pixel used to fill this destination pixel.
-	// The color of the destination pixel
-	//vec4 color = texture( InputTexture, uv );
 	// Position of the destination pixel in xy coordinates in the range [0,1]
 	vec2 pos;
 	// Position of the source pixel in xy coordinates
@@ -92,37 +93,22 @@ void main()
 	// Y increases from bottom to top [-1 to 1]
 	// Z increases from back to front [-1 to 1]
 	vec3 ray;
-	// The input given by the user in Resolume
-	float xRotateInput = InputRotation.r / 2.0;
-	if (xRotateInput == 0.5) {
-		xRotateInput -= 0.00001;
-	}
-	float yRotateInput = InputRotation.g / 2.0;
-	if (yRotateInput == 0.5) {
-		yRotateInput -= 0.00001;
-	}
-	float zRotateInput = InputRotation.b / 2.0;
-	if (zRotateInput == 0.5) {
-		zRotateInput -= 0.00001;
-	}
-	// Normalize the xy coordinates in the range [0,1]
-	pos = uv;
 
-	float latitude = pos.y * PI - PI/2.0;
-	float longitude = pos.x * 2.0*PI - PI;
+	float latitude = uv.y * PI - PI/2.0;
+	float longitude = uv.x * 2.0*PI - PI;
 	// Create a ray from the latitude and longitude
 	ray.x = cos(latitude) * sin(longitude);
 	ray.y = sin(latitude);
 	ray.z = cos(latitude) * cos(longitude);
 	// Rotate the ray based on the user input
-	if (xRotateInput != 0.5) {
-		ray = PRotateX(ray, xRotateInput * 2.0*PI);
+	if (input.r != 0.5) {
+		ray = PRotateX(ray, input.r * 2.0*PI);
 	}
-	if (yRotateInput != 0.5) {
-		ray = PRotateY(ray, yRotateInput * 2.0*PI);
+	if (input.g != 0.5) {
+		ray = PRotateY(ray, input.g * 2.0*PI);
 	}
-	if (zRotateInput != 0.5) {
-		ray = PRotateZ(ray, zRotateInput * 2.0*PI);
+	if (input.b != 0.5) {
+		ray = PRotateZ(ray, input.b * 2.0*PI);
 	}
 	// Convert back to latitude and longitude
 	latitude = asin(ray.y);
@@ -143,10 +129,10 @@ void main()
 		longitude = -PI/2.0;
 	}
 	// Convert back to the normalized pixel coordinate
-	pos.x = (longitude + PI)/(2.0*PI);
-	pos.y = (latitude + PI/2.0)/PI;
+	outCoord.x = (longitude + PI)/(2.0*PI);
+	outCoord.y = (latitude + PI/2.0)/PI;
 
-	vec4 color = texture( InputTexture, pos );
+	vec4 color = texture( InputTexture, outCoord );
 	fragColor = color;
 }
 )";

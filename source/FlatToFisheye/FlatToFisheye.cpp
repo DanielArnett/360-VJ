@@ -10,7 +10,7 @@ using namespace ffglex;
 //#define FFPARAM_Yaw ( 2 )
 
 static CFFGLPluginInfo PluginInfo(
-	PluginFactory< FisheyeRotation >,// Create method
+	PluginFactory< EquiToFisheye >,// Create method
 	"FTFV",                       // Plugin unique ID of maximum length 4.
 	"Flat to Fisheye",				 	  // Plugin name
 	2,                            // API major version number
@@ -127,7 +127,7 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 	}
 	)";
 
-FisheyeRotation::FisheyeRotation() :
+EquiToFisheye::EquiToFisheye() :
 	maxUVLocation( -1 ),
 	fieldOfViewLocation( -1 ),
 	fieldOfView( 0.5f )
@@ -143,11 +143,11 @@ FisheyeRotation::FisheyeRotation() :
 	//SetParamInfof( FFPARAM_Aspect_Ratio, "Aspect Ratio", FF_TYPE_STANDARD );
 	//SetParamInfof( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD );
 }
-FisheyeRotation::~FisheyeRotation()
+EquiToFisheye::~EquiToFisheye()
 {
 }
 
-FFResult FisheyeRotation::InitGL( const FFGLViewportStruct* vp )
+FFResult EquiToFisheye::InitGL( const FFGLViewportStruct* vp )
 {
 	if( !shader.Compile( vertexShaderCode, fragmentShaderCode ) )
 	{
@@ -174,7 +174,7 @@ FFResult FisheyeRotation::InitGL( const FFGLViewportStruct* vp )
 	//Use base-class init as success result so that it retains the viewport.
 	return CFreeFrameGLPlugin::InitGL( vp );
 }
-FFResult FisheyeRotation::ProcessOpenGL( ProcessOpenGLStruct* pGL )
+FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 {
 	if( pGL->numInputTextures < 1 )
 		return FF_FAIL;
@@ -204,7 +204,7 @@ FFResult FisheyeRotation::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 
 	return FF_SUCCESS;
 }
-FFResult FisheyeRotation::DeInitGL()
+FFResult EquiToFisheye::DeInitGL()
 {
 	shader.FreeGLResources();
 	quad.Release();
@@ -214,7 +214,7 @@ FFResult FisheyeRotation::DeInitGL()
 	return FF_SUCCESS;
 }
 
-FFResult FisheyeRotation::SetFloatParameter( unsigned int dwIndex, float value )
+FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 {
 	switch( dwIndex )
 	{
@@ -234,7 +234,7 @@ FFResult FisheyeRotation::SetFloatParameter( unsigned int dwIndex, float value )
 	return FF_SUCCESS;
 }
 
-float FisheyeRotation::GetFloatParameter( unsigned int dwIndex )
+float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
 {
 	switch( dwIndex )
 	{

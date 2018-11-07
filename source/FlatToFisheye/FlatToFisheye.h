@@ -4,11 +4,11 @@
 #include <ffglex/FFGLShader.h>
 #include <ffglex/FFGLScreenQuad.h>
 
-class FisheyeRotation : public CFreeFrameGLPlugin
+class EquiToFisheye : public CFreeFrameGLPlugin
 {
 public:
-	FisheyeRotation();
-	~FisheyeRotation();
+	EquiToFisheye();
+	~EquiToFisheye();
 
 	//CFreeFrameGLPlugin
 	FFResult InitGL( const FFGLViewportStruct* vp ) override;

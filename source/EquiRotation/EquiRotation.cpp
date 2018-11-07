@@ -71,40 +71,47 @@ vec2 uvToLatLon(vec2 uv)
 	return vec2(uv.y * PI - PI/2.0,
 				uv.x * 2.0*PI - PI);
 }
+
+vec3 latLonToPoint(vec2 latLon)
+{
+	vec3 point;
+	point.x = cos(latLon.x) * sin(latLon.y);
+	point.y = sin(latLon.x);
+	point.z = cos(latLon.x) * cos(latLon.y);
+	return point;
+}
+vec2 pointToLatLon(vec3 point) 
+{
+	vec2 latLon;
+	latLon.x = asin(point.y);
+	latLon.y = atan(point.x, point.z);
+	return latLon;
+}
+vec2 latLonToUv(vec2 latLon)
+{	
+	vec2 uv;
+	uv.x = (latLon.y + PI)/(2.0*PI);
+	uv.y = (latLon.x + PI/2.0)/PI;
+	return uv;
+}
 out vec4 fragColor;
 void main()
 {
-	ivec2 textureSize2d = textureSize(InputTexture,0);
-    vec2 textureSize = textureSize2d.xy;
-	vec2 rotation = vec2(InputRotation.r, InputRotation.g);
-	vec3 input = InputRotation.rgb * PI;
-
-	// Position of the destination pixel in xy coordinates in the range [0,1]
-	vec2 pos;
-	// Position of the source pixel in xy coordinates
-	vec2 outCoord;
-	// The ray from the camera into the 360 virtual screen
-	// X increases from left to right [-1 to 1]
-	// Y increases from bottom to top [-1 to 1]
-	// Z increases from back to front [-1 to 1]
-	vec3 ray;
-
+	// Latitude and Longitude of the destination pixel (uv)
 	vec2 latLon = uvToLatLon(uv);
-	// Create a ray from the latitude and longitude
-	ray.x = cos(latLon.x) * sin(latLon.y);
-	ray.y = sin(latLon.x);
-	ray.z = cos(latLon.x) * cos(latLon.y);
-	// Rotate the ray based on the user input
-	ray = rotatePoint(ray, input);
+	// Create a point on the unit-sphere from the latitude and longitude
+		// X increases from left to right [-1 to 1]
+		// Y increases from bottom to top [-1 to 1]
+		// Z increases from back to front [-1 to 1]
+	vec3 point = latLonToPoint(latLon);
+	// Rotate the point based on the user input in radians
+	point = rotatePoint(point, InputRotation.rgb * PI);
 	// Convert back to latitude and longitude
-	latLon.x = asin(ray.y);
-	latLon.y = atan(ray.x, ray.z);
+	latLon = pointToLatLon(point);
 	// Convert back to the normalized pixel coordinate
-	outCoord.x = (latLon.y + PI)/(2.0*PI);
-	outCoord.y = (latLon.x + PI/2.0)/PI;
-
-	vec4 color = texture( InputTexture, outCoord );
-	fragColor = color;
+	vec2 sourcePixel = latLonToUv(latLon);
+	// Set the color of the destination pixel to the color of the source pixel
+	fragColor = texture( InputTexture, sourcePixel );
 }
 )";
 

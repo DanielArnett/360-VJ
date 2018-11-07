@@ -38,10 +38,11 @@ void main()
 )";
 
 static const char fragmentShaderCode[] = R"(#version 410 core
+float PI = 3.14159265359;
 uniform sampler2D InputTexture;
-uniform vec3 Brightness;
-
+uniform vec3 InputRotation;
 in vec2 uv;
+out vec4 fragColor;
 /*
  * This is used to manipulate 360 VR videos, also known as equirectangular videos.
  * This shader can pitch, roll, and yaw the camera within a 360 image.
@@ -72,16 +73,9 @@ vec3 PRotateZ(vec3 p, float theta)
    q.z = p.z;
    return(q);
 }
-out vec4 fragColor;
-float PI = 3.14159265359;
+
 void main()
 {
-	//vec2 shiftXYInput = (vec2(2.0,2.0) * vec2(inputColour.r, inputColour.g) - vec2(1.0,1.0)) * iResolution.xy;
-	vec2 shiftXYInput = vec2(0.0,0.0);
-	// Get inputs from Resolume
-	float rotateXInput = Brightness.r * 2.0 - 1.0;
-	float rotateZInput = Brightness.b * 2.0 - 1.0; // -0.5 to 0.5
-	float rotateYInput = Brightness.g * 2.0 - 1.0; // -0.5 to 0.5
 	// Position of the destination pixel in xy coordinates in the range [-1,1]
 	vec2 pos = 2.0 * uv - 1.0;
 
@@ -98,12 +92,13 @@ void main()
 	float longitude;
 	float u;
 	float v;
-	// The ray into the scene
+	// The point on the unit-sphere
 	vec3 p;
 	// Output color. In our case the color of the source pixel
 	vec3 col;
-	// Set the source pixel's coordinates
+	// The source pixel's coordinates
 	vec2 outCoord;
+
 	// Calculate longitude
 	if (r == 0.0) {
 		longitude = 0.0;
@@ -115,7 +110,7 @@ void main()
 		longitude = asin(pos.y / r);
 	}
 	// Perform z rotation.
-	longitude += rotateZInput * 2.0 * PI;
+	longitude += InputRotation.z * 2.0 * PI;
 	if (longitude < 0.0) {
 		longitude += 2.0*PI;
 	}
@@ -124,8 +119,8 @@ void main()
 	p.y = cos(latitude) * sin(longitude);
 	p.z = sin(latitude);
 	// Rotate the value based on the user input
-	p = PRotateX(p, 2.0 * PI * rotateXInput);
-	p = PRotateY(p, 2.0 * PI * rotateYInput);
+	p = PRotateX(p, 2.0 * PI * InputRotation.x);
+	p = PRotateY(p, 2.0 * PI * InputRotation.y);
 	// Get the source pixel latitude and longitude
 	latitude = asin(p.z);
 	longitude = -acos(p.x / cos(latitude));
@@ -135,26 +130,7 @@ void main()
 	if (r > 1.0) {
 		return;
 	}
-
-	// Manually implement `phi = atan2(p.y, p.x);`
-	if (p.x > 0.0) {
-		phi = atan(p.y / p.x);
-	}
-	else if (p.x < 0.0 && p.y >= 0.0) {
-		phi = atan(p.y / p.x) + PI;
-	}
-	else if (p.x < 0.0 && p.y < 0.0) {
-		phi = atan(p.y / p.x) - PI;
-	}
-	else if (p.x == 0.0 && p.y > 0.0) {
-		phi = PI / 2.0;
-	}
-	else if (p.x == 0.0 && p.y < 0.0) {
-		phi = -PI / 2.0;
-	}
-	if (phi < 0.0) {
-		phi += 2.0*PI;
-	}
+	phi = atan(p.y, p.x);
 
 	// Get the position of the output pixel
 	u = r * cos(phi);
@@ -162,7 +138,6 @@ void main()
 	// Normalize the output pixel to be in the range [0,1]
 	outCoord.x = (float(u) + 1.0) / 2.0;
 	outCoord.y = (float(v) + 1.0) / 2.0;
-	outCoord += shiftXYInput;
 	// Set the color of the destination pixel to the color of the source pixel.
 	fragColor = texture(InputTexture, outCoord);
 }
@@ -210,7 +185,7 @@ FFResult EquiToFisheye::InitGL( const FFGLViewportStruct* vp )
 
 	//We need to know these uniform locations because we need to set their value each frame.
 	maxUVLocation = shader.FindUniform( "MaxUV" );
-	fieldOfViewLocation = shader.FindUniform( "Brightness" );
+	fieldOfViewLocation = shader.FindUniform( "InputRotation" );
 
 	//Use base-class init as success result so that it retains the viewport.
 	return CFreeFrameGLPlugin::InitGL( vp );

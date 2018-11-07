@@ -41,37 +41,44 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 float PI = 3.14159265359;
 uniform sampler2D InputTexture;
 uniform vec3 InputRotation;
-
 in vec2 uv;
+out vec4 fragColor;
+// A transformation matrix rotating about the x axis by `th` degrees.
 mat3 Rx(float th) 
 {
 	return mat3(1, 0, 0,
 				0, cos(th), -sin(th),
 				0, sin(th), cos(th));
 }
+// A transformation matrix rotating about the y axis by `th` degrees.
 mat3 Ry(float th) 
 {
 	return mat3(cos(th), 0, sin(th),
 				   0,    1,    0,
 				-sin(th), 0, cos(th));
 }
+// A transformation matrix rotating about the z axis by `th` degrees.
 mat3 Rz(float th) 
 {
 	return mat3(cos(th), -sin(th), 0,
 				sin(th),  cos(th), 0,
 				  0,         0   , 1);
 }
+
+// Rotate a point vector by th.x then th.y then th.z, and return the rotated point.
 vec3 rotatePoint(vec3 p, vec3 th)
 {
-	mat3 rotation = Rx(th.r) * Ry(th.g) * Rz(th.b);
-	return rotation * p;
+	return Rx(th.r) * Ry(th.g) * Rz(th.b) * p;
 }
+
+// Convert x, y pixel coordinates from an Equirectangular image into latitude/longitude coordinates.
 vec2 uvToLatLon(vec2 uv)
 {
 	return vec2(uv.y * PI - PI/2.0,
 				uv.x * 2.0*PI - PI);
 }
 
+// Convert latitude, longitude into a 3d point on the unit-sphere.
 vec3 latLonToPoint(vec2 latLon)
 {
 	vec3 point;
@@ -80,6 +87,8 @@ vec3 latLonToPoint(vec2 latLon)
 	point.z = cos(latLon.x) * cos(latLon.y);
 	return point;
 }
+
+// Convert a 3D point on the unit sphere into latitude and longitude.
 vec2 pointToLatLon(vec3 point) 
 {
 	vec2 latLon;
@@ -87,6 +96,8 @@ vec2 pointToLatLon(vec3 point)
 	latLon.y = atan(point.x, point.z);
 	return latLon;
 }
+
+// Convert latitude, longitude to x, y pixel coordinates on an equirectangular image.
 vec2 latLonToUv(vec2 latLon)
 {	
 	vec2 uv;
@@ -94,7 +105,6 @@ vec2 latLonToUv(vec2 latLon)
 	uv.y = (latLon.x + PI/2.0)/PI;
 	return uv;
 }
-out vec4 fragColor;
 void main()
 {
 	// Latitude and Longitude of the destination pixel (uv)

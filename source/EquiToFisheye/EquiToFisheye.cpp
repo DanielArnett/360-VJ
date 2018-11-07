@@ -5,9 +5,9 @@
 #include <ffglex/FFGLScopedTextureBinding.h>
 using namespace ffglex;
 
-#define FFPARAM_Roll ( 0 )
-#define FFPARAM_Pitch ( 1 )
-#define FFPARAM_Yaw ( 2 )
+//#define FFPARAM_Roll ( 0 )
+//#define FFPARAM_Pitch ( 1 )
+//#define FFPARAM_Yaw ( 2 )
 
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< EquiToFisheye >,// Create method
@@ -39,7 +39,6 @@ void main()
 
 static const char fragmentShaderCode[] = R"(#version 410 core
 uniform sampler2D InputTexture;
-uniform vec3 Brightness;
 
 in vec2 uv;
 
@@ -47,9 +46,8 @@ out vec4 fragColor;
 float PI = 3.14159265359;
 void main()
 {
-	float rotateZInput = Brightness.r - 0.5; // -0.5 to 0.5
-	float rotateYInput = Brightness.g - 0.5; // -0.5 to 0.5
-	float fieldOfView = Brightness.b;
+	float rotateZInput = 0.0;
+	float rotateYInput = 0.0;
 	vec2 pos = 2.0 * uv - 1.0;
 	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
 	// Don't bother with pixels outside of the fisheye circle
@@ -97,8 +95,6 @@ void main()
 	u = (longitude + PI) / (2.0 * PI);
 	v = (latitude + PI/2.0) / PI;
 	outCoord = vec2(u,v);
-	// outCoord.x = u;
-	// outCoord.y = v;
 
 	fragColor = texture(InputTexture, outCoord);
 }
@@ -116,9 +112,9 @@ EquiToFisheye::EquiToFisheye() :
 	SetMaxInputs( 1 );
 
 	// Parameters
-	SetParamInfof( FFPARAM_Roll, "Roll", FF_TYPE_STANDARD );
+	/*SetParamInfof( FFPARAM_Roll, "Roll", FF_TYPE_STANDARD );
 	SetParamInfof( FFPARAM_Pitch, "Pitch", FF_TYPE_STANDARD );
-	SetParamInfof( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD );
+	SetParamInfof( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD );*/
 }
 EquiToFisheye::~EquiToFisheye()
 {
@@ -197,7 +193,7 @@ FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 {
 	switch( dwIndex )
 	{
-	case FFPARAM_Pitch:
+	/*case FFPARAM_Pitch:
 		aspectRatio = value;
 		break;
 	case FFPARAM_Yaw:
@@ -205,7 +201,7 @@ FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 		break;
 	case FFPARAM_Roll:
 		fieldOfView = value;
-		break;
+		break;*/
 	default:
 		return FF_FAIL;
 	}
@@ -217,12 +213,12 @@ float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
 {
 	switch( dwIndex )
 	{
-	case FFPARAM_Pitch:
+	/*case FFPARAM_Pitch:
 		return aspectRatio;
 	case FFPARAM_Yaw:
 		return yaw;
 	case FFPARAM_Roll:
-		return fieldOfView;
+		return fieldOfView;*/
 
 	default:
 		return 0.0f;

@@ -12,7 +12,7 @@ using namespace ffglex;
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< FisheyeRotation >,// Create method
 	"FTFV",                       // Plugin unique ID of maximum length 4.
-	" Flat to Fisheye",				 	  // Plugin name
+	"Flat to Fisheye",				 	  // Plugin name
 	2,                            // API major version number
 	1,                            // API minor version number
 	1,                            // Plugin major version number

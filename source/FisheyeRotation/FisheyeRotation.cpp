@@ -80,8 +80,8 @@ void main()
 	vec2 shiftXYInput = vec2(0.0,0.0);
 	// Get inputs from Resolume
 	float rotateXInput = Brightness.r * 2.0 - 1.0;
-	float rotateZInput = Brightness.g * 2.0 - 1.0; // -0.5 to 0.5
-	float rotateYInput = Brightness.b * 2.0 - 1.0; // -0.5 to 0.5
+	float rotateZInput = Brightness.b * 2.0 - 1.0; // -0.5 to 0.5
+	float rotateYInput = Brightness.g * 2.0 - 1.0; // -0.5 to 0.5
 	// Position of the destination pixel in xy coordinates in the range [-1,1]
 	vec2 pos = 2.0 * uv - 1.0;
 

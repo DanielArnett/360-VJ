@@ -73,7 +73,22 @@ vec3 PRotateZ(vec3 p, float theta)
    q.z = p.z;
    return(q);
 }
-
+vec2 getLatLonFromFisheyeUv(vec2 uv, float r)
+{
+	vec2 latLon;
+	latLon.x = (1.0 - r)*(PI / 2.0);
+	// Calculate longitude
+	if (r == 0.0) {
+		latLon.y = 0.0;
+	}
+	else if (uv.x < 0.0) {
+		latLon.y = PI - asin(uv.y / r);
+	}
+	else if (uv.x >= 0.0) {
+		latLon.y = asin(uv.y / r);
+	}
+	return latLon;
+}
 void main()
 {
 	// Position of the destination pixel in xy coordinates in the range [-1,1]
@@ -88,8 +103,7 @@ void main()
 		return;
 	}
 	float phi;
-	float latitude = (1.0 - r)*(PI / 2.0);
-	float longitude;
+	vec2 latLon = getLatLonFromFisheyeUv(pos, r);
 	float u;
 	float v;
 	// The point on the unit-sphere
@@ -99,33 +113,23 @@ void main()
 	// The source pixel's coordinates
 	vec2 outCoord;
 
-	// Calculate longitude
-	if (r == 0.0) {
-		longitude = 0.0;
-	}
-	else if (pos.x < 0.0) {
-		longitude = PI - asin(pos.y / r);
-	}
-	else if (pos.x >= 0.0) {
-		longitude = asin(pos.y / r);
-	}
 	// Perform z rotation.
-	longitude += InputRotation.z * 2.0 * PI;
-	if (longitude < 0.0) {
-		longitude += 2.0*PI;
+	latLon.y += InputRotation.z * 2.0 * PI;
+	if (latLon.y < 0.0) {
+		latLon.y += 2.0*PI;
 	}
 	// Turn the latitude and longitude into a 3D ray
-	p.x = cos(latitude) * cos(longitude);
-	p.y = cos(latitude) * sin(longitude);
-	p.z = sin(latitude);
+	p.x = cos(latLon.x) * cos(latLon.y);
+	p.y = cos(latLon.x) * sin(latLon.y);
+	p.z = sin(latLon.x);
 	// Rotate the value based on the user input
 	p = PRotateX(p, 2.0 * PI * InputRotation.x);
 	p = PRotateY(p, 2.0 * PI * InputRotation.y);
 	// Get the source pixel latitude and longitude
-	latitude = asin(p.z);
-	longitude = -acos(p.x / cos(latitude));
+	latLon.x = asin(p.z);
+	latLon.y = -acos(p.x / cos(latLon.x));
 	// Get the source pixel radius from center
-	r = 1.0 - latitude/(PI / 2.0);
+	r = 1.0 - latLon.x/(PI / 2.0);
 	// Disregard all images outside of the fisheye circle
 	if (r > 1.0) {
 		return;

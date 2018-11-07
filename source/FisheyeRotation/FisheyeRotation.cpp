@@ -76,70 +76,95 @@ out vec4 fragColor;
 float PI = 3.14159265359;
 void main()
 {
-	ivec2 textureSize2d = textureSize(InputTexture,0);
-    vec2 textureSize = textureSize2d.xy;
-	vec2 rotation = vec2(Brightness.r, Brightness.g);
+	//vec2 shiftXYInput = (vec2(2.0,2.0) * vec2(inputColour.r, inputColour.g) - vec2(1.0,1.0)) * iResolution.xy;
+	vec2 shiftXYInput = vec2(0.0,0.0);
+	// Get inputs from Resolume
+	float rotateXInput = Brightness.r * 2.0 - 1.0;
+	float rotateZInput = Brightness.g * 2.0 - 1.0; // -0.5 to 0.5
+	float rotateYInput = Brightness.b * 2.0 - 1.0; // -0.5 to 0.5
+	// Position of the destination pixel in xy coordinates in the range [-1,1]
+	vec2 pos = 2.0 * uv - 1.0;
 
-	// Given a destination pixel on the screen, we need to find the color of a source pixel used to fill this destination pixel.
-	// The color of the destination pixel
-	//vec4 color = texture( InputTexture, uv );
-	// Position of the destination pixel in xy coordinates in the range [0,1]
-	vec2 pos;
-	// Position of the source pixel in xy coordinates
+	// Radius of the pixel from the center
+	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
+	// Don't bother with pixels outside of the fisheye circle
+	if (1.0 < r) {
+		// Return a transparent pixel
+		fragColor = vec4(0.0,0.0,0.0,0.0);
+		return;
+	}
+	float phi;
+	float latitude = (1.0 - r)*(PI / 2.0);
+	float longitude;
+	float u;
+	float v;
+	// The ray into the scene
+	vec3 p;
+	// Output color. In our case the color of the source pixel
+	vec3 col;
+	// Set the source pixel's coordinates
 	vec2 outCoord;
-	// The ray from the camera into the 360 virtual screen
-	// X increases from left to right [-1 to 1]
-	// Y increases from bottom to top [-1 to 1]
-	// Z increases from back to front [-1 to 1]
-	vec3 ray;
-	// The input given by the user in Resolume
-	float xRotateInput = Brightness.r / 2.0;
-	float yRotateInput = Brightness.g / 2.0;
-	float zRotateInput = Brightness.b / 2.0;
-	// Normalize the xy coordinates in the range [0,1]
-	pos.x = uv.x;
-	pos.y = uv.y;
-	
-	float latitude = pos.y * PI - PI/2.0;
-	float longitude = pos.x * 2.0*PI - PI;
-	// Create a ray from the latitude and longitude
-	ray.x = cos(latitude) * sin(longitude);
-	ray.y = sin(latitude);
-	ray.z = cos(latitude) * cos(longitude);
-	// Rotate the ray based on the user input
-	if (xRotateInput != 0.5) {
-		ray = PRotateX(ray, xRotateInput * 2.0*PI);
+	// Calculate longitude
+	if (r == 0.0) {
+		longitude = 0.0;
 	}
-	if (yRotateInput != 0.5) {
-		ray = PRotateY(ray, yRotateInput * 2.0*PI);
+	else if (pos.x < 0.0) {
+		longitude = PI - asin(pos.y / r);
 	}
-	if (zRotateInput != 0.5) {
-		ray = PRotateZ(ray, zRotateInput * 2.0*PI);
+	else if (pos.x >= 0.0) {
+		longitude = asin(pos.y / r);
 	}
-	// Convert back to latitude and longitude
-	latitude = asin(ray.y);
-	// Manually implement `longitude = atan2(ray.x, ray.z);`
-	if (ray.z > 0.0) {
-		longitude = atan(ray.x/ray.z);
+	// Perform z rotation.
+	longitude += rotateZInput * 2.0 * PI;
+	if (longitude < 0.0) {
+		longitude += 2.0*PI;
 	}
-	else if (ray.z < 0.0 && ray.x >= 0.0) {
-		longitude = atan(ray.x/ray.z) + PI;
+	// Turn the latitude and longitude into a 3D ray
+	p.x = cos(latitude) * cos(longitude);
+	p.y = cos(latitude) * sin(longitude);
+	p.z = sin(latitude);
+	// Rotate the value based on the user input
+	p = PRotateX(p, 2.0 * PI * rotateXInput);
+	p = PRotateY(p, 2.0 * PI * rotateYInput);
+	// Get the source pixel latitude and longitude
+	latitude = asin(p.z);
+	longitude = -acos(p.x / cos(latitude));
+	// Get the source pixel radius from center
+	r = 1.0 - latitude/(PI / 2.0);
+	// Disregard all images outside of the fisheye circle
+	if (r > 1.0) {
+		return;
 	}
-	else if (ray.z < 0.0 && ray.x < 0.0) {
-		longitude = atan(ray.x/ray.z) - PI;
-	}
-	else if (ray.z == 0.0 && ray.x > 0.0) {
-		longitude = PI/2.0;
-	}
-	else if (ray.z == 0.0 && ray.x < 0.0) {
-		longitude = -PI/2.0;
-	}
-	// Convert back to the normalized pixel coordinate
-	pos.x = (longitude + PI)/(2.0*PI);
-	pos.y = (latitude + PI/2.0)/PI;
 
-	vec4 color = texture( InputTexture, pos );
-	fragColor = color;
+	// Manually implement `phi = atan2(p.y, p.x);`
+	if (p.x > 0.0) {
+		phi = atan(p.y / p.x);
+	}
+	else if (p.x < 0.0 && p.y >= 0.0) {
+		phi = atan(p.y / p.x) + PI;
+	}
+	else if (p.x < 0.0 && p.y < 0.0) {
+		phi = atan(p.y / p.x) - PI;
+	}
+	else if (p.x == 0.0 && p.y > 0.0) {
+		phi = PI / 2.0;
+	}
+	else if (p.x == 0.0 && p.y < 0.0) {
+		phi = -PI / 2.0;
+	}
+	if (phi < 0.0) {
+		phi += 2.0*PI;
+	}
+
+	// Get the position of the output pixel
+	u = r * cos(phi);
+	v = r * sin(phi);
+	// Normalize the output pixel to be in the range [0,1]
+	outCoord.x = (float(u) + 1.0) / 2.0;
+	outCoord.y = (float(v) + 1.0) / 2.0;
+	outCoord += shiftXYInput;
+	// Set the color of the destination pixel to the color of the source pixel.
+	fragColor = texture(InputTexture, outCoord);
 }
 )";
 

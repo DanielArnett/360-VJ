@@ -47,6 +47,45 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 	out vec4 fragColor;
 
 	float PI = 3.14159;
+
+	vec2 getLatLonFromFisheyeUv(vec2 uv, float r)
+	{
+		vec2 latLon;
+		latLon.x = (1.0 - r)*(PI / 2.0);
+		// Calculate longitude
+		if (r == 0.0) {
+			latLon.y = 0.0;
+		}
+		else if (uv.x < 0.0) {
+			latLon.y = PI - asin(uv.y / r);
+		}
+		else if (uv.x >= 0.0) {
+			latLon.y = asin(uv.y / r);
+		}
+		return latLon;
+	}
+	// Convert latitude, longitude into a 3d point on the unit-sphere.
+	vec3 latLonToPoint(vec2 latLon)
+	{
+		vec3 point;
+		// 3D position of the destination pixel on the unit sphere.
+		point.x = cos(latLon.x) * cos(latLon.y);
+		point.y = cos(latLon.x) * sin(latLon.y);
+		point.z = sin(latLon.x);
+		// Get phi of this point, see polar coordinate system for more details.
+		float phi = atan(point.y, point.x);
+		// With phi, calculate the point on the image plane that is also at the angle phi
+		point.x = cos(phi) * tan(PI / 2.0 - latLon.x);
+		point.y = sin(phi) * tan(PI / 2.0 - latLon.x);
+		point.z = 1.0;
+		return point;
+	}
+	bool outOfBounds(vec2 xy, float lower, float upper)
+	{
+		vec2 lowerBound = vec2(lower, lower);
+		vec2 upperBound = vec2(upper, upper);
+		return (any(lessThan(xy, lowerBound)) || any(greaterThan(xy, upperBound)));
+	}
 	void main()
 	{
 		ivec2 textureSize2d = textureSize(InputTexture,0);
@@ -60,8 +99,7 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 		pos.x = 2.0 * (uv.x - 0.5);
 		pos.y = 2.0 * (uv.y - 0.5);
 
-		float flatImgWidth = tan(radians(FOV / 2.0)) * 2.0;
-		float flatImgHeight = flatImgWidth / ASPECT_RATIO;
+		vec2 imagePlaneDimensions = vec2(tan(radians(FOV / 2.0)) * 2.0, (tan(radians(FOV / 2.0)) * 2.0) / ASPECT_RATIO);
 
 		// Distance from the center to this pixel. The 'radius' of the pixel.
 		float r = distance(vec2(0.0, 0.0), pos);
@@ -71,59 +109,29 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 			fragColor = vec4(0.0,0.0,0.0,0.0);
 			return;
 		}
-		// Calculate the 3D position of the source pixel on the image plane
-		float latitude = (1.0 - r)*(PI / 2.0);
-		float longitude;
-		float phi;
-		float percentX;
-		float percentY;
-		int u;
-		int v;
+		// Calculate the 3D position of the source pixel on the image plane.
+		// First get the latitude and longitude of the destination pixel in the fisheye image.
+		vec2 latLon = getLatLonFromFisheyeUv(pos, r);
+		vec2 xyOnImagePlane;
 		vec3 p;
-		vec3 col;
-	
-		if (r == 0.0) {
-			longitude = 0.0;
-		}
-		else if (pos.x < 0.0) {
-			longitude = PI - asin(pos.y / r);
-		}
-		else if (pos.x >= 0.0) {
-			longitude = asin(pos.y / r);
-		}
-		if (longitude < 0.0) {
-			longitude += 2.0*PI;
-		}
-		p.x = cos(latitude) * cos(longitude);
-		p.y = cos(latitude) * sin(longitude);
-		p.z = sin(latitude);
-		phi = atan(p.y, p.x);
-		if (phi < 0.0) {
-			phi += 2.0*PI;
-		}
-		p.x = cos(phi) * tan(PI / 2.0 - latitude);
-		p.y = sin(phi) * tan(PI / 2.0 - latitude);
-		p.z = 1.0;
+
+		// Derive a 3D point on the plane which correlates with the latitude and longitude in the fisheye image.
+		p = latLonToPoint(latLon);
 		
 		// Position of the source pixel in the source image in the range [-1,1]
-		percentX = p.x / (float(flatImgWidth) / 2.0);
-		percentY = p.y / (float(flatImgHeight) / 2.0);
-		if (!(-1.0 <= percentX && percentX <= 1.0 && -1.0 <= percentY && percentY <= 1.0)) 
+		xyOnImagePlane = p.xy / (imagePlaneDimensions / 2.0);
+		if (outOfBounds(xyOnImagePlane, -1.0, 1.0)) 
 		{
 			fragColor = vec4(0.0, 0.0, 0.0, 0.0);
 			return;
 		}
-		// Normalize the pixel coordinates to [0,1]
-		percentX = (percentX + 1.0) / 2.0;
-		percentY = (percentY + 1.0) / 2.0;
 
-		// u, v position of the source pixel in the source image
-		vec2 outCoord;
-		outCoord.x = float(percentX);
-		outCoord.y = float(percentY);
+		// Normalize the pixel coordinates to [0,1]
+		xyOnImagePlane +=  1.0; 
+		xyOnImagePlane /= 2.0;
 
 		// Return the source pixel as a vec4 with the r, g, b, and alpha values
-		fragColor = texture( InputTexture, outCoord );
+		fragColor = texture( InputTexture, xyOnImagePlane );
 	}
 	)";
 

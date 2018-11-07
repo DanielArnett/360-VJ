@@ -130,7 +130,7 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 EquiToFisheye::EquiToFisheye() :
 	maxUVLocation( -1 ),
 	fieldOfViewLocation( -1 ),
-	fieldOfView( 0.5f )
+	roll( 0.5f )
 	//aspectRatio( 0.5f ),
 	//yaw( 0.5f )
 {
@@ -193,7 +193,7 @@ FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	glUniform2f( maxUVLocation, maxCoords.s, maxCoords.t );
 
 	glUniform1f( fieldOfViewLocation,
-				 ( fieldOfView ));
+				 ( roll ));
 
 	//The shader's sampler is always bound to sampler index 0 so that's where we need to bind the texture.
 	//Again, we're using the scoped bindings to help us keep the context in a default state.
@@ -225,7 +225,7 @@ FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 		yaw = value;
 		break;*/
 	case FFPARAM_Roll:
-		fieldOfView = value;
+		roll = value;
 		break;
 	default:
 		return FF_FAIL;
@@ -243,7 +243,7 @@ float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
 	case FFPARAM_Yaw:
 		return yaw;*/
 	case FFPARAM_Roll:
-		return fieldOfView;
+		return roll;
 
 	default:
 		return 0.0f;

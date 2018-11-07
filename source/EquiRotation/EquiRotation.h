@@ -18,11 +18,13 @@ public:
 	FFResult SetFloatParameter( unsigned int dwIndex, float value ) override;
 
 	float GetFloatParameter( unsigned int index ) override;
+	char* GetParameterDisplay(unsigned int index) override;
+
 
 private:
-	float aspectRatio;
+	float pitch;
 	float yaw;
-	float fieldOfView;
+	float roll;
 
 	ffglex::FFGLShader shader;   //!< Utility to help us compile and link some shaders into a program.
 	ffglex::FFGLScreenQuad quad; //!< Utility to help us render a full screen quad.

@@ -171,9 +171,9 @@ void main()
 EquiToFisheye::EquiToFisheye() :
 	maxUVLocation( -1 ),
 	fieldOfViewLocation( -1 ),
-	aspectRatio( 0.5f ),
+	pitch( 0.5f ),
 	yaw( 0.5f ),
-	fieldOfView( 0.5f )
+	roll( 0.5f )
 {
 	// Input properties
 	SetMinInputs( 1 );
@@ -234,9 +234,9 @@ FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	glUniform2f( maxUVLocation, maxCoords.s, maxCoords.t );
 
 	glUniform3f( fieldOfViewLocation,
-				 -1.0f + ( aspectRatio * 2.0f ),
+				 -1.0f + ( pitch * 2.0f ),
 				 -1.0f + ( yaw * 2.0f ),
-				 -1.0f + ( fieldOfView * 2.0f ) );
+				 -1.0f + ( roll * 2.0f ) );
 
 	//The shader's sampler is always bound to sampler index 0 so that's where we need to bind the texture.
 	//Again, we're using the scoped bindings to help us keep the context in a default state.
@@ -262,13 +262,13 @@ FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 	switch( dwIndex )
 	{
 	case FFPARAM_Pitch:
-		aspectRatio = value;
+		pitch = value;
 		break;
 	case FFPARAM_Yaw:
 		yaw = value;
 		break;
 	case FFPARAM_Roll:
-		fieldOfView = value;
+		roll = value;
 		break;
 	default:
 		return FF_FAIL;
@@ -282,11 +282,11 @@ float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
 	switch( dwIndex )
 	{
 	case FFPARAM_Pitch:
-		return aspectRatio;
+		return pitch;
 	case FFPARAM_Yaw:
 		return yaw;
 	case FFPARAM_Roll:
-		return fieldOfView;
+		return roll;
 
 	default:
 		return 0.0f;

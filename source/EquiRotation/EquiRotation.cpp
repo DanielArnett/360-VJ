@@ -39,7 +39,7 @@ void main()
 
 static const char fragmentShaderCode[] = R"(#version 410 core
 uniform sampler2D InputTexture;
-uniform vec3 Brightness;
+uniform vec3 InputRotation;
 
 in vec2 uv;
 /*
@@ -78,7 +78,7 @@ void main()
 {
 	ivec2 textureSize2d = textureSize(InputTexture,0);
     vec2 textureSize = textureSize2d.xy;
-	vec2 rotation = vec2(Brightness.r, Brightness.g);
+	vec2 rotation = vec2(InputRotation.r, InputRotation.g);
 
 	// Given a destination pixel on the screen, we need to find the color of a source pixel used to fill this destination pixel.
 	// The color of the destination pixel
@@ -93,13 +93,21 @@ void main()
 	// Z increases from back to front [-1 to 1]
 	vec3 ray;
 	// The input given by the user in Resolume
-	float xRotateInput = Brightness.r / 2.0;
-	float yRotateInput = Brightness.g / 2.0;
-	float zRotateInput = Brightness.b / 2.0;
+	float xRotateInput = InputRotation.r / 2.0;
+	if (xRotateInput == 0.5) {
+		xRotateInput -= 0.00001;
+	}
+	float yRotateInput = InputRotation.g / 2.0;
+	if (yRotateInput == 0.5) {
+		yRotateInput -= 0.00001;
+	}
+	float zRotateInput = InputRotation.b / 2.0;
+	if (zRotateInput == 0.5) {
+		zRotateInput -= 0.00001;
+	}
 	// Normalize the xy coordinates in the range [0,1]
-	pos.x = uv.x;
-	pos.y = uv.y;
-	
+	pos = uv;
+
 	float latitude = pos.y * PI - PI/2.0;
 	float longitude = pos.x * 2.0*PI - PI;
 	// Create a ray from the latitude and longitude
@@ -146,9 +154,9 @@ void main()
 EquiToFisheye::EquiToFisheye() :
 	maxUVLocation( -1 ),
 	fieldOfViewLocation( -1 ),
-	aspectRatio( 0.5f ),
+	pitch( 0.5f ),
 	yaw( 0.5f ),
-	fieldOfView( 0.5f )
+	roll( 0.5f )
 {
 	// Input properties
 	SetMinInputs( 1 );
@@ -185,7 +193,7 @@ FFResult EquiToFisheye::InitGL( const FFGLViewportStruct* vp )
 
 	//We need to know these uniform locations because we need to set their value each frame.
 	maxUVLocation = shader.FindUniform( "MaxUV" );
-	fieldOfViewLocation = shader.FindUniform( "Brightness" );
+	fieldOfViewLocation = shader.FindUniform( "InputRotation" );
 
 	//Use base-class init as success result so that it retains the viewport.
 	return CFreeFrameGLPlugin::InitGL( vp );
@@ -209,9 +217,9 @@ FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	glUniform2f( maxUVLocation, maxCoords.s, maxCoords.t );
 
 	glUniform3f( fieldOfViewLocation,
-				 -1.0f + ( aspectRatio * 2.0f ),
+				 -1.0f + ( pitch * 2.0f ),
 				 -1.0f + ( yaw * 2.0f ),
-				 -1.0f + ( fieldOfView * 2.0f ) );
+				 -1.0f + ( roll * 2.0f ) );
 
 	//The shader's sampler is always bound to sampler index 0 so that's where we need to bind the texture.
 	//Again, we're using the scoped bindings to help us keep the context in a default state.
@@ -237,13 +245,13 @@ FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 	switch( dwIndex )
 	{
 	case FFPARAM_Pitch:
-		aspectRatio = value;
+		pitch = value;
 		break;
 	case FFPARAM_Yaw:
 		yaw = value;
 		break;
 	case FFPARAM_Roll:
-		fieldOfView = value;
+		roll = value;
 		break;
 	default:
 		return FF_FAIL;
@@ -257,13 +265,38 @@ float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
 	switch( dwIndex )
 	{
 	case FFPARAM_Pitch:
-		return aspectRatio;
+		return pitch;
 	case FFPARAM_Yaw:
 		return yaw;
 	case FFPARAM_Roll:
-		return fieldOfView;
+		return roll;
 
 	default:
 		return 0.0f;
+	}
+}
+char* EquiToFisheye::GetParameterDisplay(unsigned int index)
+{
+	/**
+	 * We're not returning ownership over the string we return, so we have to somehow guarantee that
+	 * the lifetime of the returned string encompasses the usage of that string by the host. Having this static
+	 * buffer here keeps previously returned display string alive until this function is called again.
+	 * This happens to be long enough for the hosts we know about.
+	 */
+	static char displayValueBuffer[15];
+	memset(displayValueBuffer, 0, sizeof(displayValueBuffer));
+	switch (index)
+	{
+	case FFPARAM_Pitch:
+		sprintf_s(displayValueBuffer, "%f", pitch * 360 - 180);
+		return displayValueBuffer;
+	case FFPARAM_Yaw:
+		sprintf_s(displayValueBuffer, "%f", yaw * 360 - 180);
+		return displayValueBuffer;
+	case FFPARAM_Roll:
+		sprintf_s(displayValueBuffer, "%f", roll * 360 - 180);
+		return displayValueBuffer;
+	default:
+		return CFreeFrameGLPlugin::GetParameterDisplay(index);
 	}
 }

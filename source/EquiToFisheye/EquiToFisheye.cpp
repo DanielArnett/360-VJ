@@ -44,6 +44,47 @@ in vec2 uv;
 
 out vec4 fragColor;
 float PI = 3.14159265359;
+
+vec2 getLatLonFromFisheyeUv(vec2 uv, float r)
+{
+	vec2 latLon;
+	latLon.x = (1.0 - r)*(PI / 2.0);
+	// Calculate longitude
+	if (r == 0.0) {
+		latLon.y = 0.0;
+	}
+	else if (uv.x < 0.0) {
+		latLon.y = PI - asin(uv.y / r);
+	}
+	else if (uv.x >= 0.0) {
+		latLon.y = asin(uv.y / r);
+	}
+	if (latLon.y < 0.0) {
+		latLon.y += 2.0*PI;
+	}
+
+	return latLon;
+}
+// Convert latitude, longitude into a 3d point on the unit-sphere.
+vec3 latLonToPoint(vec2 latLon)
+{
+	vec3 point;
+	// 3D position of the destination pixel on the unit sphere.
+	point.x = cos(latLon.x) * cos(latLon.y);
+	point.y = cos(latLon.x) * sin(latLon.y);
+	point.z = sin(latLon.x);
+
+	return point;
+}
+vec2 pointToLatLon(vec3 p)
+{
+	vec2 latLon;
+	latLon.x = asin(p.z);
+	latLon.y = -acos(p.x / cos(latLon.x));
+	// Rotate by a quarter turn to align the fisheye image with the center of the 360 image
+	latLon.y += PI/2.0;
+	return latLon;
+}
 void main()
 {
 	float rotateZInput = 0.0;
@@ -56,8 +97,6 @@ void main()
 		fragColor = vec4(0.0,0.0,0.0,0.0);
 		return;
 	}
-	float latitude = (1.0 - r)*(PI / 2.0);
-	float longitude;
 	float phi;
 	float percentX;
 	float percentY;
@@ -66,34 +105,22 @@ void main()
 	vec3 p;
 	vec3 col;
 	vec2 outCoord;
+	vec2 latLon = getLatLonFromFisheyeUv(pos, r);
 
-	if (r == 0.0) {
-		longitude = 0.0;
-	}
-	else if (pos.x < 0.0) {
-		longitude = PI - asin(pos.y / r);
-	}
-	else if (pos.x >= 0.0) {
-		longitude = asin(pos.y / r);
-	}
-	longitude += rotateZInput * 2.0 * PI;
-	if (longitude < 0.0) {
-		longitude += 2.0*PI;
-	}
-	p.x = cos(latitude) * cos(longitude);
-	p.y = cos(latitude) * sin(longitude);
-	p.z = sin(latitude);
+	p.x = cos(latLon.x) * cos(latLon.y);
+	p.y = cos(latLon.x) * sin(latLon.y);
+	p.z = sin(latLon.x);
 	float temp = p.y;
 	p.z = p.y;
 	p.y = p.z;
-	latitude = asin(p.z);
-	longitude = -acos(p.x / cos(latitude));
-	longitude += rotateYInput * 2.0 * PI;
+	latLon.x = asin(p.z);
+	latLon.y = -acos(p.x / cos(latLon.x));
+	latLon.y += rotateYInput * 2.0 * PI;
 	// Rotate by a quarter turn to align the fisheye image with the center of the 360 image
-	longitude += PI/2.0;
+	latLon.y += PI/2.0;
 
-	u = (longitude + PI) / (2.0 * PI);
-	v = (latitude + PI/2.0) / PI;
+	u = (latLon.y + PI) / (2.0 * PI);
+	v = (latLon.x + PI/2.0) / PI;
 	outCoord = vec2(u,v);
 
 	fragColor = texture(InputTexture, outCoord);

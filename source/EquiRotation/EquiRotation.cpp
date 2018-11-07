@@ -38,51 +38,46 @@ void main()
 )";
 
 static const char fragmentShaderCode[] = R"(#version 410 core
+float PI = 3.14159265359;
 uniform sampler2D InputTexture;
 uniform vec3 InputRotation;
 
 in vec2 uv;
-/*
- * This is used to manipulate 360 VR videos, also known as equirectangular videos.
- * This shader can pitch, roll, and yaw the camera within a 360 image.
-*/
-vec3 PRotateX(vec3 p, float theta)
+mat3 Rx(float th) 
 {
-   vec3 q;
-   q.x = p.x;
-   q.y = p.y * cos(theta) + p.z * sin(theta);
-   q.z = -p.y * sin(theta) + p.z * cos(theta);
-   return(q);
+	return mat3(1, 0, 0,
+				0, cos(th), -sin(th),
+				0, sin(th), cos(th));
 }
-
-vec3 PRotateY(vec3 p, float theta)
+mat3 Ry(float th) 
 {
-   vec3 q;
-   q.x = p.x * cos(theta) - p.z * sin(theta);
-   q.y = p.y;
-   q.z = p.x * sin(theta) + p.z * cos(theta);
-   return(q);
+	return mat3(cos(th), 0, sin(th),
+				   0,    1,    0,
+				-sin(th), 0, cos(th));
 }
-
-vec3 PRotateZ(vec3 p, float theta)
+mat3 Rz(float th) 
 {
-   vec3 q;
-   q.x = p.x * cos(theta) + p.y * sin(theta);
-   q.y = -p.x * sin(theta) + p.y * cos(theta);
-   q.z = p.z;
-   return(q);
+	return mat3(cos(th), -sin(th), 0,
+				sin(th),  cos(th), 0,
+				  0,         0   , 1);
+}
+vec3 rotatePoint(vec3 p, vec3 th)
+{
+	mat3 rotation = Rx(th.r) * Ry(th.g) * Rz(th.b);
+	return rotation * p;
+}
+vec2 uvToLatLon(vec2 uv)
+{
+	return vec2(uv.y * PI - PI/2.0,
+				uv.x * 2.0*PI - PI);
 }
 out vec4 fragColor;
-float PI = 3.14159265359;
 void main()
 {
 	ivec2 textureSize2d = textureSize(InputTexture,0);
     vec2 textureSize = textureSize2d.xy;
 	vec2 rotation = vec2(InputRotation.r, InputRotation.g);
-	vec3 input = InputRotation.rgb / 2.0;
-	if (input.r == 0.5) { input.r -= 0.00001; }
-	if (input.g == 0.5) { input.g -= 0.00001; }
-	if (input.b == 0.5) { input.b -= 0.00001; }
+	vec3 input = InputRotation.rgb * PI;
 
 	// Position of the destination pixel in xy coordinates in the range [0,1]
 	vec2 pos;
@@ -94,43 +89,19 @@ void main()
 	// Z increases from back to front [-1 to 1]
 	vec3 ray;
 
-	float latitude = uv.y * PI - PI/2.0;
-	float longitude = uv.x * 2.0*PI - PI;
+	vec2 latLon = uvToLatLon(uv);
 	// Create a ray from the latitude and longitude
-	ray.x = cos(latitude) * sin(longitude);
-	ray.y = sin(latitude);
-	ray.z = cos(latitude) * cos(longitude);
+	ray.x = cos(latLon.x) * sin(latLon.y);
+	ray.y = sin(latLon.x);
+	ray.z = cos(latLon.x) * cos(latLon.y);
 	// Rotate the ray based on the user input
-	if (input.r != 0.5) {
-		ray = PRotateX(ray, input.r * 2.0*PI);
-	}
-	if (input.g != 0.5) {
-		ray = PRotateY(ray, input.g * 2.0*PI);
-	}
-	if (input.b != 0.5) {
-		ray = PRotateZ(ray, input.b * 2.0*PI);
-	}
+	ray = rotatePoint(ray, input);
 	// Convert back to latitude and longitude
-	latitude = asin(ray.y);
-	// Manually implement `longitude = atan2(ray.x, ray.z);`
-	if (ray.z > 0.0) {
-		longitude = atan(ray.x/ray.z);
-	}
-	else if (ray.z < 0.0 && ray.x >= 0.0) {
-		longitude = atan(ray.x/ray.z) + PI;
-	}
-	else if (ray.z < 0.0 && ray.x < 0.0) {
-		longitude = atan(ray.x/ray.z) - PI;
-	}
-	else if (ray.z == 0.0 && ray.x > 0.0) {
-		longitude = PI/2.0;
-	}
-	else if (ray.z == 0.0 && ray.x < 0.0) {
-		longitude = -PI/2.0;
-	}
+	latLon.x = asin(ray.y);
+	latLon.y = atan(ray.x, ray.z);
 	// Convert back to the normalized pixel coordinate
-	outCoord.x = (longitude + PI)/(2.0*PI);
-	outCoord.y = (latitude + PI/2.0)/PI;
+	outCoord.x = (latLon.y + PI)/(2.0*PI);
+	outCoord.y = (latLon.x + PI/2.0)/PI;
 
 	vec4 color = texture( InputTexture, outCoord );
 	fragColor = color;

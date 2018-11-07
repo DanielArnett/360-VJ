@@ -43,35 +43,32 @@ uniform sampler2D InputTexture;
 uniform vec3 InputRotation;
 in vec2 uv;
 out vec4 fragColor;
-/*
- * This is used to manipulate 360 VR videos, also known as equirectangular videos.
- * This shader can pitch, roll, and yaw the camera within a 360 image.
-*/
-vec3 PRotateX(vec3 p, float theta)
+// A transformation matrix rotating about the x axis by `th` degrees.
+mat3 Rx(float th) 
 {
-   vec3 q;
-   q.x = p.x;
-   q.y = p.y * cos(theta) + p.z * sin(theta);
-   q.z = -p.y * sin(theta) + p.z * cos(theta);
-   return(q);
+	return mat3(1, 0, 0,
+				0, cos(th), -sin(th),
+				0, sin(th), cos(th));
+}
+// A transformation matrix rotating about the y axis by `th` degrees.
+mat3 Ry(float th) 
+{
+	return mat3(cos(th), 0, sin(th),
+				   0,    1,    0,
+				-sin(th), 0, cos(th));
+}
+// A transformation matrix rotating about the z axis by `th` degrees.
+mat3 Rz(float th) 
+{
+	return mat3(cos(th), -sin(th), 0,
+				sin(th),  cos(th), 0,
+				  0,         0   , 1);
 }
 
-vec3 PRotateY(vec3 p, float theta)
+// Rotate a point vector by th.x then th.y then th.z, and return the rotated point.
+vec3 rotatePoint(vec3 p, vec3 th)
 {
-   vec3 q;
-   q.x = p.x * cos(theta) - p.z * sin(theta);
-   q.y = p.y;
-   q.z = p.x * sin(theta) + p.z * cos(theta);
-   return(q);
-}
-
-vec3 PRotateZ(vec3 p, float theta)
-{
-   vec3 q;
-   q.x = p.x * cos(theta) + p.y * sin(theta);
-   q.y = -p.x * sin(theta) + p.y * cos(theta);
-   q.z = p.z;
-   return(q);
+	return Rx(th.r) * Ry(th.g) * Rz(th.b) * p;
 }
 vec2 getLatLonFromFisheyeUv(vec2 uv, float r)
 {
@@ -87,6 +84,29 @@ vec2 getLatLonFromFisheyeUv(vec2 uv, float r)
 	else if (uv.x >= 0.0) {
 		latLon.y = asin(uv.y / r);
 	}
+	// Perform z rotation.
+	/*latLon.y += InputRotation.z * 2.0 * PI;
+	if (latLon.y < 0.0) {
+		latLon.y += 2.0*PI;
+	}*/
+	return latLon;
+}
+// Convert latitude, longitude into a 3d point on the unit-sphere.
+vec3 latLonToPoint(vec2 latLon)
+{
+	vec3 point;
+	point.x = cos(latLon.x) * cos(latLon.y);
+	point.y = cos(latLon.x) * sin(latLon.y);
+	point.z = sin(latLon.x);
+	return point;
+}
+
+// Convert a 3D point on the unit sphere into latitude and longitude.
+vec2 pointToLatLon(vec3 point) 
+{
+	vec2 latLon;
+	latLon.x = asin(point.z);
+	latLon.y = -acos(point.x / cos(latLon.x));
 	return latLon;
 }
 void main()
@@ -95,55 +115,48 @@ void main()
 	vec2 pos = 2.0 * uv - 1.0;
 
 	// Radius of the pixel from the center
-	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
+	float r = distance(vec2(0.0,0.0), pos);
 	// Don't bother with pixels outside of the fisheye circle
 	if (1.0 < r) {
 		// Return a transparent pixel
 		fragColor = vec4(0.0,0.0,0.0,0.0);
 		return;
 	}
+	// phi is the angle of r on the unit circle. See polar coordinates for more details
 	float phi;
 	vec2 latLon = getLatLonFromFisheyeUv(pos, r);
-	float u;
-	float v;
 	// The point on the unit-sphere
 	vec3 p;
-	// Output color. In our case the color of the source pixel
-	vec3 col;
 	// The source pixel's coordinates
-	vec2 outCoord;
+	vec2 sourcePixel;
 
-	// Perform z rotation.
-	latLon.y += InputRotation.z * 2.0 * PI;
-	if (latLon.y < 0.0) {
-		latLon.y += 2.0*PI;
-	}
-	// Turn the latitude and longitude into a 3D ray
-	p.x = cos(latLon.x) * cos(latLon.y);
-	p.y = cos(latLon.x) * sin(latLon.y);
-	p.z = sin(latLon.x);
+	
+	// Turn the latitude and longitude into a 3D point
+	p = latLonToPoint(latLon);
+	
 	// Rotate the value based on the user input
-	p = PRotateX(p, 2.0 * PI * InputRotation.x);
-	p = PRotateY(p, 2.0 * PI * InputRotation.y);
-	// Get the source pixel latitude and longitude
-	latLon.x = asin(p.z);
-	latLon.y = -acos(p.x / cos(latLon.x));
+	p = rotatePoint(p, 2.0 * PI * InputRotation);
+	// Get the latitude and longitude of the rotated point
+	latLon = pointToLatLon(p);
+
 	// Get the source pixel radius from center
 	r = 1.0 - latLon.x/(PI / 2.0);
-	// Disregard all images outside of the fisheye circle
-	if (r > 1.0) {
+	// Don't bother with source pixels outside of the fisheye circle
+	if (1.0 < r) {
+		// Return a transparent pixel
+		fragColor = vec4(0.0,0.0,0.0,0.0);
 		return;
 	}
 	phi = atan(p.y, p.x);
 
 	// Get the position of the output pixel
-	u = r * cos(phi);
-	v = r * sin(phi);
+	sourcePixel.x = r * cos(phi);
+	sourcePixel.y = r * sin(phi);
 	// Normalize the output pixel to be in the range [0,1]
-	outCoord.x = (float(u) + 1.0) / 2.0;
-	outCoord.y = (float(v) + 1.0) / 2.0;
+	sourcePixel += 1.0;
+	sourcePixel /= 2.0;
 	// Set the color of the destination pixel to the color of the source pixel.
-	fragColor = texture(InputTexture, outCoord);
+	fragColor = texture(InputTexture, sourcePixel);
 }
 )";
 

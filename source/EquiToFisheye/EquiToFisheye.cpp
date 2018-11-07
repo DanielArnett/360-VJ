@@ -87,43 +87,31 @@ vec2 pointToLatLon(vec3 p)
 }
 void main()
 {
-	float rotateZInput = 0.0;
-	float rotateYInput = 0.0;
 	vec2 pos = 2.0 * uv - 1.0;
-	float r = sqrt(pos.x*pos.x + pos.y*pos.y);
+	float r = distance(vec2(0.0, 0.0), pos);
 	// Don't bother with pixels outside of the fisheye circle
 	if (1.0 < r) {
 		// Return a transparent pixel
 		fragColor = vec4(0.0,0.0,0.0,0.0);
 		return;
 	}
-	float phi;
-	float percentX;
-	float percentY;
-	float u;
-	float v;
 	vec3 p;
-	vec3 col;
-	vec2 outCoord;
+	vec2 sourcePixel;
+	// Get the latitude and longitude for the destination pixel.
 	vec2 latLon = getLatLonFromFisheyeUv(pos, r);
+	p = latLonToPoint(latLon);
 
-	p.x = cos(latLon.x) * cos(latLon.y);
-	p.y = cos(latLon.x) * sin(latLon.y);
-	p.z = sin(latLon.x);
-	float temp = p.y;
+	// TODO align my equirectangular coordinate system with the fisheye coordinate system. Here's a temporary fix.
 	p.z = p.y;
 	p.y = p.z;
-	latLon.x = asin(p.z);
-	latLon.y = -acos(p.x / cos(latLon.x));
-	latLon.y += rotateYInput * 2.0 * PI;
-	// Rotate by a quarter turn to align the fisheye image with the center of the 360 image
-	latLon.y += PI/2.0;
 
-	u = (latLon.y + PI) / (2.0 * PI);
-	v = (latLon.x + PI/2.0) / PI;
-	outCoord = vec2(u,v);
+	// Get the lat lon for the source pixel
+	latLon = pointToLatLon(p);
 
-	fragColor = texture(InputTexture, outCoord);
+	sourcePixel.x = (latLon.y + PI) / (2.0 * PI);
+	sourcePixel.y = (latLon.x + PI/2.0) / PI;
+
+	fragColor = texture(InputTexture, sourcePixel);
 }
 )";
 

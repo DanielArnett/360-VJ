@@ -88,6 +88,8 @@
     <ClInclude Include="..\ffgl\source\lib\ffgl\utilities\utilities.h">
       <Filter>Source Files\lib\ffgl\utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\EquiToFisheye\EquiToFisheye.h" />
+    <ClInclude Include="..\source\EquiToFisheye\EquiToFisheye.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

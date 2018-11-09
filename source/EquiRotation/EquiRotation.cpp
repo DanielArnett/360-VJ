@@ -1,48 +1,41 @@
+#include <FFGL.h>
+#include <FFGLLib.h>
+
 #include "EquiRotation.h"
-#include <ffgl/FFGLLib.h>
-#include <ffglex/FFGLScopedShaderBinding.h>
-#include <ffglex/FFGLScopedSamplerActivation.h>
-#include <ffglex/FFGLScopedTextureBinding.h>
-using namespace ffglex;
+#include "../../lib/ffgl/utilities/utilities.h"
+
 
 #define FFPARAM_Roll ( 0 )
 #define FFPARAM_Pitch ( 1 )
 #define FFPARAM_Yaw ( 2 )
 
 static CFFGLPluginInfo PluginInfo(
-	PluginFactory< EquiToFisheye >,// Create method
+	EquiRotation::CreateInstance,		// Create method
 	"360V",                       // Plugin unique ID of maximum length 4.
 	"360 VJ",				 	  // Plugin name
-	2,                            // API major version number
-	1,                            // API minor version number
-	1,                            // Plugin major version number
-	0,                            // Plugin minor version number
+	1,						   	  // API major version number 													
+	500,						  // API minor version number
+	1,							  // Plugin major version number
+	000,						  // Plugin minor version number
 	FF_EFFECT,                    // Plugin type
 	"Rotate 360 videos",		  // Plugin description
 	"Written by Daniel Arnett, go to https://github.com/DanielArnett/360-VJ/releases for more detail."      // About
 );
 
-static const char vertexShaderCode[] = R"(#version 410 core
-uniform vec2 MaxUV;
-
-layout( location = 0 ) in vec4 vPosition;
-layout( location = 1 ) in vec2 vUV;
-
-out vec2 uv;
-
-void main()
+static const std::string vertexShaderCode = STRINGIFY(
+	void main()
 {
-	gl_Position = vPosition;
-	uv = vUV * MaxUV;
+	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+	gl_TexCoord[0] = gl_MultiTexCoord0;
+	gl_FrontColor = gl_Color;
 }
-)";
+);
 
-static const char fragmentShaderCode[] = R"(#version 410 core
+static const std::string fragmentShaderCode = STRINGIFY(
+
 float PI = 3.14159265359;
 uniform sampler2D InputTexture;
 uniform vec3 InputRotation;
-in vec2 uv;
-out vec4 fragColor;
 // A transformation matrix rotating about the x axis by `th` degrees.
 mat3 Rx(float th) 
 {
@@ -105,8 +98,10 @@ vec2 latLonToUv(vec2 latLon)
 	uv.y = (latLon.x + PI/2.0)/PI;
 	return uv;
 }
+
 void main()
 {
+	vec2 uv = gl_TexCoord[0].xy;
 	// Latitude and Longitude of the destination pixel (uv)
 	vec2 latLon = uvToLatLon(uv);
 	// Create a point on the unit-sphere from the latitude and longitude
@@ -121,12 +116,15 @@ void main()
 	// Convert back to the normalized pixel coordinate
 	vec2 sourcePixel = latLonToUv(latLon);
 	// Set the color of the destination pixel to the color of the source pixel
-	fragColor = texture( InputTexture, sourcePixel );
-}
-)";
 
-EquiToFisheye::EquiToFisheye() :
-	maxUVLocation( -1 ),
+	gl_FragColor = texture2D(InputTexture, sourcePixel);
+}
+);
+
+EquiRotation::EquiRotation()
+	:CFreeFrameGLPlugin(),
+	m_initResources(1),
+	m_inputTextureLocation(-1),
 	fieldOfViewLocation( -1 ),
 	pitch( 0.5f ),
 	yaw( 0.5f ),
@@ -137,57 +135,76 @@ EquiToFisheye::EquiToFisheye() :
 	SetMaxInputs( 1 );
 
 	// Parameters
-	SetParamInfof( FFPARAM_Roll, "Roll", FF_TYPE_STANDARD );
-	SetParamInfof( FFPARAM_Pitch, "Pitch", FF_TYPE_STANDARD );
-	SetParamInfof( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD );
+	SetParamInfo( FFPARAM_Roll, "Roll", FF_TYPE_STANDARD, 0.5f);
+	roll = 0.5f;
+	SetParamInfo( FFPARAM_Pitch, "Pitch", FF_TYPE_STANDARD, 0.5f);
+	pitch = 0.5f;
+	SetParamInfo( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD, 0.5f);
+	yaw = 0.5f;
 }
-EquiToFisheye::~EquiToFisheye()
+EquiRotation::~EquiRotation()
 {
 }
 
-FFResult EquiToFisheye::InitGL( const FFGLViewportStruct* vp )
+FFResult EquiRotation::InitGL( const FFGLViewportStruct* vp )
 {
-	if( !shader.Compile( vertexShaderCode, fragmentShaderCode ) )
-	{
-		DeInitGL();
-		return FF_FAIL;
-	}
-	if( !quad.Initialise() )
-	{
-		DeInitGL();
-		return FF_FAIL;
-	}
+	m_initResources = 0;
+	//initialize gl shader
+	m_shader.Compile(vertexShaderCode, fragmentShaderCode);
 
-	//FFGL requires us to leave the context in a default state on return, so use this scoped binding to help us do that.
-	ScopedShaderBinding shaderBinding( shader.GetGLID() );
+	//activate our shader
+	m_shader.BindShader();
 
-	//We're never changing the sampler to use, instead during rendering we'll make sure that we're always
-	//binding the texture to sampler 0.
-	glUniform1i( shader.FindUniform( "inputTexture" ), 0 );
+	//to assign values to parameters in the shader, we have to lookup
+	//the "location" of each value.. then call one of the glUniform* methods
+	//to assign a value
+	m_inputTextureLocation = m_shader.FindUniform("InputTexture");
 
 	//We need to know these uniform locations because we need to set their value each frame.
-	maxUVLocation = shader.FindUniform( "MaxUV" );
-	fieldOfViewLocation = shader.FindUniform( "InputRotation" );
+	maxUVLocation = m_shader.FindUniform( "MaxUV" );
+	fieldOfViewLocation = m_shader.FindUniform( "InputRotation" );
 
-	//Use base-class init as success result so that it retains the viewport.
-	return CFreeFrameGLPlugin::InitGL( vp );
+	//the 0 means that the 'inputTexture' in
+	//the shader will use the texture bound to GL texture unit 0
+	glUniform1i(m_inputTextureLocation, 0);
+
+	m_shader.UnbindShader();
+
+	return FF_SUCCESS;
 }
-FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
+
+FFResult EquiRotation::DeInitGL()
 {
-	if( pGL->numInputTextures < 1 )
+	m_shader.FreeGLResources();
+
+
+	return FF_SUCCESS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Methods
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+FFResult EquiRotation::ProcessOpenGL(ProcessOpenGLStruct *pGL)
+{
+	if (pGL->numInputTextures < 1)
 		return FF_FAIL;
 
-	if( pGL->inputTextures[ 0 ] == NULL )
+	if (pGL->inputTextures[0] == NULL)
 		return FF_FAIL;
 
-	//FFGL requires us to leave the context in a default state on return, so use this scoped binding to help us do that.
-	ScopedShaderBinding shaderBinding( shader.GetGLID() );
+	//activate our shader
+	m_shader.BindShader();
 
-	FFGLTextureStruct& Texture = *( pGL->inputTextures[ 0 ] );
+	FFGLTextureStruct &Texture = *(pGL->inputTextures[0]);
 
-	//The input texture's dimension might change each frame and so might the content area.
-	//We're adopting the texture's maxUV using a uniform because that way we dont have to update our vertex buffer each frame.
-	FFGLTexCoords maxCoords = GetMaxGLTexCoords( Texture );
+	//get the max s,t that correspond to the 
+	//width,height of the used portion of the allocated texture space
+	FFGLTexCoords maxCoords = GetMaxGLTexCoords(Texture);
+
+	//assign the UV
 	glUniform2f( maxUVLocation, maxCoords.s, maxCoords.t );
 
 	glUniform3f( fieldOfViewLocation,
@@ -195,26 +212,45 @@ FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 				 -1.0f + ( yaw * 2.0f ),
 				 -1.0f + ( roll * 2.0f ) );
 
-	//The shader's sampler is always bound to sampler index 0 so that's where we need to bind the texture.
-	//Again, we're using the scoped bindings to help us keep the context in a default state.
-	ScopedSamplerActivation activateSampler( 0 );
-	Scoped2DTextureBinding textureBinding( Texture.Handle );
 
-	quad.Draw();
+	//activate texture unit 1 and bind the input texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Texture.Handle);
+
+	//draw the quad that will be painted by the shader/textures
+	//note that we are sending texture coordinates to texture unit 1..
+	//the vertex shader and fragment shader refer to this when querying for
+	//texture coordinates of the inputTexture
+	glBegin(GL_QUADS);
+
+	//lower left
+	glMultiTexCoord2f(GL_TEXTURE0, 0, 0);
+	glVertex2f(-1, -1);
+
+	//upper left
+	glMultiTexCoord2f(GL_TEXTURE0, 0, maxCoords.t);
+	glVertex2f(-1, 1);
+
+	//upper right
+	glMultiTexCoord2f(GL_TEXTURE0, maxCoords.s, maxCoords.t);
+	glVertex2f(1, 1);
+
+	//lower right
+	glMultiTexCoord2f(GL_TEXTURE0, maxCoords.s, 0);
+	glVertex2f(1, -1);
+	glEnd();
+
+	//unbind the input texture
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	//unbind the shader
+	m_shader.UnbindShader();
 
 	return FF_SUCCESS;
 }
-FFResult EquiToFisheye::DeInitGL()
-{
-	shader.FreeGLResources();
-	quad.Release();
-	maxUVLocation = -1;
-	fieldOfViewLocation = -1;
 
-	return FF_SUCCESS;
-}
-
-FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
+FFResult EquiRotation::SetFloatParameter( unsigned int dwIndex, float value )
 {
 	switch( dwIndex )
 	{
@@ -234,7 +270,7 @@ FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 	return FF_SUCCESS;
 }
 
-float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
+float EquiRotation::GetFloatParameter( unsigned int dwIndex )
 {
 	switch( dwIndex )
 	{
@@ -247,30 +283,5 @@ float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
 
 	default:
 		return 0.0f;
-	}
-}
-char* EquiToFisheye::GetParameterDisplay(unsigned int index)
-{
-	/**
-	 * We're not returning ownership over the string we return, so we have to somehow guarantee that
-	 * the lifetime of the returned string encompasses the usage of that string by the host. Having this static
-	 * buffer here keeps previously returned display string alive until this function is called again.
-	 * This happens to be long enough for the hosts we know about.
-	 */
-	static char displayValueBuffer[15];
-	memset(displayValueBuffer, 0, sizeof(displayValueBuffer));
-	switch (index)
-	{
-	case FFPARAM_Pitch:
-		sprintf_s(displayValueBuffer, "%f", pitch * 360 - 180);
-		return displayValueBuffer;
-	case FFPARAM_Yaw:
-		sprintf_s(displayValueBuffer, "%f", yaw * 360 - 180);
-		return displayValueBuffer;
-	case FFPARAM_Roll:
-		sprintf_s(displayValueBuffer, "%f", roll * 360 - 180);
-		return displayValueBuffer;
-	default:
-		return CFreeFrameGLPlugin::GetParameterDisplay(index);
 	}
 }

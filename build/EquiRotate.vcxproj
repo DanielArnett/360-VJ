@@ -20,7 +20,7 @@
     <ClCompile Include="..\ffgl\source\lib\ffgl\FFGLShader.cpp" />
     <ClCompile Include="..\ffgl\source\lib\ffgl\utilities\utilities.cpp" />
     <ClCompile Include="..\ffgl\source\lib\glee\GLee.c" />
-    <ClCompile Include="..\source\EquiRotate\EquiRotate.cpp" />
+    <ClCompile Include="..\source\EquiRotation\EquiRotation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ffgl\source\lib\ffgl\FFGL.h" />
@@ -34,7 +34,7 @@
     <ClInclude Include="..\ffgl\source\lib\ffgl\FreeFrame.h" />
     <ClInclude Include="..\ffgl\source\lib\ffgl\utilities\utilities.h" />
     <ClInclude Include="..\ffgl\source\lib\glee\GLee.h" />
-    <ClInclude Include="..\source\EquiRotate\EquiRotate.h" />
+    <ClInclude Include="..\source\EquiRotation\EquiRotation.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1EC32B44-73B3-482A-BF6F-B9030C0F5AC4}</ProjectGuid>

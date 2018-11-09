@@ -50,7 +50,7 @@
     <ClCompile Include="..\ffgl\source\lib\ffgl\utilities\utilities.cpp">
       <Filter>Source Files\lib\ffgl\utilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\EquiRotate\EquiRotate.cpp">
+    <ClCompile Include="..\source\EquiRotation\EquiRotation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -88,7 +88,7 @@
     <ClInclude Include="..\ffgl\source\lib\ffgl\utilities\utilities.h">
       <Filter>Source Files\lib\ffgl\utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\EquiRotate\EquiRotate.h">
+    <ClInclude Include="..\source\EquiRotation\EquiRotation.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

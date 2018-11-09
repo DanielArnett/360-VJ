@@ -1,31 +1,76 @@
 #pragma once
-#include <string>
-#include <ffgl/FFGLPluginSDK.h>
-#include <ffglex/FFGLShader.h>
-#include <ffglex/FFGLScreenQuad.h>
 
-class EquiToFisheye : public CFreeFrameGLPlugin
+#include <FFGLShader.h>
+#include "FFGLPluginSDK.h"
+#include <string>
+
+class FisheyeRotation : public CFreeFrameGLPlugin
 {
 public:
-	EquiToFisheye();
-	~EquiToFisheye();
+	FisheyeRotation();
+	~FisheyeRotation();
 
-	//CFreeFrameGLPlugin
-	FFResult InitGL( const FFGLViewportStruct* vp ) override;
-	FFResult ProcessOpenGL( ProcessOpenGLStruct* pGL ) override;
+	///////////////////////////////////////////////////
+	// FreeFrame plugin methods
+	///////////////////////////////////////////////////
+
+	FFResult SetFloatParameter(unsigned int dwIndex, float value) override;
+	float GetFloatParameter(unsigned int index) override;
+	FFResult ProcessOpenGL(ProcessOpenGLStruct* pGL) override;
+	FFResult InitGL(const FFGLViewportStruct *vp) override;
 	FFResult DeInitGL() override;
 
-	FFResult SetFloatParameter( unsigned int dwIndex, float value ) override;
+	///////////////////////////////////////////////////
+	// Factory method
+	///////////////////////////////////////////////////
 
-	float GetFloatParameter( unsigned int index ) override;
+	static FFResult __stdcall CreateInstance(CFreeFrameGLPlugin **ppOutInstance)
+	{
+		*ppOutInstance = new FisheyeRotation();
+		if (*ppOutInstance != NULL)
+			return FF_SUCCESS;
+		return FF_FAIL;
+	}
 
-private:
+
+protected:
+	// Parameters
+	int m_initResources;
+
+	FFGLShader m_shader;
+	GLint m_inputTextureLocation;
+
 	float pitch;
 	float yaw;
 	float roll;
 
-	ffglex::FFGLShader shader;   //!< Utility to help us compile and link some shaders into a program.
-	ffglex::FFGLScreenQuad quad; //!< Utility to help us render a full screen quad.
 	GLint maxUVLocation;
 	GLint fieldOfViewLocation;
+
 };
+
+//class EquiToFisheye : public CFreeFrameGLPlugin
+//{
+//public:
+//	EquiToFisheye();
+//	~EquiToFisheye();
+//
+//	//CFreeFrameGLPlugin
+//	FFResult InitGL( const FFGLViewportStruct* vp ) override;
+//	FFResult ProcessOpenGL( ProcessOpenGLStruct* pGL ) override;
+//	FFResult DeInitGL() override;
+//
+//	FFResult SetFloatParameter( unsigned int dwIndex, float value ) override;
+//
+//	float GetFloatParameter( unsigned int index ) override;
+//
+//private:
+//	float pitch;
+//	float yaw;
+//	float roll;
+//
+//	ffglex::FFGLShader shader;   //!< Utility to help us compile and link some shaders into a program.
+//	ffglex::FFGLScreenQuad quad; //!< Utility to help us render a full screen quad.
+//	GLint maxUVLocation;
+//	GLint fieldOfViewLocation;
+//};

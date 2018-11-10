@@ -5,7 +5,7 @@
 
 
 
-#define FFPARAM_Roll ( 0 )
+#define FFPARAM_FOV ( 0 )
 #define FFPARAM_Pitch ( 1 )
 #define FFPARAM_Yaw ( 2 )
 
@@ -113,7 +113,7 @@ void main()
 	// Don't bother with pixels outside of the fisheye circle
 	if (1.0 < r) {
 		// Return a transparent pixel
-		fragColor = vec4(0.0,0.0,0.0,0.0);
+		gl_FragColor = vec4(0.0,0.0,0.0,0.0);
 		return;
 	}
 	// phi is the angle of r on the unit circle. See polar coordinates for more details
@@ -138,7 +138,7 @@ void main()
 	// Don't bother with source pixels outside of the fisheye circle
 	if (1.0 < r) {
 		// Return a transparent pixel
-		fragColor = vec4(0.0,0.0,0.0,0.0);
+		gl_FragColor = vec4(0.0,0.0,0.0,0.0);
 		return;
 	}
 	phi = atan(p.y, p.x);
@@ -169,7 +169,7 @@ FisheyeRotation::FisheyeRotation()
 	SetMaxInputs(1);
 
 	// Parameters
-	SetParamInfo(FFPARAM_Roll, "Roll", FF_TYPE_STANDARD, 0.5f);
+	SetParamInfo(FFPARAM_FOV, "Roll", FF_TYPE_STANDARD, 0.5f);
 	roll = 0.5f;
 	SetParamInfo(FFPARAM_Pitch, "Pitch", FF_TYPE_STANDARD, 0.5f);
 	pitch = 0.5f;
@@ -287,7 +287,7 @@ FFResult FisheyeRotation::SetFloatParameter(unsigned int dwIndex, float value)
 	case FFPARAM_Yaw:
 		yaw = value;
 		break;
-	case FFPARAM_Roll:
+	case FFPARAM_FOV:
 		roll = value;
 		break;
 	default:
@@ -305,7 +305,7 @@ float FisheyeRotation::GetFloatParameter(unsigned int dwIndex)
 		return pitch;
 	case FFPARAM_Yaw:
 		return yaw;
-	case FFPARAM_Roll:
+	case FFPARAM_FOV:
 		return roll;
 
 	default:

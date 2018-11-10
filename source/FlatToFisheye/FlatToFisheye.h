@@ -36,10 +36,11 @@ public:
 protected:
 	// Parameters
 	int m_initResources;
-
+	float fieldOfView;
 	FFGLShader m_shader;
 	GLint m_inputTextureLocation;
 	GLint fieldOfViewLocation;
+	GLint maxUVLocation;
 
 };
 

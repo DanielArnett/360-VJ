@@ -1,52 +1,39 @@
 #include "FlatToFisheye.h"
-#include <ffgl/FFGLLib.h>
-#include <ffglex/FFGLScopedShaderBinding.h>
-#include <ffglex/FFGLScopedSamplerActivation.h>
-#include <ffglex/FFGLScopedTextureBinding.h>
-using namespace ffglex;
+#include <FFGL.h>
+#include <FFGLLib.h>
+#include "../../lib/ffgl/utilities/utilities.h"
 
-#define FFPARAM_Roll ( 0 )
+#define FFPARAM_FOV ( 0 )
 //#define FFPARAM_Aspect_Ratio ( 1 )
 //#define FFPARAM_Yaw ( 2 )
 
 static CFFGLPluginInfo PluginInfo(
-	PluginFactory< EquiToFisheye >,// Create method
+	FlatToFisheye::CreateInstance,// Create method
 	"FTFV",                       // Plugin unique ID of maximum length 4.
-	"Flat to Fisheye",				 	  // Plugin name
-	2,                            // API major version number
-	1,                            // API minor version number
-	1,                            // Plugin major version number
-	0,                            // Plugin minor version number
+	"Flat to Fisheye",			  // Plugin name
+	1,						   	  // API major version number 													
+	500,						  // API minor version number
+	1,							  // Plugin major version number
+	000,						  // Plugin minor version number
 	FF_EFFECT,                    // Plugin type
 	"Apply a fisheye effect to flat videos", // Plugin description
 	"Written by Daniel Arnett, go to https://github.com/DanielArnett/360-VJ/releases for more detail."      // About
 );
 
-static const char vertexShaderCode[] = R"(#version 410 core
-uniform vec2 MaxUV;
-
-layout( location = 0 ) in vec4 vPosition;
-layout( location = 1 ) in vec2 vUV;
-
-out vec2 uv;
-
-void main()
+static const std::string vertexShaderCode = STRINGIFY(
+	void main()
 {
-	gl_Position = vPosition;
-	uv = vUV * MaxUV;
+	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+	gl_TexCoord[0] = gl_MultiTexCoord0;
+	gl_FrontColor = gl_Color;
 }
-)";
+);
 
-static const char fragmentShaderCode[] = R"(#version 410 core
+static const std::string fragmentShaderCode = STRINGIFY(
+
+	float PI = 3.14159265359;
 	uniform sampler2D InputTexture;
 	uniform float fieldOfView;
-	
-	// vector with elements in the range [0,1]
-	// uv == vec2(0.0, 0.0) at the bottom left corner of the image
-	in vec2 uv;
-	out vec4 fragColor;
-
-	float PI = 3.14159;
 
 	vec2 getLatLonFromFisheyeUv(vec2 uv, float r)
 	{
@@ -88,6 +75,7 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 	}
 	void main()
 	{
+		vec2 uv = gl_TexCoord[0].xy;
 		ivec2 textureSize2d = textureSize(InputTexture,0);
 		vec2 textureSize = textureSize2d.xy;
 		float ASPECT_RATIO = textureSize.x / textureSize.y;
@@ -106,7 +94,7 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 		// Mask off the fisheye ring.
 		if (r > 1.0) {
 			// Return a transparent pixel
-			fragColor = vec4(0.0,0.0,0.0,0.0);
+			gl_FragColor = vec4(0.0,0.0,0.0,0.0);
 			return;
 		}
 		// Calculate the 3D position of the source pixel on the image plane.
@@ -122,7 +110,7 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 		xyOnImagePlane = p.xy / (imagePlaneDimensions / 2.0);
 		if (outOfBounds(xyOnImagePlane, -1.0, 1.0)) 
 		{
-			fragColor = vec4(0.0, 0.0, 0.0, 0.0);
+			gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
 			return;
 		}
 
@@ -131,109 +119,138 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 		xyOnImagePlane /= 2.0;
 
 		// Return the source pixel as a vec4 with the r, g, b, and alpha values
-		fragColor = texture( InputTexture, xyOnImagePlane );
+		gl_FragColor = texture2D( InputTexture, xyOnImagePlane );
 	}
-	)";
+	);
 
-EquiToFisheye::EquiToFisheye() :
-	maxUVLocation( -1 ),
-	fieldOfViewLocation( -1 ),
-	roll( 0.5f )
-	//aspectRatio( 0.5f ),
-	//yaw( 0.5f )
+FlatToFisheye::FlatToFisheye()
+	:CFreeFrameGLPlugin(),
+	m_initResources(1),
+	m_inputTextureLocation(-1),
+	fieldOfViewLocation(-1),
+	fieldOfView(0.5f)
 {
 	// Input properties
-	SetMinInputs( 1 );
-	SetMaxInputs( 1 );
+	SetMinInputs(1);
+	SetMaxInputs(1);
 
 	// Parameters
-	SetParamInfof( FFPARAM_Roll, "Field of View", FF_TYPE_STANDARD );
-	//SetParamInfof( FFPARAM_Aspect_Ratio, "Aspect Ratio", FF_TYPE_STANDARD );
-	//SetParamInfof( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD );
+	SetParamInfo( FFPARAM_FOV, "Field of View", FF_TYPE_STANDARD, 0.5f );
+	fieldOfView = 0.5f;
 }
-EquiToFisheye::~EquiToFisheye()
+
+FlatToFisheye::~FlatToFisheye()
 {
 }
 
-FFResult EquiToFisheye::InitGL( const FFGLViewportStruct* vp )
+FFResult FlatToFisheye::InitGL(const FFGLViewportStruct* vp)
 {
-	if( !shader.Compile( vertexShaderCode, fragmentShaderCode ) )
-	{
-		DeInitGL();
-		return FF_FAIL;
-	}
-	if( !quad.Initialise() )
-	{
-		DeInitGL();
-		return FF_FAIL;
-	}
+	m_initResources = 0;
+	//initialize gl shader
+	m_shader.Compile(vertexShaderCode, fragmentShaderCode);
 
-	//FFGL requires us to leave the context in a default state on return, so use this scoped binding to help us do that.
-	ScopedShaderBinding shaderBinding( shader.GetGLID() );
+	//activate our shader
+	m_shader.BindShader();
 
-	//We're never changing the sampler to use, instead during rendering we'll make sure that we're always
-	//binding the texture to sampler 0.
-	glUniform1i( shader.FindUniform( "inputTexture" ), 0 );
+	//to assign values to parameters in the shader, we have to lookup
+	//the "location" of each value.. then call one of the glUniform* methods
+	//to assign a value
+	m_inputTextureLocation = m_shader.FindUniform("InputTexture");
 
 	//We need to know these uniform locations because we need to set their value each frame.
-	maxUVLocation = shader.FindUniform( "MaxUV" );
-	fieldOfViewLocation = shader.FindUniform( "fieldOfView" );
+	maxUVLocation = m_shader.FindUniform("MaxUV");
+	fieldOfViewLocation = m_shader.FindUniform("fieldOfView");
 
-	//Use base-class init as success result so that it retains the viewport.
-	return CFreeFrameGLPlugin::InitGL( vp );
-}
-FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
-{
-	if( pGL->numInputTextures < 1 )
-		return FF_FAIL;
+	//the 0 means that the 'inputTexture' in
+	//the shader will use the texture bound to GL texture unit 0
+	glUniform1i(m_inputTextureLocation, 0);
 
-	if( pGL->inputTextures[ 0 ] == NULL )
-		return FF_FAIL;
-
-	//FFGL requires us to leave the context in a default state on return, so use this scoped binding to help us do that.
-	ScopedShaderBinding shaderBinding( shader.GetGLID() );
-
-	FFGLTextureStruct& Texture = *( pGL->inputTextures[ 0 ] );
-
-	//The input texture's dimension might change each frame and so might the content area.
-	//We're adopting the texture's maxUV using a uniform because that way we dont have to update our vertex buffer each frame.
-	FFGLTexCoords maxCoords = GetMaxGLTexCoords( Texture );
-	glUniform2f( maxUVLocation, maxCoords.s, maxCoords.t );
-
-	glUniform1f( fieldOfViewLocation,
-				 ( roll ));
-
-	//The shader's sampler is always bound to sampler index 0 so that's where we need to bind the texture.
-	//Again, we're using the scoped bindings to help us keep the context in a default state.
-	ScopedSamplerActivation activateSampler( 0 );
-	Scoped2DTextureBinding textureBinding( Texture.Handle );
-
-	quad.Draw();
+	m_shader.UnbindShader();
 
 	return FF_SUCCESS;
 }
-FFResult EquiToFisheye::DeInitGL()
+
+FFResult FlatToFisheye::DeInitGL()
 {
-	shader.FreeGLResources();
-	quad.Release();
+	m_shader.FreeGLResources();
 	maxUVLocation = -1;
 	fieldOfViewLocation = -1;
 
 	return FF_SUCCESS;
 }
 
-FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Methods
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+FFResult FlatToFisheye::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 {
-	switch( dwIndex )
+	if (pGL->numInputTextures < 1)
+		return FF_FAIL;
+
+	if (pGL->inputTextures[0] == NULL)
+		return FF_FAIL;
+
+	//activate our shader
+	m_shader.BindShader();
+
+	FFGLTextureStruct &Texture = *(pGL->inputTextures[0]);
+
+	//get the max s,t that correspond to the 
+	//width,height of the used portion of the allocated texture space
+	FFGLTexCoords maxCoords = GetMaxGLTexCoords(Texture);
+
+	//assign the UV
+	glUniform2f(maxUVLocation, maxCoords.s, maxCoords.t);
+
+	glUniform1f(fieldOfViewLocation,
+			fieldOfView);
+
+
+	//activate texture unit 1 and bind the input texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Texture.Handle);
+
+	//draw the quad that will be painted by the shader/textures
+	//note that we are sending texture coordinates to texture unit 1..
+	//the vertex shader and fragment shader refer to this when querying for
+	//texture coordinates of the inputTexture
+	glBegin(GL_QUADS);
+
+	//lower left
+	glMultiTexCoord2f(GL_TEXTURE0, 0, 0);
+	glVertex2f(-1, -1);
+
+	//upper left
+	glMultiTexCoord2f(GL_TEXTURE0, 0, maxCoords.t);
+	glVertex2f(-1, 1);
+
+	//upper right
+	glMultiTexCoord2f(GL_TEXTURE0, maxCoords.s, maxCoords.t);
+	glVertex2f(1, 1);
+
+	//lower right
+	glMultiTexCoord2f(GL_TEXTURE0, maxCoords.s, 0);
+	glVertex2f(1, -1);
+	glEnd();
+
+	//unbind the input texture
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	//unbind the shader
+	m_shader.UnbindShader();
+
+	return FF_SUCCESS;
+}
+FFResult FlatToFisheye::SetFloatParameter(unsigned int dwIndex, float value)
+{
+	switch (dwIndex)
 	{
-	/*case FFPARAM_Aspect_Ratio:
-		aspectRatio = value;
-		break;
-	case FFPARAM_Yaw:
-		yaw = value;
-		break;*/
-	case FFPARAM_Roll:
-		roll = value;
+	case FFPARAM_FOV:
+		fieldOfView = value;
 		break;
 	default:
 		return FF_FAIL;
@@ -242,16 +259,12 @@ FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 	return FF_SUCCESS;
 }
 
-float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
+float FlatToFisheye::GetFloatParameter(unsigned int dwIndex)
 {
-	switch( dwIndex )
+	switch (dwIndex)
 	{
-	/*case FFPARAM_Aspect_Ratio:
-		return aspectRatio;
-	case FFPARAM_Yaw:
-		return yaw;*/
-	case FFPARAM_Roll:
-		return roll;
+	case FFPARAM_FOV:
+		return fieldOfView;
 
 	default:
 		return 0.0f;

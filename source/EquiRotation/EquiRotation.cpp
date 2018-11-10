@@ -5,7 +5,7 @@
 #include "../../lib/ffgl/utilities/utilities.h"
 
 
-#define FFPARAM_Roll ( 0 )
+#define FFPARAM_FOV ( 0 )
 #define FFPARAM_Pitch ( 1 )
 #define FFPARAM_Yaw ( 2 )
 
@@ -135,7 +135,7 @@ EquiRotation::EquiRotation()
 	SetMaxInputs( 1 );
 
 	// Parameters
-	SetParamInfo( FFPARAM_Roll, "Roll", FF_TYPE_STANDARD, 0.5f);
+	SetParamInfo( FFPARAM_FOV, "Roll", FF_TYPE_STANDARD, 0.5f);
 	roll = 0.5f;
 	SetParamInfo( FFPARAM_Pitch, "Pitch", FF_TYPE_STANDARD, 0.5f);
 	pitch = 0.5f;
@@ -260,7 +260,7 @@ FFResult EquiRotation::SetFloatParameter( unsigned int dwIndex, float value )
 	case FFPARAM_Yaw:
 		yaw = value;
 		break;
-	case FFPARAM_Roll:
+	case FFPARAM_FOV:
 		roll = value;
 		break;
 	default:
@@ -278,7 +278,7 @@ float EquiRotation::GetFloatParameter( unsigned int dwIndex )
 		return pitch;
 	case FFPARAM_Yaw:
 		return yaw;
-	case FFPARAM_Roll:
+	case FFPARAM_FOV:
 		return roll;
 
 	default:

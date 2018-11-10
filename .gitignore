@@ -1,0 +1,5 @@
+*.pdb
+*.exp
+*.lib
+build/.vs/
+build/x64/

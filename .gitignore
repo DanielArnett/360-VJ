@@ -3,3 +3,5 @@
 *.lib
 build/.vs/
 build/x64/
+build/Release/
+build/x86/

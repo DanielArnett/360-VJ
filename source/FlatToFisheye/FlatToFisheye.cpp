@@ -1,7 +1,7 @@
 #include "FlatToFisheye.h"
 #include <FFGL.h>
 #include <FFGLLib.h>
-#include "../../lib/ffgl/utilities/utilities.h"
+#include "../../ffgl/source/lib/ffgl/utilities/utilities.h"
 
 #define FFPARAM_FOV ( 0 )
 //#define FFPARAM_Aspect_Ratio ( 1 )
@@ -16,7 +16,7 @@ static CFFGLPluginInfo PluginInfo(
 	1,							  // Plugin major version number
 	000,						  // Plugin minor version number
 	FF_EFFECT,                    // Plugin type
-	"Apply a fisheye effect to flat videos", // Plugin description
+	"Wubba Lubba Dub Dub", // Plugin description
 	"Written by Daniel Arnett, go to https://github.com/DanielArnett/360-VJ/releases for more detail."      // About
 );
 
@@ -31,95 +31,96 @@ static const std::string vertexShaderCode = STRINGIFY(
 
 static const std::string fragmentShaderCode = STRINGIFY(
 
-	float PI = 3.14159265359;
-	uniform sampler2D InputTexture;
-	uniform float fieldOfView;
-
-	vec2 getLatLonFromFisheyeUv(vec2 uv, float r)
-	{
-		vec2 latLon;
-		latLon.x = (1.0 - r)*(PI / 2.0);
-		// Calculate longitude
-		if (r == 0.0) {
-			latLon.y = 0.0;
-		}
-		else if (uv.x < 0.0) {
-			latLon.y = PI - asin(uv.y / r);
-		}
-		else if (uv.x >= 0.0) {
-			latLon.y = asin(uv.y / r);
-		}
-		return latLon;
-	}
-	// Convert latitude, longitude into a 3d point on the unit-sphere.
-	vec3 latLonToPoint(vec2 latLon)
-	{
-		vec3 point;
-		// 3D position of the destination pixel on the unit sphere.
-		point.x = cos(latLon.x) * cos(latLon.y);
-		point.y = cos(latLon.x) * sin(latLon.y);
-		point.z = sin(latLon.x);
-		// Get phi of this point, see polar coordinate system for more details.
-		float phi = atan(point.y, point.x);
-		// With phi, calculate the point on the image plane that is also at the angle phi
-		point.x = cos(phi) * tan(PI / 2.0 - latLon.x);
-		point.y = sin(phi) * tan(PI / 2.0 - latLon.x);
-		point.z = 1.0;
-		return point;
-	}
-	bool outOfBounds(vec2 xy, float lower, float upper)
-	{
-		vec2 lowerBound = vec2(lower, lower);
-		vec2 upperBound = vec2(upper, upper);
-		return (any(lessThan(xy, lowerBound)) || any(greaterThan(xy, upperBound)));
-	}
+//	float PI = 3.14159265359;
+//	uniform sampler2D InputTexture;
+//	uniform float fieldOfView;
+//
+//	vec2 getLatLonFromFisheyeUv(vec2 uv, float r)
+//	{
+//		vec2 latLon;
+//		latLon.x = (1.0 - r)*(PI / 2.0);
+//		// Calculate longitude
+//		if (r == 0.0) {
+//			latLon.y = 0.0;
+//		}
+//		else if (uv.x < 0.0) {
+//			latLon.y = PI - asin(uv.y / r);
+//		}
+//		else if (uv.x >= 0.0) {
+//			latLon.y = asin(uv.y / r);
+//		}
+//		return latLon;
+//	}
+//	// Convert latitude, longitude into a 3d point on the unit-sphere.
+//	vec3 latLonToPoint(vec2 latLon)
+//	{
+//		vec3 point;
+//		// 3D position of the destination pixel on the unit sphere.
+//		point.x = cos(latLon.x) * cos(latLon.y);
+//		point.y = cos(latLon.x) * sin(latLon.y);
+//		point.z = sin(latLon.x);
+//		// Get phi of this point, see polar coordinate system for more details.
+//		float phi = atan(point.y, point.x);
+//		// With phi, calculate the point on the image plane that is also at the angle phi
+//		point.x = cos(phi) * tan(PI / 2.0 - latLon.x);
+//		point.y = sin(phi) * tan(PI / 2.0 - latLon.x);
+//		point.z = 1.0;
+//		return point;
+//	}
+//	bool outOfBounds(vec2 xy, float lower, float upper)
+//	{
+//		vec2 lowerBound = vec2(lower, lower);
+//		vec2 upperBound = vec2(upper, upper);
+//		return (any(lessThan(xy, lowerBound)) || any(greaterThan(xy, upperBound)));
+//	}
 	void main()
 	{
 		vec2 uv = gl_TexCoord[0].xy;
-		ivec2 textureSize2d = textureSize(InputTexture,0);
-		vec2 textureSize = textureSize2d.xy;
-		float ASPECT_RATIO = textureSize.x / textureSize.y;
-		float fovInput = fieldOfView; // 0.0 to 1.0
-		float FOV = 180.0 * fovInput; // 60 degrees to 180 degrees
-
-		// Position of the destination pixel in xy coordinates in the range [0,1]
-		vec2 pos;
-		pos.x = 2.0 * (uv.x - 0.5);
-		pos.y = 2.0 * (uv.y - 0.5);
-
-		vec2 imagePlaneDimensions = vec2(tan(radians(FOV / 2.0)) * 2.0, (tan(radians(FOV / 2.0)) * 2.0) / ASPECT_RATIO);
-
-		// Distance from the center to this pixel. The 'radius' of the pixel.
-		float r = distance(vec2(0.0, 0.0), pos);
-		// Mask off the fisheye ring.
-		if (r > 1.0) {
-			// Return a transparent pixel
-			gl_FragColor = vec4(0.0,0.0,0.0,0.0);
-			return;
-		}
-		// Calculate the 3D position of the source pixel on the image plane.
-		// First get the latitude and longitude of the destination pixel in the fisheye image.
-		vec2 latLon = getLatLonFromFisheyeUv(pos, r);
-		vec2 xyOnImagePlane;
-		vec3 p;
-
-		// Derive a 3D point on the plane which correlates with the latitude and longitude in the fisheye image.
-		p = latLonToPoint(latLon);
-		
-		// Position of the source pixel in the source image in the range [-1,1]
-		xyOnImagePlane = p.xy / (imagePlaneDimensions / 2.0);
-		if (outOfBounds(xyOnImagePlane, -1.0, 1.0)) 
-		{
-			gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-			return;
-		}
-
-		// Normalize the pixel coordinates to [0,1]
-		xyOnImagePlane +=  1.0; 
-		xyOnImagePlane /= 2.0;
-
-		// Return the source pixel as a vec4 with the r, g, b, and alpha values
-		gl_FragColor = texture2D( InputTexture, xyOnImagePlane );
+        gl_FragColor = texture2D( InputTexture, uv);
+//		ivec2 textureSize2d = textureSize(InputTexture,0);
+//		vec2 textureSize = textureSize2d.xy;
+//		float ASPECT_RATIO = textureSize.x / textureSize.y;
+//		float fovInput = fieldOfView; // 0.0 to 1.0
+//		float FOV = 180.0 * fovInput; // 60 degrees to 180 degrees
+//
+//		// Position of the destination pixel in xy coordinates in the range [0,1]
+//		vec2 pos;
+//		pos.x = 2.0 * (uv.x - 0.5);
+//		pos.y = 2.0 * (uv.y - 0.5);
+//
+//		vec2 imagePlaneDimensions = vec2(tan(radians(FOV / 2.0)) * 2.0, (tan(radians(FOV / 2.0)) * 2.0) / ASPECT_RATIO);
+//
+//		// Distance from the center to this pixel. The 'radius' of the pixel.
+//		float r = distance(vec2(0.0, 0.0), pos);
+//		// Mask off the fisheye ring.
+//		if (r > 1.0) {
+//			// Return a transparent pixel
+//			gl_FragColor = vec4(0.0,0.0,0.0,0.0);
+//			return;
+//		}
+//		// Calculate the 3D position of the source pixel on the image plane.
+//		// First get the latitude and longitude of the destination pixel in the fisheye image.
+//		vec2 latLon = getLatLonFromFisheyeUv(pos, r);
+//		vec2 xyOnImagePlane;
+//		vec3 p;
+//
+//		// Derive a 3D point on the plane which correlates with the latitude and longitude in the fisheye image.
+//		p = latLonToPoint(latLon);
+//		
+//		// Position of the source pixel in the source image in the range [-1,1]
+//		xyOnImagePlane = p.xy / (imagePlaneDimensions / 2.0);
+//		if (outOfBounds(xyOnImagePlane, -1.0, 1.0)) 
+//		{
+//			gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+//			return;
+//		}
+//
+//		// Normalize the pixel coordinates to [0,1]
+//		xyOnImagePlane +=  1.0; 
+//		xyOnImagePlane /= 2.0;
+//
+//		// Return the source pixel as a vec4 with the r, g, b, and alpha values
+//		gl_FragColor = texture2D( InputTexture, xyOnImagePlane );
 	}
 	);
 

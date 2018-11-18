@@ -1,0 +1,815 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D6369DBB1AAF108500B0CC43 /* ALL */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D6369DBC1AAF108500B0CC43 /* Build configuration list for PBXAggregateTarget "ALL" */;
+			buildPhases = (
+			);
+			dependencies = (
+				BC69B19F21A1C67700242FDE /* PBXTargetDependency */,
+				BC69B1A121A1C67700242FDE /* PBXTargetDependency */,
+				BC69B17321A1C48000242FDE /* PBXTargetDependency */,
+				D6369DC21AAF109800B0CC43 /* PBXTargetDependency */,
+			);
+			name = ALL;
+			productName = ALL;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		BC69B15A21A1BCEF00242FDE /* FFGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A2A1B9054A9007E6883 /* FFGL.cpp */; };
+		BC69B15B21A1BCEF00242FDE /* FFGLPluginInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A311B9054A9007E6883 /* FFGLPluginInfo.cpp */; };
+		BC69B15C21A1BCEF00242FDE /* FFGLPluginInfoData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A331B9054A9007E6883 /* FFGLPluginInfoData.cpp */; };
+		BC69B15D21A1BCEF00242FDE /* FFGLPluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A341B9054A9007E6883 /* FFGLPluginManager.cpp */; };
+		BC69B15E21A1BCEF00242FDE /* FFGLPluginSDK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A371B9054A9007E6883 /* FFGLPluginSDK.cpp */; };
+		BC69B15F21A1BCEF00242FDE /* FFGLShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A391B9054A9007E6883 /* FFGLShader.cpp */; };
+		BC69B16121A1BCEF00242FDE /* FFGLFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A691B906185007E6883 /* FFGLFBO.cpp */; };
+		BC69B17121A1C0BC00242FDE /* EquiToFisheye.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC69B16F21A1BDDC00242FDE /* EquiToFisheye.cpp */; };
+		BC69B17E21A1C63B00242FDE /* FFGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A2A1B9054A9007E6883 /* FFGL.cpp */; };
+		BC69B17F21A1C63B00242FDE /* FFGLPluginInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A311B9054A9007E6883 /* FFGLPluginInfo.cpp */; };
+		BC69B18021A1C63B00242FDE /* FFGLPluginInfoData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A331B9054A9007E6883 /* FFGLPluginInfoData.cpp */; };
+		BC69B18121A1C63B00242FDE /* FFGLPluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A341B9054A9007E6883 /* FFGLPluginManager.cpp */; };
+		BC69B18221A1C63B00242FDE /* FFGLPluginSDK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A371B9054A9007E6883 /* FFGLPluginSDK.cpp */; };
+		BC69B18321A1C63B00242FDE /* FFGLShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A391B9054A9007E6883 /* FFGLShader.cpp */; };
+		BC69B18421A1C63B00242FDE /* FFGLFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A691B906185007E6883 /* FFGLFBO.cpp */; };
+		BC69B18B21A1C64F00242FDE /* FisheyeRotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC69B17621A1C61900242FDE /* FisheyeRotation.cpp */; };
+		BC69B19021A1C65400242FDE /* FFGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A2A1B9054A9007E6883 /* FFGL.cpp */; };
+		BC69B19121A1C65400242FDE /* FFGLPluginInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A311B9054A9007E6883 /* FFGLPluginInfo.cpp */; };
+		BC69B19221A1C65400242FDE /* FFGLPluginInfoData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A331B9054A9007E6883 /* FFGLPluginInfoData.cpp */; };
+		BC69B19321A1C65400242FDE /* FFGLPluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A341B9054A9007E6883 /* FFGLPluginManager.cpp */; };
+		BC69B19421A1C65400242FDE /* FFGLPluginSDK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A371B9054A9007E6883 /* FFGLPluginSDK.cpp */; };
+		BC69B19521A1C65400242FDE /* FFGLShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A391B9054A9007E6883 /* FFGLShader.cpp */; };
+		BC69B19621A1C65400242FDE /* FFGLFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A691B906185007E6883 /* FFGLFBO.cpp */; };
+		BC69B19D21A1C66700242FDE /* FlatToFisheye.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC69B17821A1C62A00242FDE /* FlatToFisheye.cpp */; };
+		D69416C91B904EA200D30319 /* EquiRotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D69416A11B90436100D30319 /* EquiRotation.cpp */; };
+		D6DB1A4D1B9054FE007E6883 /* FFGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A2A1B9054A9007E6883 /* FFGL.cpp */; };
+		D6DB1A541B9054FE007E6883 /* FFGLPluginInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A311B9054A9007E6883 /* FFGLPluginInfo.cpp */; };
+		D6DB1A561B9054FE007E6883 /* FFGLPluginInfoData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A331B9054A9007E6883 /* FFGLPluginInfoData.cpp */; };
+		D6DB1A571B9054FE007E6883 /* FFGLPluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A341B9054A9007E6883 /* FFGLPluginManager.cpp */; };
+		D6DB1A5A1B9054FE007E6883 /* FFGLPluginSDK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A371B9054A9007E6883 /* FFGLPluginSDK.cpp */; };
+		D6DB1A5C1B9054FE007E6883 /* FFGLShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A391B9054A9007E6883 /* FFGLShader.cpp */; };
+		D6DB1A6B1B906185007E6883 /* FFGLFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6DB1A691B906185007E6883 /* FFGLFBO.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BC69B17221A1C48000242FDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2DA285930AEE5D640030A4DD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC69B15721A1BCEF00242FDE;
+			remoteInfo = EquiToFisheye;
+		};
+		BC69B19E21A1C67700242FDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2DA285930AEE5D640030A4DD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC69B17A21A1C63B00242FDE;
+			remoteInfo = FisheyeRotation;
+		};
+		BC69B1A021A1C67700242FDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2DA285930AEE5D640030A4DD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC69B18C21A1C65400242FDE;
+			remoteInfo = FlatToFisheye;
+		};
+		D6369DC11AAF109800B0CC43 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2DA285930AEE5D640030A4DD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2FD12258188540470009EBA8;
+			remoteInfo = AVFFGLAddSubtract;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2FD1224418853D4B0009EBA8 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		2FD1224618853D640009EBA8 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		2FD1224818853D700009EBA8 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		2FD1225318853FFB0009EBA8 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		2FD1226B188540470009EBA8 /* EquiRotation.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EquiRotation.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9F28D5818B37D0C007D7C87 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		A9F28D5A18B37D12007D7C87 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		BC69B16621A1BCEF00242FDE /* EquiToFisheye.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EquiToFisheye.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC69B16F21A1BDDC00242FDE /* EquiToFisheye.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EquiToFisheye.cpp; path = ../../source/EquiToFisheye/EquiToFisheye.cpp; sourceTree = "<group>"; };
+		BC69B17021A1BDDC00242FDE /* EquiToFisheye.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EquiToFisheye.h; path = ../../source/EquiToFisheye/EquiToFisheye.h; sourceTree = "<group>"; };
+		BC69B17621A1C61900242FDE /* FisheyeRotation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FisheyeRotation.cpp; path = ../../source/FisheyeRotation/FisheyeRotation.cpp; sourceTree = "<group>"; };
+		BC69B17721A1C61900242FDE /* FisheyeRotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FisheyeRotation.h; path = ../../source/FisheyeRotation/FisheyeRotation.h; sourceTree = "<group>"; };
+		BC69B17821A1C62A00242FDE /* FlatToFisheye.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FlatToFisheye.cpp; path = ../../source/FlatToFisheye/FlatToFisheye.cpp; sourceTree = "<group>"; };
+		BC69B17921A1C62A00242FDE /* FlatToFisheye.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlatToFisheye.h; path = ../../source/FlatToFisheye/FlatToFisheye.h; sourceTree = "<group>"; };
+		BC69B18921A1C63B00242FDE /* FisheyeRotation.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FisheyeRotation.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC69B18A21A1C63B00242FDE /* EquiToFisheye copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "EquiToFisheye copy-Info.plist"; path = "/Users/Planetarium/Documents/360-VJ/build/osx/EquiToFisheye copy-Info.plist"; sourceTree = "<absolute>"; };
+		BC69B19B21A1C65400242FDE /* FlatToFisheye.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlatToFisheye.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC69B19C21A1C65400242FDE /* FisheyeRotation copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "FisheyeRotation copy-Info.plist"; path = "/Users/Planetarium/Documents/360-VJ/build/osx/FisheyeRotation copy-Info.plist"; sourceTree = "<absolute>"; };
+		D69416961B9040DA00D30319 /* PluginIds.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = PluginIds.txt; path = ../PluginIds.txt; sourceTree = "<group>"; };
+		D69416971B9041FA00D30319 /* FFGLPlugin-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "FFGLPlugin-Info.plist"; sourceTree = "<group>"; };
+		D694169A1B90421F00D30319 /* FFGL_Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = FFGL_Debug.xcconfig; sourceTree = "<group>"; };
+		D694169B1B90421F00D30319 /* FFGL_Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = FFGL_Release.xcconfig; sourceTree = "<group>"; };
+		D694169C1B90421F00D30319 /* FFGL.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = FFGL.xcconfig; sourceTree = "<group>"; };
+		D69416A11B90436100D30319 /* EquiRotation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EquiRotation.cpp; path = ../../source/EquiRotation/EquiRotation.cpp; sourceTree = "<group>"; };
+		D69416A21B90436100D30319 /* EquiRotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EquiRotation.h; path = ../../source/EquiRotation/EquiRotation.h; sourceTree = "<group>"; };
+		D6DB1A2A1B9054A9007E6883 /* FFGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFGL.cpp; sourceTree = "<group>"; };
+		D6DB1A2B1B9054A9007E6883 /* FFGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFGL.h; sourceTree = "<group>"; };
+		D6DB1A301B9054A9007E6883 /* FFGLLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFGLLib.h; sourceTree = "<group>"; };
+		D6DB1A311B9054A9007E6883 /* FFGLPluginInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFGLPluginInfo.cpp; sourceTree = "<group>"; };
+		D6DB1A321B9054A9007E6883 /* FFGLPluginInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFGLPluginInfo.h; sourceTree = "<group>"; };
+		D6DB1A331B9054A9007E6883 /* FFGLPluginInfoData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFGLPluginInfoData.cpp; sourceTree = "<group>"; };
+		D6DB1A341B9054A9007E6883 /* FFGLPluginManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFGLPluginManager.cpp; sourceTree = "<group>"; };
+		D6DB1A351B9054A9007E6883 /* FFGLPluginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFGLPluginManager.h; sourceTree = "<group>"; };
+		D6DB1A361B9054A9007E6883 /* FFGLPluginManager_inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFGLPluginManager_inl.h; sourceTree = "<group>"; };
+		D6DB1A371B9054A9007E6883 /* FFGLPluginSDK.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFGLPluginSDK.cpp; sourceTree = "<group>"; };
+		D6DB1A381B9054A9007E6883 /* FFGLPluginSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFGLPluginSDK.h; sourceTree = "<group>"; };
+		D6DB1A391B9054A9007E6883 /* FFGLShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFGLShader.cpp; sourceTree = "<group>"; };
+		D6DB1A3A1B9054A9007E6883 /* FFGLShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFGLShader.h; sourceTree = "<group>"; };
+		D6DB1A3B1B9054A9007E6883 /* FreeFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FreeFrame.h; sourceTree = "<group>"; };
+		D6DB1A3D1B9054A9007E6883 /* utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utilities.cpp; sourceTree = "<group>"; };
+		D6DB1A3E1B9054A9007E6883 /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
+		D6DB1A691B906185007E6883 /* FFGLFBO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFGLFBO.cpp; sourceTree = "<group>"; };
+		D6DB1A6A1B906185007E6883 /* FFGLFBO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFGLFBO.h; sourceTree = "<group>"; };
+		E89249CF19AD2CE80019503B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2FD12265188540470009EBA8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC69B16221A1BCEF00242FDE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC69B18521A1C63B00242FDE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC69B19721A1C65400242FDE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2DA285910AEE5D640030A4DD = {
+			isa = PBXGroup;
+			children = (
+				D69416991B90420600D30319 /* xcconfig */,
+				D69416971B9041FA00D30319 /* FFGLPlugin-Info.plist */,
+				D69416961B9040DA00D30319 /* PluginIds.txt */,
+				D69416A01B90436100D30319 /* EquiRotation */,
+				BC69B16C21A1BDA700242FDE /* EquiToFisheye */,
+				BC69B17521A1C5DE00242FDE /* FisheyeRotation */,
+				BC69B17421A1C5D600242FDE /* FlatToFisheye */,
+				E8D161130C5DF1DF0035D796 /* frameworks */,
+				2FD12214188538AC0009EBA8 /* source */,
+				2DA285A10AEE5E480030A4DD /* Products */,
+				BC69B18A21A1C63B00242FDE /* EquiToFisheye copy-Info.plist */,
+				BC69B19C21A1C65400242FDE /* FisheyeRotation copy-Info.plist */,
+			);
+			sourceTree = "<group>";
+		};
+		2DA285A10AEE5E480030A4DD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2FD1226B188540470009EBA8 /* EquiRotation.bundle */,
+				BC69B16621A1BCEF00242FDE /* EquiToFisheye.bundle */,
+				BC69B18921A1C63B00242FDE /* FisheyeRotation.bundle */,
+				BC69B19B21A1C65400242FDE /* FlatToFisheye.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2FD12214188538AC0009EBA8 /* source */ = {
+			isa = PBXGroup;
+			children = (
+				D6DB1A481B9054CD007E6883 /* lib */,
+			);
+			name = source;
+			path = ../../ffgl/source;
+			sourceTree = "<group>";
+		};
+		BC69B16C21A1BDA700242FDE /* EquiToFisheye */ = {
+			isa = PBXGroup;
+			children = (
+				BC69B16F21A1BDDC00242FDE /* EquiToFisheye.cpp */,
+				BC69B17021A1BDDC00242FDE /* EquiToFisheye.h */,
+			);
+			name = EquiToFisheye;
+			sourceTree = "<group>";
+		};
+		BC69B17421A1C5D600242FDE /* FlatToFisheye */ = {
+			isa = PBXGroup;
+			children = (
+				BC69B17821A1C62A00242FDE /* FlatToFisheye.cpp */,
+				BC69B17921A1C62A00242FDE /* FlatToFisheye.h */,
+			);
+			name = FlatToFisheye;
+			sourceTree = "<group>";
+		};
+		BC69B17521A1C5DE00242FDE /* FisheyeRotation */ = {
+			isa = PBXGroup;
+			children = (
+				BC69B17621A1C61900242FDE /* FisheyeRotation.cpp */,
+				BC69B17721A1C61900242FDE /* FisheyeRotation.h */,
+			);
+			name = FisheyeRotation;
+			sourceTree = "<group>";
+		};
+		D69416991B90420600D30319 /* xcconfig */ = {
+			isa = PBXGroup;
+			children = (
+				D694169A1B90421F00D30319 /* FFGL_Debug.xcconfig */,
+				D694169B1B90421F00D30319 /* FFGL_Release.xcconfig */,
+				D694169C1B90421F00D30319 /* FFGL.xcconfig */,
+			);
+			name = xcconfig;
+			sourceTree = "<group>";
+		};
+		D69416A01B90436100D30319 /* EquiRotation */ = {
+			isa = PBXGroup;
+			children = (
+				D69416A21B90436100D30319 /* EquiRotation.h */,
+				D69416A11B90436100D30319 /* EquiRotation.cpp */,
+			);
+			name = EquiRotation;
+			path = ../../source/EquiRotation;
+			sourceTree = "<group>";
+		};
+		D6DB1A291B9054A9007E6883 /* ffgl */ = {
+			isa = PBXGroup;
+			children = (
+				D6DB1A691B906185007E6883 /* FFGLFBO.cpp */,
+				D6DB1A6A1B906185007E6883 /* FFGLFBO.h */,
+				D6DB1A2A1B9054A9007E6883 /* FFGL.cpp */,
+				D6DB1A2B1B9054A9007E6883 /* FFGL.h */,
+				D6DB1A301B9054A9007E6883 /* FFGLLib.h */,
+				D6DB1A311B9054A9007E6883 /* FFGLPluginInfo.cpp */,
+				D6DB1A321B9054A9007E6883 /* FFGLPluginInfo.h */,
+				D6DB1A331B9054A9007E6883 /* FFGLPluginInfoData.cpp */,
+				D6DB1A341B9054A9007E6883 /* FFGLPluginManager.cpp */,
+				D6DB1A351B9054A9007E6883 /* FFGLPluginManager.h */,
+				D6DB1A361B9054A9007E6883 /* FFGLPluginManager_inl.h */,
+				D6DB1A371B9054A9007E6883 /* FFGLPluginSDK.cpp */,
+				D6DB1A381B9054A9007E6883 /* FFGLPluginSDK.h */,
+				D6DB1A391B9054A9007E6883 /* FFGLShader.cpp */,
+				D6DB1A3A1B9054A9007E6883 /* FFGLShader.h */,
+				D6DB1A3B1B9054A9007E6883 /* FreeFrame.h */,
+				D6DB1A3C1B9054A9007E6883 /* utilities */,
+			);
+			name = ffgl;
+			path = ../../ffgl/source/lib/ffgl;
+			sourceTree = "<group>";
+		};
+		D6DB1A3C1B9054A9007E6883 /* utilities */ = {
+			isa = PBXGroup;
+			children = (
+				D6DB1A3D1B9054A9007E6883 /* utilities.cpp */,
+				D6DB1A3E1B9054A9007E6883 /* utilities.h */,
+			);
+			path = utilities;
+			sourceTree = "<group>";
+		};
+		D6DB1A481B9054CD007E6883 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				D6DB1A701B906E50007E6883 /* glload */,
+				D6DB1A291B9054A9007E6883 /* ffgl */,
+			);
+			name = lib;
+			sourceTree = "<group>";
+		};
+		D6DB1A701B906E50007E6883 /* glload */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = glload;
+			sourceTree = "<group>";
+		};
+		E89249D319AD2D7C0019503B /* plugins */ = {
+			isa = PBXGroup;
+			children = (
+				2FD1224618853D640009EBA8 /* Quartz.framework */,
+				2FD1224418853D4B0009EBA8 /* QuickTime.framework */,
+				2FD1224818853D700009EBA8 /* QTKit.framework */,
+				A9F28D5818B37D0C007D7C87 /* AVFoundation.framework */,
+				A9F28D5A18B37D12007D7C87 /* CoreMedia.framework */,
+				E89249CF19AD2CE80019503B /* AppKit.framework */,
+			);
+			name = plugins;
+			sourceTree = "<group>";
+		};
+		E8D161130C5DF1DF0035D796 /* frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E89249D319AD2D7C0019503B /* plugins */,
+				2FD1225318853FFB0009EBA8 /* OpenGL.framework */,
+			);
+			name = frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2FD12258188540470009EBA8 /* EquiRotation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2FD12268188540470009EBA8 /* Build configuration list for PBXNativeTarget "EquiRotation" */;
+			buildPhases = (
+				2FD1225B188540470009EBA8 /* Resources */,
+				2FD1225C188540470009EBA8 /* Sources */,
+				2FD12265188540470009EBA8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EquiRotation;
+			productName = FFGLBrightness;
+			productReference = 2FD1226B188540470009EBA8 /* EquiRotation.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+		BC69B15721A1BCEF00242FDE /* EquiToFisheye */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC69B16321A1BCEF00242FDE /* Build configuration list for PBXNativeTarget "EquiToFisheye" */;
+			buildPhases = (
+				BC69B15821A1BCEF00242FDE /* Resources */,
+				BC69B15921A1BCEF00242FDE /* Sources */,
+				BC69B16221A1BCEF00242FDE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EquiToFisheye;
+			productName = FFGLBrightness;
+			productReference = BC69B16621A1BCEF00242FDE /* EquiToFisheye.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+		BC69B17A21A1C63B00242FDE /* FisheyeRotation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC69B18621A1C63B00242FDE /* Build configuration list for PBXNativeTarget "FisheyeRotation" */;
+			buildPhases = (
+				BC69B17B21A1C63B00242FDE /* Resources */,
+				BC69B17C21A1C63B00242FDE /* Sources */,
+				BC69B18521A1C63B00242FDE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FisheyeRotation;
+			productName = FFGLBrightness;
+			productReference = BC69B18921A1C63B00242FDE /* FisheyeRotation.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+		BC69B18C21A1C65400242FDE /* FlatToFisheye */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC69B19821A1C65400242FDE /* Build configuration list for PBXNativeTarget "FlatToFisheye" */;
+			buildPhases = (
+				BC69B18D21A1C65400242FDE /* Resources */,
+				BC69B18E21A1C65400242FDE /* Sources */,
+				BC69B19721A1C65400242FDE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FlatToFisheye;
+			productName = FFGLBrightness;
+			productReference = BC69B19B21A1C65400242FDE /* FlatToFisheye.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2DA285930AEE5D640030A4DD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
+			buildConfigurationList = 2DA285940AEE5D640030A4DD /* Build configuration list for PBXProject "FFGLPlugins" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 2DA285910AEE5D640030A4DD;
+			productRefGroup = 2DA285A10AEE5E480030A4DD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D6369DBB1AAF108500B0CC43 /* ALL */,
+				2FD12258188540470009EBA8 /* EquiRotation */,
+				BC69B15721A1BCEF00242FDE /* EquiToFisheye */,
+				BC69B17A21A1C63B00242FDE /* FisheyeRotation */,
+				BC69B18C21A1C65400242FDE /* FlatToFisheye */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2FD1225B188540470009EBA8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC69B15821A1BCEF00242FDE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC69B17B21A1C63B00242FDE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC69B18D21A1C65400242FDE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2FD1225C188540470009EBA8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6DB1A4D1B9054FE007E6883 /* FFGL.cpp in Sources */,
+				D6DB1A541B9054FE007E6883 /* FFGLPluginInfo.cpp in Sources */,
+				D6DB1A561B9054FE007E6883 /* FFGLPluginInfoData.cpp in Sources */,
+				D6DB1A571B9054FE007E6883 /* FFGLPluginManager.cpp in Sources */,
+				D6DB1A5A1B9054FE007E6883 /* FFGLPluginSDK.cpp in Sources */,
+				D6DB1A5C1B9054FE007E6883 /* FFGLShader.cpp in Sources */,
+				D69416C91B904EA200D30319 /* EquiRotation.cpp in Sources */,
+				D6DB1A6B1B906185007E6883 /* FFGLFBO.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC69B15921A1BCEF00242FDE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BC69B17121A1C0BC00242FDE /* EquiToFisheye.cpp in Sources */,
+				BC69B15A21A1BCEF00242FDE /* FFGL.cpp in Sources */,
+				BC69B15B21A1BCEF00242FDE /* FFGLPluginInfo.cpp in Sources */,
+				BC69B15C21A1BCEF00242FDE /* FFGLPluginInfoData.cpp in Sources */,
+				BC69B15D21A1BCEF00242FDE /* FFGLPluginManager.cpp in Sources */,
+				BC69B15E21A1BCEF00242FDE /* FFGLPluginSDK.cpp in Sources */,
+				BC69B15F21A1BCEF00242FDE /* FFGLShader.cpp in Sources */,
+				BC69B16121A1BCEF00242FDE /* FFGLFBO.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC69B17C21A1C63B00242FDE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BC69B18B21A1C64F00242FDE /* FisheyeRotation.cpp in Sources */,
+				BC69B17E21A1C63B00242FDE /* FFGL.cpp in Sources */,
+				BC69B17F21A1C63B00242FDE /* FFGLPluginInfo.cpp in Sources */,
+				BC69B18021A1C63B00242FDE /* FFGLPluginInfoData.cpp in Sources */,
+				BC69B18121A1C63B00242FDE /* FFGLPluginManager.cpp in Sources */,
+				BC69B18221A1C63B00242FDE /* FFGLPluginSDK.cpp in Sources */,
+				BC69B18321A1C63B00242FDE /* FFGLShader.cpp in Sources */,
+				BC69B18421A1C63B00242FDE /* FFGLFBO.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC69B18E21A1C65400242FDE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BC69B19D21A1C66700242FDE /* FlatToFisheye.cpp in Sources */,
+				BC69B19021A1C65400242FDE /* FFGL.cpp in Sources */,
+				BC69B19121A1C65400242FDE /* FFGLPluginInfo.cpp in Sources */,
+				BC69B19221A1C65400242FDE /* FFGLPluginInfoData.cpp in Sources */,
+				BC69B19321A1C65400242FDE /* FFGLPluginManager.cpp in Sources */,
+				BC69B19421A1C65400242FDE /* FFGLPluginSDK.cpp in Sources */,
+				BC69B19521A1C65400242FDE /* FFGLShader.cpp in Sources */,
+				BC69B19621A1C65400242FDE /* FFGLFBO.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BC69B17321A1C48000242FDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC69B15721A1BCEF00242FDE /* EquiToFisheye */;
+			targetProxy = BC69B17221A1C48000242FDE /* PBXContainerItemProxy */;
+		};
+		BC69B19F21A1C67700242FDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC69B17A21A1C63B00242FDE /* FisheyeRotation */;
+			targetProxy = BC69B19E21A1C67700242FDE /* PBXContainerItemProxy */;
+		};
+		BC69B1A121A1C67700242FDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC69B18C21A1C65400242FDE /* FlatToFisheye */;
+			targetProxy = BC69B1A021A1C67700242FDE /* PBXContainerItemProxy */;
+		};
+		D6369DC21AAF109800B0CC43 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2FD12258188540470009EBA8 /* EquiRotation */;
+			targetProxy = D6369DC11AAF109800B0CC43 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2DA285950AEE5D640030A4DD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D694169A1B90421F00D30319 /* FFGL_Debug.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
+				CONFIGURATION_BUILD_DIR = ../../binaries/debug;
+				COPY_PHASE_STRIP = NO;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		2DA285960AEE5D640030A4DD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D694169B1B90421F00D30319 /* FFGL_Release.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
+				CONFIGURATION_BUILD_DIR = ../../binaries/release;
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				STRIP_STYLE = debugging;
+			};
+			name = Release;
+		};
+		2FD12269188540470009EBA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "FFGLPlugin-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				PREBINDING = NO;
+				PRODUCT_NAME = EquiRotation;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		2FD1226A188540470009EBA8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "FFGLPlugin-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				PREBINDING = NO;
+				PRODUCT_NAME = EquiRotation;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		BC69B16421A1BCEF00242FDE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "EquiRotation copy-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				PREBINDING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		BC69B16521A1BCEF00242FDE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "EquiRotation copy-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				PREBINDING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		BC69B18721A1C63B00242FDE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "EquiToFisheye copy-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				PREBINDING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		BC69B18821A1C63B00242FDE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "EquiToFisheye copy-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				PREBINDING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		BC69B19921A1C65400242FDE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "FisheyeRotation copy-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				PREBINDING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		BC69B19A21A1C65400242FDE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "FisheyeRotation copy-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				PREBINDING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D6369DBD1AAF108500B0CC43 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D6369DBE1AAF108500B0CC43 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2DA285940AEE5D640030A4DD /* Build configuration list for PBXProject "FFGLPlugins" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2DA285950AEE5D640030A4DD /* Debug */,
+				2DA285960AEE5D640030A4DD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2FD12268188540470009EBA8 /* Build configuration list for PBXNativeTarget "EquiRotation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2FD12269188540470009EBA8 /* Debug */,
+				2FD1226A188540470009EBA8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BC69B16321A1BCEF00242FDE /* Build configuration list for PBXNativeTarget "EquiToFisheye" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC69B16421A1BCEF00242FDE /* Debug */,
+				BC69B16521A1BCEF00242FDE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BC69B18621A1C63B00242FDE /* Build configuration list for PBXNativeTarget "FisheyeRotation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC69B18721A1C63B00242FDE /* Debug */,
+				BC69B18821A1C63B00242FDE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BC69B19821A1C65400242FDE /* Build configuration list for PBXNativeTarget "FlatToFisheye" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC69B19921A1C65400242FDE /* Debug */,
+				BC69B19A21A1C65400242FDE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6369DBC1AAF108500B0CC43 /* Build configuration list for PBXAggregateTarget "ALL" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6369DBD1AAF108500B0CC43 /* Debug */,
+				D6369DBE1AAF108500B0CC43 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2DA285930AEE5D640030A4DD /* Project object */;
+}

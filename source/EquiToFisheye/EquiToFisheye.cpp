@@ -2,7 +2,7 @@
 #include <FFGLLib.h>
 
 #include "EquiToFisheye.h"
-#include "../../lib/ffgl/utilities/utilities.h"
+#include "../../ffgl/source/lib/ffgl/utilities/utilities.h"
 
 //#define FFPARAM_BrightnessR  (0)
 //#define FFPARAM_BrightnessG	 (1)
@@ -21,7 +21,7 @@ static CFFGLPluginInfo PluginInfo(
 	1,									// Plugin major version number
 	000,								// Plugin minor version number
 	FF_EFFECT,							// Plugin type
-	"Convert 360 Videos into Fisheye Videos",	  // Plugin description
+	"BLABLA Rotation",	  // Plugin description
 	"Written by Daniel Arnett, go to https://github.com/DanielArnett/360-VJ/releases for more detail."      // About
 );
 

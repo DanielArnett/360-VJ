@@ -2,7 +2,7 @@
 #include <FFGLLib.h>
 
 #include "EquiRotation.h"
-#include "../../lib/ffgl/utilities/utilities.h"
+#include "../../ffgl/source/lib/ffgl/utilities/utilities.h"
 
 
 #define FFPARAM_FOV ( 0 )

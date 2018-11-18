@@ -1,0 +1,51 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "FF942FD5188C060BA1FC7DE5A2E7F961EE2AE4D1",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "6F85825BDECC9F84EDDA8E03EEC4F8AC07D4200D" : 0,
+    "FF942FD5188C060BA1FC7DE5A2E7F961EE2AE4D1" : 9223372036854775807,
+    "9671613629A490CEF9F610AB841A2459DD53E6EA" : 9223372036854775807,
+    "F4CCB893AFADB97238A965FD2F28717F1CAAE613" : 0,
+    "73220F081312AE4F986F1C5D78DEDEC18CD364CE" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "BC7FE722-938C-441B-A5C1-38DFE5371484",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "6F85825BDECC9F84EDDA8E03EEC4F8AC07D4200D" : "Resolume%20Resapi",
+    "FF942FD5188C060BA1FC7DE5A2E7F961EE2AE4D1" : "360-VJ\/ffgl\/",
+    "9671613629A490CEF9F610AB841A2459DD53E6EA" : "360-VJ\/",
+    "F4CCB893AFADB97238A965FD2F28717F1CAAE613" : "of_v0.8.4_osx_release\/addons\/ofxSyphon",
+    "73220F081312AE4F986F1C5D78DEDEC18CD364CE" : "Resolume%20FFGL"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "FFGLPlugins",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "build\/osx\/FFGLPlugins.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "resolume.unfuddle.com:resolume\/resolumeresapi.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6F85825BDECC9F84EDDA8E03EEC4F8AC07D4200D"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/resolume.unfuddle.com\/git\/resolume_resolumeffgl\/",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "73220F081312AE4F986F1C5D78DEDEC18CD364CE"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/DanielArnett\/360-VJ",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9671613629A490CEF9F610AB841A2459DD53E6EA"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/astellato\/ofxSyphon.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "F4CCB893AFADB97238A965FD2F28717F1CAAE613"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/resolume\/ffgl.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FF942FD5188C060BA1FC7DE5A2E7F961EE2AE4D1"
+    }
+  ]
+}

@@ -5,3 +5,6 @@ build/.vs/
 build/x64/
 build/Release/
 build/x86/
+build/osx/360 VJ.xcodeproj/xcuserdata/
+binaries/.DS_Store
+build/osx/.DS_Store

@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BC69B15721A1BCEF00242FDE"
-               BuildableName = "EquiToFisheye.bundle"
-               BlueprintName = "EquiToFisheye"
-               ReferencedContainer = "container:FFGLPlugins.xcodeproj">
+               BlueprintIdentifier = "BC69B17A21A1C63B00242FDE"
+               BuildableName = "FisheyeRotation.bundle"
+               BlueprintName = "FisheyeRotation"
+               ReferencedContainer = "container:360 VJ.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,15 +29,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BC69B15721A1BCEF00242FDE"
-            BuildableName = "EquiToFisheye.bundle"
-            BlueprintName = "EquiToFisheye"
-            ReferencedContainer = "container:FFGLPlugins.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -54,10 +45,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BC69B15721A1BCEF00242FDE"
-            BuildableName = "EquiToFisheye.bundle"
-            BlueprintName = "EquiToFisheye"
-            ReferencedContainer = "container:FFGLPlugins.xcodeproj">
+            BlueprintIdentifier = "BC69B17A21A1C63B00242FDE"
+            BuildableName = "FisheyeRotation.bundle"
+            BlueprintName = "FisheyeRotation"
+            ReferencedContainer = "container:360 VJ.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -72,10 +63,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BC69B15721A1BCEF00242FDE"
-            BuildableName = "EquiToFisheye.bundle"
-            BlueprintName = "EquiToFisheye"
-            ReferencedContainer = "container:FFGLPlugins.xcodeproj">
+            BlueprintIdentifier = "BC69B17A21A1C63B00242FDE"
+            BuildableName = "FisheyeRotation.bundle"
+            BlueprintName = "FisheyeRotation"
+            ReferencedContainer = "container:360 VJ.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

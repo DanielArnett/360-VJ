@@ -17,7 +17,7 @@
                BlueprintIdentifier = "2FD12258188540470009EBA8"
                BuildableName = "EquiRotation.bundle"
                BlueprintName = "EquiRotation"
-               ReferencedContainer = "container:FFGLPlugins.xcodeproj">
+               ReferencedContainer = "container:360 VJ.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -48,7 +48,7 @@
             BlueprintIdentifier = "2FD12258188540470009EBA8"
             BuildableName = "EquiRotation.bundle"
             BlueprintName = "EquiRotation"
-            ReferencedContainer = "container:FFGLPlugins.xcodeproj">
+            ReferencedContainer = "container:360 VJ.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -66,7 +66,7 @@
             BlueprintIdentifier = "2FD12258188540470009EBA8"
             BuildableName = "EquiRotation.bundle"
             BlueprintName = "EquiRotation"
-            ReferencedContainer = "container:FFGLPlugins.xcodeproj">
+            ReferencedContainer = "container:360 VJ.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

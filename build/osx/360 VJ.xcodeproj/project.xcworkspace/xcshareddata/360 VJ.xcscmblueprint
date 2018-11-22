@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "9671613629A490CEF9F610AB841A2459DD53E6EA",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "FF942FD5188C060BA1FC7DE5A2E7F961EE2AE4D1" : 9223372036854775807,
+    "9671613629A490CEF9F610AB841A2459DD53E6EA" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "240CA73A-735C-4CBC-A3B2-5F465B926774",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "FF942FD5188C060BA1FC7DE5A2E7F961EE2AE4D1" : "360-VJ\/ffgl\/",
+    "9671613629A490CEF9F610AB841A2459DD53E6EA" : "360-VJ\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "360 VJ",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "build\/osx\/360 VJ.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/DanielArnett\/360-VJ",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9671613629A490CEF9F610AB841A2459DD53E6EA"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/resolume\/ffgl.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FF942FD5188C060BA1FC7DE5A2E7F961EE2AE4D1"
+    }
+  ]
+}

@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BC69B18C21A1C65400242FDE"
-               BuildableName = "FlatToFisheye.bundle"
-               BlueprintName = "FlatToFisheye"
-               ReferencedContainer = "container:FFGLPlugins.xcodeproj">
+               BlueprintIdentifier = "D6369DBB1AAF108500B0CC43"
+               BuildableName = "ALL"
+               BlueprintName = "ALL"
+               ReferencedContainer = "container:360 VJ.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,6 +29,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D6369DBB1AAF108500B0CC43"
+            BuildableName = "ALL"
+            BlueprintName = "ALL"
+            ReferencedContainer = "container:360 VJ.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -45,10 +54,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BC69B18C21A1C65400242FDE"
-            BuildableName = "FlatToFisheye.bundle"
-            BlueprintName = "FlatToFisheye"
-            ReferencedContainer = "container:FFGLPlugins.xcodeproj">
+            BlueprintIdentifier = "D6369DBB1AAF108500B0CC43"
+            BuildableName = "ALL"
+            BlueprintName = "ALL"
+            ReferencedContainer = "container:360 VJ.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -63,10 +72,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BC69B18C21A1C65400242FDE"
-            BuildableName = "FlatToFisheye.bundle"
-            BlueprintName = "FlatToFisheye"
-            ReferencedContainer = "container:FFGLPlugins.xcodeproj">
+            BlueprintIdentifier = "D6369DBB1AAF108500B0CC43"
+            BuildableName = "ALL"
+            BlueprintName = "ALL"
+            ReferencedContainer = "container:360 VJ.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

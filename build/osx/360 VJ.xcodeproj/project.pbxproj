@@ -404,7 +404,7 @@
 			attributes = {
 				LastUpgradeCheck = 0510;
 			};
-			buildConfigurationList = 2DA285940AEE5D640030A4DD /* Build configuration list for PBXProject "FFGLPlugins" */;
+			buildConfigurationList = 2DA285940AEE5D640030A4DD /* Build configuration list for PBXProject "360 VJ" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -554,6 +554,7 @@
 				CONFIGURATION_BUILD_DIR = ../../binaries/debug;
 				COPY_PHASE_STRIP = NO;
 				ONLY_ACTIVE_ARCH = YES;
+				ON_DEMAND_RESOURCES_PREFETCH_ORDER = "";
 			};
 			name = Debug;
 		};
@@ -566,6 +567,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
+				ON_DEMAND_RESOURCES_PREFETCH_ORDER = "";
 				STRIP_STYLE = debugging;
 			};
 			name = Release;
@@ -755,7 +757,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2DA285940AEE5D640030A4DD /* Build configuration list for PBXProject "FFGLPlugins" */ = {
+		2DA285940AEE5D640030A4DD /* Build configuration list for PBXProject "360 VJ" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2DA285950AEE5D640030A4DD /* Debug */,

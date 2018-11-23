@@ -659,6 +659,7 @@
 		BC69B18721A1C63B00242FDE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
 				COPY_PHASE_STRIP = NO;
@@ -681,6 +682,7 @@
 		BC69B18821A1C63B00242FDE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
 				COPY_PHASE_STRIP = YES;
@@ -701,6 +703,7 @@
 		BC69B19921A1C65400242FDE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
 				COPY_PHASE_STRIP = NO;
@@ -723,6 +726,7 @@
 		BC69B19A21A1C65400242FDE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = ../../binaries/osx/FFGL1.5/x86;
 				COPY_PHASE_STRIP = YES;

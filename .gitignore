@@ -5,3 +5,9 @@ build/.vs/
 build/x64/
 build/Release/
 build/x86/
+build/FFGL2/x64/
+build/FFGL2/Release/
+build/FFGL2/x86/
+build/FFGL1.5/x64/
+build/FFGL2.5/Release/
+build/FFGL2.5/x86/

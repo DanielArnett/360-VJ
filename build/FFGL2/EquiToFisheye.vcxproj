@@ -11,45 +11,45 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLFBO.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedBufferBinding.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedSamplerActivation.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedShaderBinding.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedTextureBinding.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedVAOBinding.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScreenQuad.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLShader.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLUtilities.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGL.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginInfo.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginInfoData.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginManager.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginSDK.cpp" />
-    <ClCompile Include="..\ffgl\ffgl\source\lib\glsdk_0_5_2\glload\source\gl_load.c" />
-    <ClCompile Include="..\source\FisheyeRotation\FisheyeRotation.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLFBO.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedBufferBinding.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedSamplerActivation.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedShaderBinding.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedTextureBinding.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedVAOBinding.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScreenQuad.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLShader.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLUtilities.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGL.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGLPluginInfo.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGLPluginInfoData.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGLPluginManager.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGLPluginSDK.cpp" />
+    <ClCompile Include="..\..\ffgl\ffgl\source\lib\glsdk_0_5_2\glload\source\gl_load.c" />
+    <ClCompile Include="..\..\source\FFGL2\EquiToFisheye\EquiToFisheye.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLFBO.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedBufferBinding.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedSamplerActivation.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedShaderBinding.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedTextureBinding.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedVAOBinding.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScreenQuad.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLShader.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLUtilities.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGL.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGLLib.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginInfo.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginManager.h" />
-    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginSDK.h" />
-    <ClInclude Include="..\source\FisheyeRotation\FisheyeRotation.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLFBO.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedBufferBinding.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedSamplerActivation.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedShaderBinding.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedTextureBinding.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScopedVAOBinding.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLScreenQuad.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLShader.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffglex\FFGLUtilities.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGL.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGLLib.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGLPluginInfo.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGLPluginManager.h" />
+    <ClInclude Include="..\..\ffgl\ffgl\source\lib\ffgl\FFGLPluginSDK.h" />
+    <ClInclude Include="..\..\source\FFGL2\EquiToFisheye\EquiToFisheye.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D595C912-6B5A-4E9A-B341-7A3DB99EDAB4}</ProjectGuid>
+    <ProjectGuid>{189ED9A2-D282-4029-8E4B-4ACF930BF238}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
-    <ProjectName>FisheyeRotation</ProjectName>
+    <ProjectName>EquiToFisheye</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -80,11 +80,11 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\binaries\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>..\..\binaries\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\binaries\windows\FFGL2\$(PlatformTarget)\</OutDir>
+    <OutDir>..\..\binaries\windows\FFGL2\$(PlatformTarget)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -97,7 +97,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\ffgl\ffgl\source\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\ffgl\ffgl\source\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>FFGLPlugins.def</ModuleDefinitionFile>
@@ -105,7 +105,7 @@
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <ImportLibrary>$(OutDir)$(ProjectName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>..\..\..\source\common\opengl\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\..\source\common\opengl\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -117,7 +117,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\ffgl\ffgl\source\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\ffgl\ffgl\source\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>FFGLPlugins.def</ModuleDefinitionFile>
@@ -126,7 +126,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <ImportLibrary>$(OutDir)$(ProjectName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>..\..\..\source\common\opengl\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\..\source\common\opengl\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

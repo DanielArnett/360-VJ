@@ -2,13 +2,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EquiRotation", "EquiRotate.vcxproj", "{1EC32B44-73B3-482A-BF6F-B9030C0F5AC4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EquiRotation", "FFGL2/EquiRotate.vcxproj", "{1EC32B44-73B3-482A-BF6F-B9030C0F5AC4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlatToFisheye", "FlatToFisheye.vcxproj", "{5E331F75-A2BE-4D1C-9CAE-D3B2E851F60E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlatToFisheye", "FFGL2/FlatToFisheye.vcxproj", "{5E331F75-A2BE-4D1C-9CAE-D3B2E851F60E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FisheyeRotation", "FisheyeRotation.vcxproj", "{D595C912-6B5A-4E9A-B341-7A3DB99EDAB4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FisheyeRotation", "FFGL2/FisheyeRotation.vcxproj", "{D595C912-6B5A-4E9A-B341-7A3DB99EDAB4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EquiToFisheye", "EquiToFisheye.vcxproj", "{189ED9A2-D282-4029-8E4B-4ACF930BF238}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EquiToFisheye", "FFGL2/EquiToFisheye.vcxproj", "{189ED9A2-D282-4029-8E4B-4ACF930BF238}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

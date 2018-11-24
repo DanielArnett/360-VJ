@@ -11,38 +11,38 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLFBO.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedBufferBinding.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedSamplerActivation.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedShaderBinding.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedTextureBinding.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedVAOBinding.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScreenQuad.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLShader.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLUtilities.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffgl\FFGL.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffgl\FFGLPluginInfo.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffgl\FFGLPluginInfoData.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffgl\FFGLPluginManager.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\ffgl\FFGLPluginSDK.cpp" />
-    <ClCompile Include="..\ffgl2\ffgl\source\lib\glsdk_0_5_2\glload\source\gl_load.c" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLFBO.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedBufferBinding.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedSamplerActivation.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedShaderBinding.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedTextureBinding.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedVAOBinding.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScreenQuad.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLShader.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffglex\FFGLUtilities.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGL.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginInfo.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginInfoData.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginManager.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginSDK.cpp" />
+    <ClCompile Include="..\ffgl\ffgl\source\lib\glsdk_0_5_2\glload\source\gl_load.c" />
     <ClCompile Include="..\source\EquiRotation\EquiRotation.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLFBO.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedBufferBinding.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedSamplerActivation.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedShaderBinding.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedTextureBinding.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScopedVAOBinding.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLScreenQuad.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLShader.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffglex\FFGLUtilities.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffgl\FFGL.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffgl\FFGLLib.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffgl\FFGLPluginInfo.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffgl\FFGLPluginManager.h" />
-    <ClInclude Include="..\ffgl2\ffgl\source\lib\ffgl\FFGLPluginSDK.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLFBO.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedBufferBinding.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedSamplerActivation.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedShaderBinding.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedTextureBinding.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScopedVAOBinding.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLScreenQuad.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLShader.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffglex\FFGLUtilities.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGL.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGLLib.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginInfo.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginManager.h" />
+    <ClInclude Include="..\ffgl\ffgl\source\lib\ffgl\FFGLPluginSDK.h" />
     <ClInclude Include="..\source\EquiRotation\EquiRotation.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -97,7 +97,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\ffgl2\ffgl\source\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ffgl\ffgl\source\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>FFGLPlugins.def</ModuleDefinitionFile>
@@ -117,7 +117,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\ffgl2\ffgl\source\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ffgl\ffgl\source\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>FFGLPlugins.def</ModuleDefinitionFile>

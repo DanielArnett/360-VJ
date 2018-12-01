@@ -1,4 +1,4 @@
-#include "EquiRotation.h"
+#include "FisheyeToEqui.h"
 #include <ffgl/FFGLLib.h>
 #include <ffglex/FFGLScopedShaderBinding.h>
 #include <ffglex/FFGLScopedSamplerActivation.h>
@@ -10,15 +10,15 @@ using namespace ffglex;
 #define FFPARAM_Yaw ( 2 )
 
 static CFFGLPluginInfo PluginInfo(
-	PluginFactory< EquiToFisheye >,// Create method
-	"360V",                       // Plugin unique ID of maximum length 4.
-	"360 VJ",				 	  // Plugin name
+	PluginFactory< FisheyeToEqui >,// Create method
+	"F2EQ",                       // Plugin unique ID of maximum length 4.
+	"Fisheye To 360",		 	  // Plugin name
 	2,                            // API major version number
 	1,                            // API minor version number
 	1,                            // Plugin major version number
 	0,                            // Plugin minor version number
 	FF_EFFECT,                    // Plugin type
-	"Rotate 360 videos",		  // Plugin description
+	"Convert fisheye videos into Equirectangular 360 videos.",	  // Plugin description
 	"Written by Daniel Arnett, go to https://github.com/DanielArnett/360-VJ/releases for more detail."      // About
 );
 
@@ -66,8 +66,9 @@ mat3 Rz(float th)
 }
 
 // Rotate a point vector by th.x then th.y then th.z, and return the rotated point.
-vec3 rotatePoint(vec3 p, vec3 th)
+vec3 rotatePoint(vec3 p, vec3 th, vec3 offset)
 {
+	th += offset;
 	return Rx(th.r) * Ry(th.g) * Rz(th.b) * p;
 }
 
@@ -97,13 +98,32 @@ vec2 pointToLatLon(vec3 point)
 	return latLon;
 }
 
-// Convert latitude, longitude to x, y pixel coordinates on an equirectangular image.
-vec2 latLonToUv(vec2 latLon)
+// Convert latitude, longitude to x, y pixel coordinates on the source fisheye image.
+vec2 latLonToFisheyeUv(vec2 latLon, vec3 point)
 {	
-	vec2 uv;
-	uv.x = (latLon.y + PI)/(2.0*PI);
-	uv.y = (latLon.x + PI/2.0)/PI;
-	return uv;
+	// The distance from the source pixel to the center of the image
+	float r;
+	// phi is the angle of r on the unit circle. See polar coordinates for more details
+	float phi;
+	// Get the position of the source pixel
+	vec2 sourcePixel;
+
+	// Get the source pixel radius from center
+	r = 1.0 - latLon.x/(PI / 2.0);
+	// Don't bother with source pixels outside of the fisheye circle
+	if (1.0 < r) {
+		// Return a transparent pixel
+		return vec2(-1.0, -1.0);
+	}
+	phi = atan(-point.z, point.x);
+	
+	sourcePixel.x = r * cos(phi);
+	sourcePixel.y = r * sin(phi);
+	// Normalize the output pixel to be in the range [0,1]
+	sourcePixel += 1.0;
+	sourcePixel /= 2.0;
+
+	return sourcePixel;
 }
 void main()
 {
@@ -115,17 +135,25 @@ void main()
 		// Z increases from back to front [-1 to 1]
 	vec3 point = latLonToPoint(latLon);
 	// Rotate the point based on the user input in radians
-	point = rotatePoint(point, InputRotation.xyz * PI);
+	point = rotatePoint(point, InputRotation.xyz * PI, vec3(PI/2.0, 0.0, 0.0));
 	// Convert back to latitude and longitude
 	latLon = pointToLatLon(point);
 	// Convert back to the normalized pixel coordinate
-	vec2 sourcePixel = latLonToUv(latLon);
-	// Set the color of the destination pixel to the color of the source pixel
-	fragColor = texture( InputTexture, sourcePixel );
+	vec2 sourcePixel = latLonToFisheyeUv(latLon, point);
+	// Set the color of the destination pixel to the color of the source pixel if it's in the fisheye circle.
+	if (sourcePixel.x != -1.0)
+	{
+		fragColor = texture( InputTexture, sourcePixel );
+	}
+	else
+	{
+		fragColor = vec4(0.0, 0.0, 0.0, 0.0);
+	}
 }
+
 )";
 
-EquiToFisheye::EquiToFisheye() :
+FisheyeToEqui::FisheyeToEqui() :
 	maxUVLocation( -1 ),
 	fieldOfViewLocation( -1 ),
 	pitch( 0.5f ),
@@ -141,11 +169,11 @@ EquiToFisheye::EquiToFisheye() :
 	SetParamInfof( FFPARAM_Pitch, "Pitch", FF_TYPE_STANDARD );
 	SetParamInfof( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD );
 }
-EquiToFisheye::~EquiToFisheye()
+FisheyeToEqui::~FisheyeToEqui()
 {
 }
 
-FFResult EquiToFisheye::InitGL( const FFGLViewportStruct* vp )
+FFResult FisheyeToEqui::InitGL( const FFGLViewportStruct* vp )
 {
 	if( !shader.Compile( vertexShaderCode, fragmentShaderCode ) )
 	{
@@ -172,7 +200,7 @@ FFResult EquiToFisheye::InitGL( const FFGLViewportStruct* vp )
 	//Use base-class init as success result so that it retains the viewport.
 	return CFreeFrameGLPlugin::InitGL( vp );
 }
-FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
+FFResult FisheyeToEqui::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 {
 	if( pGL->numInputTextures < 1 )
 		return FF_FAIL;
@@ -204,7 +232,7 @@ FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 
 	return FF_SUCCESS;
 }
-FFResult EquiToFisheye::DeInitGL()
+FFResult FisheyeToEqui::DeInitGL()
 {
 	shader.FreeGLResources();
 	quad.Release();
@@ -214,7 +242,7 @@ FFResult EquiToFisheye::DeInitGL()
 	return FF_SUCCESS;
 }
 
-FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
+FFResult FisheyeToEqui::SetFloatParameter( unsigned int dwIndex, float value )
 {
 	switch( dwIndex )
 	{
@@ -234,7 +262,7 @@ FFResult EquiToFisheye::SetFloatParameter( unsigned int dwIndex, float value )
 	return FF_SUCCESS;
 }
 
-float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
+float FisheyeToEqui::GetFloatParameter( unsigned int dwIndex )
 {
 	switch( dwIndex )
 	{
@@ -247,30 +275,5 @@ float EquiToFisheye::GetFloatParameter( unsigned int dwIndex )
 
 	default:
 		return 0.0f;
-	}
-}
-char* EquiToFisheye::GetParameterDisplay(unsigned int index)
-{
-	/**
-	 * We're not returning ownership over the string we return, so we have to somehow guarantee that
-	 * the lifetime of the returned string encompasses the usage of that string by the host. Having this static
-	 * buffer here keeps previously returned display string alive until this function is called again.
-	 * This happens to be long enough for the hosts we know about.
-	 */
-	static char displayValueBuffer[15];
-	memset(displayValueBuffer, 0, sizeof(displayValueBuffer));
-	switch (index)
-	{
-	case FFPARAM_Pitch:
-		sprintf_s(displayValueBuffer, "%f", pitch * 360 - 180);
-		return displayValueBuffer;
-	case FFPARAM_Yaw:
-		sprintf_s(displayValueBuffer, "%f", yaw * 360 - 180);
-		return displayValueBuffer;
-	case FFPARAM_Roll:
-		sprintf_s(displayValueBuffer, "%f", roll * 360 - 180);
-		return displayValueBuffer;
-	default:
-		return CFreeFrameGLPlugin::GetParameterDisplay(index);
 	}
 }

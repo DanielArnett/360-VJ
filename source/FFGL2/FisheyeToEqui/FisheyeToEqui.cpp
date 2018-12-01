@@ -8,6 +8,8 @@ using namespace ffglex;
 #define FFPARAM_Roll ( 0 )
 #define FFPARAM_Pitch ( 1 )
 #define FFPARAM_Yaw ( 2 )
+#define FFPARAM_FadeInner ( 3 )
+#define FFPARAM_FadeOuter ( 4 )
 
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< FisheyeToEqui >,// Create method
@@ -41,6 +43,7 @@ static const char fragmentShaderCode[] = R"(#version 410 core
 float PI = 3.14159265359;
 uniform sampler2D InputTexture;
 uniform vec3 InputRotation;
+uniform vec2 InputFade;
 in vec2 uv;
 out vec4 fragColor;
 // A transformation matrix rotating about the x axis by `th` degrees.
@@ -97,7 +100,10 @@ vec2 pointToLatLon(vec3 point)
 	latLon.y = atan(point.x, point.z);
 	return latLon;
 }
-
+float getRFromLatLon(vec2 latLon)
+{
+	return 1.0 - latLon.x/(PI / 2.0);
+}
 // Convert latitude, longitude to x, y pixel coordinates on the source fisheye image.
 vec2 latLonToFisheyeUv(vec2 latLon, vec3 point)
 {	
@@ -109,7 +115,7 @@ vec2 latLonToFisheyeUv(vec2 latLon, vec3 point)
 	vec2 sourcePixel;
 
 	// Get the source pixel radius from center
-	r = 1.0 - latLon.x/(PI / 2.0);
+	r = getRFromLatLon(latLon);
 	// Don't bother with source pixels outside of the fisheye circle
 	if (1.0 < r) {
 		// Return a transparent pixel
@@ -124,6 +130,21 @@ vec2 latLonToFisheyeUv(vec2 latLon, vec3 point)
 	sourcePixel /= 2.0;
 
 	return sourcePixel;
+}
+float getFadeCoefficient(float r)
+{
+	if (r < InputFade.x)
+	{
+		return 1.0;
+	}
+	else if (InputFade.x < r && r < InputFade.y)
+	{
+		return (InputFade.y - r) / (InputFade.y - InputFade.x);
+	}
+	else
+	{
+		return 0.0;
+	}
 }
 void main()
 {
@@ -144,6 +165,9 @@ void main()
 	if (sourcePixel.x != -1.0)
 	{
 		fragColor = texture( InputTexture, sourcePixel );
+		fragColor.a = getFadeCoefficient(getRFromLatLon(latLon));
+		//fragColor.a = 0.3;
+		fragColor.rgb *= fragColor.a;
 	}
 	else
 	{
@@ -155,7 +179,10 @@ void main()
 
 FisheyeToEqui::FisheyeToEqui() :
 	maxUVLocation( -1 ),
-	fieldOfViewLocation( -1 ),
+	fieldOfViewLocation(-1),
+	fadeLocation(-1),
+	fadeIn( 0.8f ),
+	fadeOut( 1.0f ),
 	pitch( 0.5f ),
 	yaw( 0.5f ),
 	roll( 0.5f )
@@ -167,7 +194,9 @@ FisheyeToEqui::FisheyeToEqui() :
 	// Parameters
 	SetParamInfof( FFPARAM_Roll, "Roll", FF_TYPE_STANDARD );
 	SetParamInfof( FFPARAM_Pitch, "Pitch", FF_TYPE_STANDARD );
-	SetParamInfof( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD );
+	SetParamInfof( FFPARAM_Yaw, "Yaw", FF_TYPE_STANDARD);
+	SetParamInfof( FFPARAM_FadeInner, "Inner Radial Fade", FF_TYPE_STANDARD);
+	SetParamInfof( FFPARAM_FadeOuter, "Outer Radial Fade", FF_TYPE_STANDARD);
 }
 FisheyeToEqui::~FisheyeToEqui()
 {
@@ -195,7 +224,8 @@ FFResult FisheyeToEqui::InitGL( const FFGLViewportStruct* vp )
 
 	//We need to know these uniform locations because we need to set their value each frame.
 	maxUVLocation = shader.FindUniform( "MaxUV" );
-	fieldOfViewLocation = shader.FindUniform( "InputRotation" );
+	fieldOfViewLocation = shader.FindUniform("InputRotation");
+	fadeLocation = shader.FindUniform("InputFade");
 
 	//Use base-class init as success result so that it retains the viewport.
 	return CFreeFrameGLPlugin::InitGL( vp );
@@ -217,11 +247,15 @@ FFResult FisheyeToEqui::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	//We're adopting the texture's maxUV using a uniform because that way we dont have to update our vertex buffer each frame.
 	FFGLTexCoords maxCoords = GetMaxGLTexCoords( Texture );
 	glUniform2f( maxUVLocation, maxCoords.s, maxCoords.t );
-
+	
 	glUniform3f( fieldOfViewLocation,
 				 -1.0f + ( pitch * 2.0f ),
 				 -1.0f + ( yaw * 2.0f ),
 				 -1.0f + ( roll * 2.0f ) );
+
+	glUniform2f(fadeLocation,
+				fadeIn,
+				fadeOut);
 
 	//The shader's sampler is always bound to sampler index 0 so that's where we need to bind the texture.
 	//Again, we're using the scoped bindings to help us keep the context in a default state.
@@ -255,6 +289,12 @@ FFResult FisheyeToEqui::SetFloatParameter( unsigned int dwIndex, float value )
 	case FFPARAM_Roll:
 		roll = value;
 		break;
+	case FFPARAM_FadeInner:
+		fadeIn = value;
+		break;
+	case FFPARAM_FadeOuter:
+		fadeOut = value;
+		break;
 	default:
 		return FF_FAIL;
 	}
@@ -272,6 +312,10 @@ float FisheyeToEqui::GetFloatParameter( unsigned int dwIndex )
 		return yaw;
 	case FFPARAM_Roll:
 		return roll;
+	case FFPARAM_FadeInner:
+		return fadeIn;
+	case FFPARAM_FadeOuter:
+		return fadeOut;
 
 	default:
 		return 0.0f;

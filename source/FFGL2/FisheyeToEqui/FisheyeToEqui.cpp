@@ -165,8 +165,8 @@ void main()
 	if (sourcePixel.x != -1.0)
 	{
 		fragColor = texture( InputTexture, sourcePixel );
+		// Set the opacity of the pixel
 		fragColor.a = getFadeCoefficient(getRFromLatLon(latLon));
-		//fragColor.a = 0.3;
 		fragColor.rgb *= fragColor.a;
 	}
 	else

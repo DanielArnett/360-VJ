@@ -148,7 +148,6 @@ void main()
 		return;
 	}
 	phi = atan(p.y, p.x);
-
 	// Get the position of the output pixel
 	sourcePixel.x = r * cos(phi);
 	sourcePixel.y = r * sin(phi);

@@ -12,6 +12,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EquiToFisheye", "FFGL2\Equi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FisheyeToEqui", "FFGL2\FisheyeToEqui.vcxproj", "{90B3B6FC-134F-4434-9F69-4B2B96995ECF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FisheyeToFlat", "FFGL2\FisheyeToFlat.vcxproj", "{1AAFA3BA-DC3A-48D6-BE03-C29A1F017533}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -38,6 +40,10 @@ Global
 		{90B3B6FC-134F-4434-9F69-4B2B96995ECF}.Debug|x64.Build.0 = Debug|x64
 		{90B3B6FC-134F-4434-9F69-4B2B96995ECF}.Release|x64.ActiveCfg = Release|x64
 		{90B3B6FC-134F-4434-9F69-4B2B96995ECF}.Release|x64.Build.0 = Release|x64
+		{1AAFA3BA-DC3A-48D6-BE03-C29A1F017533}.Debug|x64.ActiveCfg = Debug|x64
+		{1AAFA3BA-DC3A-48D6-BE03-C29A1F017533}.Debug|x64.Build.0 = Debug|x64
+		{1AAFA3BA-DC3A-48D6-BE03-C29A1F017533}.Release|x64.ActiveCfg = Release|x64
+		{1AAFA3BA-DC3A-48D6-BE03-C29A1F017533}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

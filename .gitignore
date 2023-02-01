@@ -11,4 +11,7 @@ build/FFGL2/x86/
 build/FFGL1.5/x64/
 build/FFGL2.5/Release/
 build/FFGL2.5/x86/
+
 .DS_Store
+build/mac/FFGLPlugins\.xcodeproj/xcuserdata/
+build/mac/FFGLPlugins\.xcodeproj/project\.xcworkspace/xcuserdata/

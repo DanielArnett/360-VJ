@@ -170,7 +170,7 @@ FFResult EquiToFisheye::InitGL( const FFGLViewportStruct* vp )
 	fieldOfViewLocation = shader.FindUniform( "InputRotation" );
 
 	//Use base-class init as success result so that it retains the viewport.
-	return CFreeFrameGLPlugin::InitGL( vp );
+	return CFFGLPlugin::InitGL( vp );
 }
 FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 {
@@ -262,15 +262,15 @@ char* EquiToFisheye::GetParameterDisplay(unsigned int index)
 	switch (index)
 	{
 	case FFPARAM_Pitch:
-		sprintf_s(displayValueBuffer, "%f", pitch * 360 - 180);
+		sprintf(displayValueBuffer, "%f", pitch * 360 - 180);
 		return displayValueBuffer;
 	case FFPARAM_Yaw:
-		sprintf_s(displayValueBuffer, "%f", yaw * 360 - 180);
+		sprintf(displayValueBuffer, "%f", yaw * 360 - 180);
 		return displayValueBuffer;
 	case FFPARAM_Roll:
-		sprintf_s(displayValueBuffer, "%f", roll * 360 - 180);
+		sprintf(displayValueBuffer, "%f", roll * 360 - 180);
 		return displayValueBuffer;
 	default:
-		return CFreeFrameGLPlugin::GetParameterDisplay(index);
+		return CFFGLPlugin::GetParameterDisplay(index);
 	}
 }

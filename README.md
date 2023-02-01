@@ -15,7 +15,10 @@ Download everything and unzip into in any folder, open the VS2017 solution file 
 Visual Studio and change to "release", it should build OK as-is.
 
 ### Mac
-TODO:  
+There is an XCode project file in `build/mac` with targets for "ALL" and individual plugins.
+It is currently configured to deploy to `10.15`, so if you are using an earlier version of OSX you may need to try changing that.
+It's probably worth trying a debug build first to verify the basic configuration is working, but the resulting binaries appear liable to crash in Resolume.
+In order to produce working binaries, it seems to be necessary to prepare an archive (`product/Archive` in the XCode menu). If that succeeds, you should see an XCode "Organizer" window containing your build. If you show that in Finder, then "Show Package Contents" and recurse throught the `Products` folder until you find the `.bundle` files that can be copied to `~/Documents/Resolume [Avenue|Arena]/Extra Effects`.
 
 ## Credits
 Developed and Implemented by Daniel Arnett for the Slippery Rock University Planetarium.

@@ -4,13 +4,13 @@
 #include <ffglex/FFGLShader.h>
 #include <ffglex/FFGLScreenQuad.h>
 
-class EquiToFisheye : public CFreeFrameGLPlugin
+class EquiToFisheye : public CFFGLPlugin
 {
 public:
 	EquiToFisheye();
 	~EquiToFisheye();
 
-	//CFreeFrameGLPlugin
+	//CFFGLPlugin
 	FFResult InitGL( const FFGLViewportStruct* vp ) override;
 	FFResult ProcessOpenGL( ProcessOpenGLStruct* pGL ) override;
 	FFResult DeInitGL() override;

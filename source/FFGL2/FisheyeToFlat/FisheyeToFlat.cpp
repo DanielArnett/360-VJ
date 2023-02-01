@@ -150,7 +150,7 @@ FFResult FisheyeToFlat::InitGL( const FFGLViewportStruct* vp )
 	fieldOfViewLocation = shader.FindUniform( "fieldOfView" );
 
 	//Use base-class init as success result so that it retains the viewport.
-	return CFreeFrameGLPlugin::InitGL( vp );
+	return CFFGLPlugin::InitGL( vp );
 }
 FFResult FisheyeToFlat::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 {

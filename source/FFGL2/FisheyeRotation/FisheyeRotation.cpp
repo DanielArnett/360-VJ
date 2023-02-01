@@ -204,7 +204,7 @@ FFResult EquiToFisheye::InitGL( const FFGLViewportStruct* vp )
 	fieldOfViewLocation = shader.FindUniform( "InputRotation" );
 
 	//Use base-class init as success result so that it retains the viewport.
-	return CFreeFrameGLPlugin::InitGL( vp );
+	return CFFGLPlugin::InitGL( vp );
 }
 FFResult EquiToFisheye::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 {

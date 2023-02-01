@@ -4,13 +4,13 @@
 #include <ffglex/FFGLShader.h>
 #include <ffglex/FFGLScreenQuad.h>
 
-class FisheyeToFlat : public CFreeFrameGLPlugin
+class FisheyeToFlat : public CFFGLPlugin
 {
 public:
 	FisheyeToFlat();
 	~FisheyeToFlat();
 
-	//CFreeFrameGLPlugin
+	//CFFGLPlugin
 	FFResult InitGL( const FFGLViewportStruct* vp ) override;
 	FFResult ProcessOpenGL( ProcessOpenGLStruct* pGL ) override;
 	FFResult DeInitGL() override;

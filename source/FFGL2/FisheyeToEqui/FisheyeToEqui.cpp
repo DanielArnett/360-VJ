@@ -228,7 +228,7 @@ FFResult FisheyeToEqui::InitGL( const FFGLViewportStruct* vp )
 	fadeLocation = shader.FindUniform("InputFade");
 
 	//Use base-class init as success result so that it retains the viewport.
-	return CFreeFrameGLPlugin::InitGL( vp );
+	return CFFGLPlugin::InitGL( vp );
 }
 FFResult FisheyeToEqui::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 {

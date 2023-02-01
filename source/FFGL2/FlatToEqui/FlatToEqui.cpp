@@ -363,19 +363,19 @@ char* FlatToEqui::GetParameterDisplay(unsigned int index)
 	switch (index)
 	{
 	case FFPARAM_Pitch:
-		sprintf_s(displayValueBuffer, "%f", pitch * 360.0f - 180.0f);
+		sprintf(displayValueBuffer, "%f", pitch * 360.0f - 180.0f);
 		return displayValueBuffer;
 	case FFPARAM_Yaw:
-		sprintf_s(displayValueBuffer, "%f", yaw * 360.0f - 180.0f);
+		sprintf(displayValueBuffer, "%f", yaw * 360.0f - 180.0f);
 		return displayValueBuffer;
 	case FFPARAM_Roll:
-		sprintf_s(displayValueBuffer, "%f", roll * 360.0f - 180.0f);
+		sprintf(displayValueBuffer, "%f", roll * 360.0f - 180.0f);
 		return displayValueBuffer;
 	case FFPARAM_FOV:
-		sprintf_s(displayValueBuffer, "%f", fieldOfView * 180.0f);
+		sprintf(displayValueBuffer, "%f", fieldOfView * 180.0f);
 		return displayValueBuffer;
 	case FFPARAM_Aspect:
-		sprintf_s(displayValueBuffer, "%f", aspectRatio * 2.0);
+		sprintf(displayValueBuffer, "%f", aspectRatio * 2.0);
 		return displayValueBuffer;
 	default:
 		return CFFGLPlugin::GetParameterDisplay(index);

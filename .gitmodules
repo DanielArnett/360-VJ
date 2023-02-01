@@ -2,7 +2,3 @@
 	path = ffgl/ffgl
 	url = https://github.com/resolume/ffgl.git
 	branch = master
-[submodule "ffgl/ffgl1.5"]
-	path = ffgl/ffgl1.5
-	url = https://github.com/resolume/ffgl.git
-	branch = ffgl1.5

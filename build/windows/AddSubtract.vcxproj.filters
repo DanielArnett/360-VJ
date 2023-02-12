@@ -224,4 +224,7 @@
       <UniqueIdentifier>{44eb9986-e7cd-4b25-8715-dbdbbc920b4c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\source\plugins\AddSubtract\Reprojection.hlsl" />
+  </ItemGroup>
 </Project>

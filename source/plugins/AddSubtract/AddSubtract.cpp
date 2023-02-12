@@ -1,6 +1,10 @@
 #include "AddSubtract.h"
-using namespace ffglex;
+#include <fstream>// std::ifstream
 
+using namespace ffglex;
+const std::string vs_source = {
+#include "Reprojection.hlsl"
+};
 enum ParamType : FFUInt32
 {
 	PT_RED,
@@ -10,15 +14,15 @@ enum ParamType : FFUInt32
 
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< AddSubtract >,// Create method
-	"RE01",                      // Plugin unique ID of maximum length 4.
-	"AddSub Example",            // Plugin name
+	"360V",                      // Plugin unique ID of maximum length 4.
+	"Reprojection2",            // Plugin name
 	2,                           // API major version number
 	1,                           // API minor version number
 	1,                           // Plugin major version number
 	0,                           // Plugin minor version number
 	FF_EFFECT,                   // Plugin type
-	"Add and Subtract colours",  // Plugin description
-	"Resolume FFGL Example"      // About
+	"Change image projection",   // Plugin description
+	"Modify projections"      // About
 );
 
 static const char _vertexShaderCode[] = R"(#version 410 core
@@ -78,7 +82,7 @@ AddSubtract::~AddSubtract()
 
 FFResult AddSubtract::InitGL( const FFGLViewportStruct* vp )
 {
-	if( !shader.Compile( _vertexShaderCode, _fragmentShaderCode ) )
+	if( !shader.Compile( _vertexShaderCode, vs_source ) )
 	{
 		DeInitGL();
 		return FF_FAIL;

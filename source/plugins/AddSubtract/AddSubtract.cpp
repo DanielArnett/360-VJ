@@ -2,7 +2,7 @@
 #include <fstream>// std::ifstream
 
 using namespace ffglex;
-const std::string vs_source = {
+const std::string _fragmentShaderCode = { 
 #include "Reprojection.hlsl"
 };
 enum ParamType : FFUInt32
@@ -14,7 +14,7 @@ enum ParamType : FFUInt32
 
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< AddSubtract >,// Create method
-	"360V",                      // Plugin unique ID of maximum length 4.
+	"RPRJ",                      // Plugin unique ID of maximum length 4.
 	"Reprojection2",            // Plugin name
 	2,                           // API major version number
 	1,                           // API minor version number
@@ -40,39 +40,15 @@ void main()
 }
 )";
 
-static const char _fragmentShaderCode[] = R"(#version 410 core
-uniform sampler2D InputTexture;
-uniform vec3 Brightness;
-
-in vec2 uv;
-
-out vec4 fragColor;
-
-void main()
-{
-	vec4 color = texture( InputTexture, uv );
-	//The InputTexture contains premultiplied colors, so we need to unpremultiply first to apply our effect on straight colors.
-	if( color.a > 0.0 )
-		color.rgb /= color.a;
-
-	color.rgb += Brightness * 2. - 1.;
-
-	//The plugin has to output premultiplied colors, this is how we're premultiplying our straight color while also
-	//ensuring we aren't going out of the LDR the video engine is working in.
-	color.rgb = clamp( color.rgb * color.a, vec3( 0.0 ), vec3( color.a ) );
-	fragColor = color;
-}
-)";
-
 AddSubtract::AddSubtract() :
 	r( 0.5f ), g( 0.5f ), b( 0.5f )
 {
 	SetMinInputs( 1 );
 	SetMaxInputs( 1 );
 
-	SetParamInfof( PT_RED, "Brightness", FF_TYPE_RED );
-	SetParamInfof( PT_GREEN, "Brightness_Green", FF_TYPE_GREEN );
-	SetParamInfof( PT_BLUE, "Brightness_Blue", FF_TYPE_BLUE );
+	SetParamInfof( PT_RED, "Pitch", FF_TYPE_BRIGHTNESS );
+	SetParamInfof( PT_GREEN, "Roll", FF_TYPE_GREEN );
+	SetParamInfof( PT_BLUE, "Yaw", FF_TYPE_BLUE );
 
 	FFGLLog::LogToHost( "Created AddSubtract effect" );
 }
@@ -82,7 +58,7 @@ AddSubtract::~AddSubtract()
 
 FFResult AddSubtract::InitGL( const FFGLViewportStruct* vp )
 {
-	if( !shader.Compile( _vertexShaderCode, vs_source ) )
+	if( !shader.Compile( _vertexShaderCode, _fragmentShaderCode ) )
 	{
 		DeInitGL();
 		return FF_FAIL;

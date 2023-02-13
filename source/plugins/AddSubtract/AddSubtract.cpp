@@ -7,9 +7,12 @@ const std::string _fragmentShaderCode = {
 };
 enum ParamType : FFUInt32
 {
+	PT_INPUT_PROJECTION,
+	PT_OUTPUT_PROJECTION,
 	PT_RED,
 	PT_GREEN,
-	PT_BLUE
+	PT_BLUE,
+	PT_FOV
 };
 
 static CFFGLPluginInfo PluginInfo(
@@ -41,14 +44,26 @@ void main()
 )";
 
 AddSubtract::AddSubtract() :
-	r( 0.5f ), g( 0.5f ), b( 0.5f )
+	inputProjection( 0 ), outputProjection( 0 ), r( 0.5f ), g( 0.5f ), b( 0.5f ), fov( 1.0 )
 {
 	SetMinInputs( 1 );
 	SetMaxInputs( 1 );
 
+	SetOptionParamInfo( PT_INPUT_PROJECTION, "InputProjection", 3, inputProjection );
+	SetParamElementInfo( PT_INPUT_PROJECTION, 0, "Equirectangular", 0 );
+	SetParamElementInfo( PT_INPUT_PROJECTION, 1, "Fisheye", 1 );
+	SetParamElementInfo( PT_INPUT_PROJECTION, 2, "Flat", 2 );
+	SetParamElementInfo( PT_INPUT_PROJECTION, 3, "Cubemap", 3 );
+	SetOptionParamInfo(  PT_OUTPUT_PROJECTION, "OutputProjection", 3, outputProjection );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 0, "Equirectangular", 0 );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 1, "Fisheye", 1 );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 2, "Flat", 2 );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 3, "Cubemap", 3 );
+
 	SetParamInfof( PT_RED, "Pitch", FF_TYPE_BRIGHTNESS );
 	SetParamInfof( PT_GREEN, "Roll", FF_TYPE_GREEN );
 	SetParamInfof( PT_BLUE, "Yaw", FF_TYPE_BLUE );
+	SetParamInfof( PT_FOV, "fov Out", FF_TYPE_STANDARD );
 
 	FFGLLog::LogToHost( "Created AddSubtract effect" );
 }
@@ -68,7 +83,7 @@ FFResult AddSubtract::InitGL( const FFGLViewportStruct* vp )
 		DeInitGL();
 		return FF_FAIL;
 	}
-
+	
 	//Use base-class init as success result so that it retains the viewport.
 	return CFFGLPlugin::InitGL( vp );
 }
@@ -95,6 +110,9 @@ FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	shader.Set( "MaxUV", maxCoords.s, maxCoords.t );
 
 	glUniform3f( shader.FindUniform( "Brightness" ), r, g, b );
+	glUniform1f( shader.FindUniform( "fovOut" ), fov );
+	glUniform1i( shader.FindUniform( "inputProjection" ), inputProjection );
+	glUniform1i( shader.FindUniform( "outputProjection" ), outputProjection );
 
 	quad.Draw();
 
@@ -121,7 +139,15 @@ FFResult AddSubtract::SetFloatParameter( unsigned int dwIndex, float value )
 	case PT_BLUE:
 		b = value;
 		break;
-
+	case PT_INPUT_PROJECTION:
+		inputProjection = value;
+		break;
+	case PT_OUTPUT_PROJECTION:
+		outputProjection = value;
+		break;
+	case PT_FOV:
+		fov = value;
+		break;
 	default:
 		return FF_FAIL;
 	}
@@ -139,6 +165,12 @@ float AddSubtract::GetFloatParameter( unsigned int index )
 		return g;
 	case PT_BLUE:
 		return b;
+	case PT_INPUT_PROJECTION:
+		return inputProjection;
+	case PT_OUTPUT_PROJECTION:
+		return outputProjection;
+	case PT_FOV:
+		return fov;
 	}
 
 	return 0.0f;

@@ -9,16 +9,17 @@ enum ParamType : FFUInt32
 {
 	PT_INPUT_PROJECTION,
 	PT_OUTPUT_PROJECTION,
-	PT_RED,
-	PT_GREEN,
-	PT_BLUE,
-	PT_FOV
+	PT_PITCH,
+	PT_ROLL,
+	PT_YAW,
+	PT_FOV_IN,
+	PT_FOV_OUT
 };
 
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< AddSubtract >,// Create method
 	"RPRJ",                      // Plugin unique ID of maximum length 4.
-	"Reprojection2",            // Plugin name
+	"Reprojection",            // Plugin name
 	2,                           // API major version number
 	1,                           // API minor version number
 	1,                           // Plugin major version number
@@ -44,7 +45,7 @@ void main()
 )";
 
 AddSubtract::AddSubtract() :
-	inputProjection( 0 ), outputProjection( 0 ), r( 0.5f ), g( 0.5f ), b( 0.5f ), fov( 1.0 )
+	inputProjection( 0 ), outputProjection( 0 ), pitch( 0.5f ), roll( 0.5f ), yaw( 0.5f ), fovOut( 0.5 ), fovIn( 0.5 )
 {
 	SetMinInputs( 1 );
 	SetMaxInputs( 1 );
@@ -60,10 +61,11 @@ AddSubtract::AddSubtract() :
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 2, "Flat", 2 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 3, "Cubemap", 3 );
 
-	SetParamInfof( PT_RED, "Pitch", FF_TYPE_BRIGHTNESS );
-	SetParamInfof( PT_GREEN, "Roll", FF_TYPE_GREEN );
-	SetParamInfof( PT_BLUE, "Yaw", FF_TYPE_BLUE );
-	SetParamInfof( PT_FOV, "fov Out", FF_TYPE_STANDARD );
+	SetParamInfof( PT_PITCH, "Pitch", FF_TYPE_STANDARD );
+	SetParamInfof( PT_ROLL, "Roll", FF_TYPE_STANDARD );
+	SetParamInfof( PT_YAW, "Yaw", FF_TYPE_STANDARD );
+	SetParamInfof( PT_FOV_OUT, "fov Out", FF_TYPE_STANDARD );
+	SetParamInfof( PT_FOV_IN, "fov In", FF_TYPE_STANDARD );
 
 	FFGLLog::LogToHost( "Created AddSubtract effect" );
 }
@@ -101,6 +103,7 @@ FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	//Again, we're using the scoped bindings to help us keep the context in a default state.
 	ScopedSamplerActivation activateSampler( 0 );
 	Scoped2DTextureBinding textureBinding( pGL->inputTextures[ 0 ]->Handle );
+	
 
 	shader.Set( "InputTexture", 0 );
 
@@ -108,11 +111,17 @@ FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	//We're adopting the texture's maxUV using a uniform because that way we dont have to update our vertex buffer each frame.
 	FFGLTexCoords maxCoords = GetMaxGLTexCoords( *pGL->inputTextures[ 0 ] );
 	shader.Set( "MaxUV", maxCoords.s, maxCoords.t );
-
-	glUniform3f( shader.FindUniform( "Brightness" ), r, g, b );
-	glUniform1f( shader.FindUniform( "fovOut" ), fov );
+	//SetParamDisplayName( PT_RED, std::to_string( pGL->inputTextures[ 0 ]->Width ).c_str(), true );
+	glUniform3f( shader.FindUniform( "Rotation" ), (pitch-0.5)*2.0*3.14159265359,
+		                                           (roll -0.5)*2.0*3.14159265359,
+		                                           (yaw  -0.5)*2.0*3.14159265359 );
+	glUniform1f( shader.FindUniform( "fovOut" ), fovOut * 3.14159269359 / 2.0 );
+	glUniform1f( shader.FindUniform( "fovIn" ), fovIn * 3.14159269359 / 2.0 );
 	glUniform1i( shader.FindUniform( "inputProjection" ), inputProjection );
 	glUniform1i( shader.FindUniform( "outputProjection" ), outputProjection );
+	glUniform1i( shader.FindUniform( "width" ), pGL->inputTextures[ 0 ]->Width );
+	glUniform1i( shader.FindUniform( "height" ), pGL->inputTextures[ 0 ]->Height );
+
 
 	quad.Draw();
 
@@ -130,14 +139,14 @@ FFResult AddSubtract::SetFloatParameter( unsigned int dwIndex, float value )
 {
 	switch( dwIndex )
 	{
-	case PT_RED:
-		r = value;
+	case PT_PITCH:
+		pitch = value;
 		break;
-	case PT_GREEN:
-		g = value;
+	case PT_ROLL:
+		roll = value;
 		break;
-	case PT_BLUE:
-		b = value;
+	case PT_YAW:
+		yaw = value;
 		break;
 	case PT_INPUT_PROJECTION:
 		inputProjection = value;
@@ -145,8 +154,11 @@ FFResult AddSubtract::SetFloatParameter( unsigned int dwIndex, float value )
 	case PT_OUTPUT_PROJECTION:
 		outputProjection = value;
 		break;
-	case PT_FOV:
-		fov = value;
+	case PT_FOV_OUT:
+		fovOut = value;
+		break;
+	case PT_FOV_IN:
+		fovIn = value;
 		break;
 	default:
 		return FF_FAIL;
@@ -159,19 +171,53 @@ float AddSubtract::GetFloatParameter( unsigned int index )
 {
 	switch( index )
 	{
-	case PT_RED:
-		return r;
-	case PT_GREEN:
-		return g;
-	case PT_BLUE:
-		return b;
+	case PT_PITCH:
+		return pitch;
+	case PT_ROLL:
+		return roll;
+	case PT_YAW:
+		return yaw;
 	case PT_INPUT_PROJECTION:
 		return inputProjection;
 	case PT_OUTPUT_PROJECTION:
 		return outputProjection;
-	case PT_FOV:
-		return fov;
+	case PT_FOV_OUT:
+		return fovOut;
+	case PT_FOV_IN:
+		return fovIn;
 	}
 
 	return 0.0f;
+}
+
+char* AddSubtract::GetParameterDisplay( unsigned int index )
+{
+	/**
+	 * We're not returning ownership over the string we return, so we have to somehow guarantee that
+	 * the lifetime of the returned string encompasses the usage of that string by the host. Having this static
+	 * buffer here keeps previously returned display string alive until this function is called again.
+	 * This happens to be long enough for the hosts we know about.
+	 */
+	static char displayValueBuffer[ 15 ];
+	memset( displayValueBuffer, 0, sizeof( displayValueBuffer ) );
+	switch( index )
+	{
+	case PT_PITCH:
+		sprintf_s( displayValueBuffer, "%f", pitch * 360.0f - 180.0f );
+		return displayValueBuffer;
+	case PT_YAW:
+		sprintf_s( displayValueBuffer, "%f", yaw * 360.0f - 180.0f );
+		return displayValueBuffer;
+	case PT_ROLL:
+		sprintf_s( displayValueBuffer, "%f", roll * 360.0f - 180.0f );
+		return displayValueBuffer;
+	case PT_FOV_OUT:
+		sprintf_s( displayValueBuffer, "%f", fovOut );
+		return displayValueBuffer;
+	case PT_FOV_IN:
+		sprintf_s( displayValueBuffer, "%f", fovIn );
+		return displayValueBuffer;
+	default:
+		return CFFGLPlugin::GetParameterDisplay( index );
+	}
 }

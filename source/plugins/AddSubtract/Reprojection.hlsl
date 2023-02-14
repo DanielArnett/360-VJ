@@ -1,12 +1,12 @@
 R"(
 #version 410 core
 uniform sampler2D InputTexture;
-uniform vec3 Brightness;
+uniform vec3 Rotation;
 
 in vec2 uv;
 out vec4 fragColor;
-uniform int inputProjection, outputProjection;
-uniform float fovOut;
+uniform int inputProjection, outputProjection, width, height;
+uniform float fovOut, fovIn;
 //precision highp float;
 vec4 TRANSPARENT_PIXEL = vec4( 0.0, 0.0, 0.0, 0.0 );
 float PI = 3.14159265359;
@@ -67,6 +67,7 @@ vec2 equiUvToLatLon( vec2 local_uv )
 	return vec2( local_uv.y * PI - PI / 2.0,
 				 local_uv.x * 2.0 * PI - PI );
 }
+
 // Convert latitude, longitude to x, y pixel coordinates on an equirectangular image.
 vec2 latLonToEquiUv( vec2 latLon )
 {
@@ -81,42 +82,42 @@ vec2 latLonToEquiUv( vec2 latLon )
 		return SET_TO_TRANSPARENT;
 	}
 	return local_uv;
-  }
-  // Convert  pixel coordinates from an Fisheye image into latitude/longitude coordinates.
-  vec2 fisheyeUvToLatLon(vec2 local_uv, float fovOutput)
-  {
-    vec2 pos = 2.0 * local_uv - 1.0;
-    // The distance from the source pixel to the center of the image
-    float r = distance(vec2(0.0,0.0),pos.xy);
-    // Don't bother with pixels outside of the fisheye circle
-    if (1.0 < r) {
-      isTransparent = true;
-      return SET_TO_TRANSPARENT;
-    }
-    float theta = atan(r, 1.0);
-    r = tan(theta/fovOutput);
-    vec2 latLon;
-    latLon.x = (1.0 - r) * (PI/2.0);
-    // Calculate longitude
-    latLon.y = PI + atan(-pos.x, pos.y);
-      
-    if (latLon.y < 0.0) {
-      latLon.y += 2.0*PI;
-    }
-    vec3 point = latLonToPoint(latLon);
-    point = rotatePoint(point, vec3(PI/2.0, 0.0, 0.0));
-    latLon = pointToLatLon(point);
-    return latLon;
-  }
+}
 
-  // Convert latitude, longitude to x, y pixel coordinates on the source fisheye image.
-  vec2 pointToFisheyeUv( vec3 point, float fovInput, vec4 fishCorrect )
-  {
+// Convert  pixel coordinates from an Fisheye image into latitude/longitude coordinates.
+vec2 fisheyeUvToLatLon(vec2 local_uv, float fovOutput) {
+	vec2 pos = 2.0 * local_uv - 1.0;
+	// The distance from the source pixel to the center of the image
+	float r = distance(vec2(0.0,0.0),pos.xy);
+	// Don't bother with pixels outside of the fisheye circle
+	if (1.0 < r) {
+		isTransparent = true;
+		return SET_TO_TRANSPARENT;
+	}
+	float theta = atan(r, 1.0);
+	r = tan(theta/fovOutput);
+	vec2 latLon;
+	latLon.x = (1.0 - r) * (PI/2.0);
+	// Calculate longitude
+	latLon.y = PI + atan(-pos.x, pos.y);
+      
+	if (latLon.y < 0.0) {
+		latLon.y += 2.0*PI;
+	}
+	vec3 point = latLonToPoint(latLon);
+	point = rotatePoint(point, vec3(PI/2.0, 0.0, 0.0));
+	latLon = pointToLatLon(point);
+	return latLon;
+}
+
+// Convert latitude, longitude to x, y pixel coordinates on the source fisheye image.
+vec2 pointToFisheyeUv( vec3 point, float fovIn )
+{
 	point = rotatePoint( point, vec3( -PI / 2.0, 0.0, 0.0 ) );
 	// Phi and theta are flipped depending on where you read about them.
 	float theta = atan( distance( vec2( 0.0, 0.0 ), point.xy ), point.z );
 	// The distance from the source pixel to the center of the image
-	float r = ( 2.0 / PI ) * ( theta / fovInput );
+	float r = ( 2.0 / PI ) * ( theta / fovIn );
 
 	// phi is the angle of r on the unit circle. See polar coordinates for more details
 	float phi = atan( -point.y, point.x );
@@ -130,37 +131,113 @@ vec2 latLonToEquiUv( vec2 latLon )
 	// Don't bother with source pixels outside of the fisheye circle
 	if( 1.0 < r || sourcePixel.x < 0.0 || sourcePixel.y < 0.0 || sourcePixel.x > 1.0 || sourcePixel.y > 1.0 )
 	{
-	  // Return a isTransparent pixel
-	  isTransparent = true;
-	  return SET_TO_TRANSPARENT;
+		// Return a isTransparent pixel
+		isTransparent = true;
+		return SET_TO_TRANSPARENT;
 	}
 	return sourcePixel;
-  }
+}
+
+bool outOfFlatBounds( vec2 xy, float lower, float upper )
+{
+	vec2 lowerBound = vec2( lower, lower );
+	vec2 upperBound = vec2( upper, upper );
+	return ( any( lessThan( xy, lowerBound ) ) || any( greaterThan( xy, upperBound ) ) );
+}
+
+vec2 flatImageUvToLatLon( vec2 local_uv, float fovOutput )
+{
+	// Position of the source pixel in uv coordinates in the range [-1,1]
+	vec2 pos          = 2.0 * local_uv - 1.0;
+	float aspectRatio = float( width ) / float( height );
+	vec3 point        = vec3( pos.x * aspectRatio, 1.0 / fovOutput, pos.y );
+	return pointToLatLon( point );
+}
+
+// Convert latitude, longitude into a 3d point on the unit-sphere.
+vec3 flatLatLonToPoint( vec2 latLon )
+{
+	vec3 point = latLonToPoint( latLon );
+	// Get phi of this point, see polar coordinate system for more details.
+	float phi = atan( point.x, -point.y );
+	// With phi, calculate the point on the image plane that is also at the angle phi
+	point.x = sin( phi ) * tan( PI / 2.0 - latLon.x );
+	point.y = cos( phi ) * tan( PI / 2.0 - latLon.x );
+	point.z = 1.0;
+	return point;
+}
+
+vec2 latLonToFlatUv( vec2 latLon, float fovInput )
+{
+	vec3 point        = rotatePoint( latLonToPoint( latLon ), vec3( -PI / 2.0, 0.0, 0.0 ) );
+	latLon            = pointToLatLon( point );
+	float aspectRatio = float( width ) / float( height );
+	vec2 xyOnImagePlane;
+	vec3 p;
+	if( latLon.x < 0.0 )
+	{
+		isTransparent = true;
+		return SET_TO_TRANSPARENT;
+	}
+	// Derive a 3D point on the plane which correlates with the latitude and longitude in the fisheye image.
+	p = flatLatLonToPoint( latLon );
+	p.x /= aspectRatio;
+	// Control the scale with the user's fov input parameter.
+	p.xy *= fovInput;
+	// Position of the source pixel in the source image in the range [-1,1]
+	xyOnImagePlane = p.xy / 2.0 + 0.5;
+	if( outOfFlatBounds( xyOnImagePlane, 0.0, 1.0 ) )
+	{
+		isTransparent = true;
+		return SET_TO_TRANSPARENT;
+	}
+	return xyOnImagePlane;
+}
 
 void main()
 {
-
 	// Latitude and Longitude of the destination pixel (uv)
-	vec2 latLon; 
-	if( outputProjection == EQUI ) {
+	vec2 latLon;
+	if( outputProjection == EQUI )
+	{
 		latLon = equiUvToLatLon( uv );
 	}
-	else if( outputProjection == FISHEYE ) {
+	else if( outputProjection == FISHEYE )
+	{
 		latLon = fisheyeUvToLatLon( uv, fovOut );
 	}
 
+	else if( outputProjection == FLAT ) {
+		latLon = flatImageUvToLatLon( uv, fovOut );
+	}
+	if( latLon == SET_TO_TRANSPARENT )
+	{
+		fragColor = TRANSPARENT_PIXEL;
+		return;
+	}
 	// Create a point on the unit-sphere from the latitude and longitude
 		// X increases from left to right [-1 to 1]
 		// Y increases from bottom to top [-1 to 1]
 		// Z increases from back to front [-1 to 1]
 	vec3 point = latLonToPoint(latLon);
 	// Rotate the point based on the user input in radians
-	point = rotatePoint(point, Brightness.xyz * PI);
+	point = rotatePoint(point, Rotation.xyz);
 	// Convert back to latitude and longitude
 	latLon = pointToLatLon(point);
 	// Convert back to the normalized pixel coordinate
-	vec2 sourcePixel = latLonToEquiUv( latLon );
+	vec2 sourcePixel;
+	if( inputProjection == EQUI )
+		sourcePixel = latLonToEquiUv( latLon );
+	else if( inputProjection == FISHEYE )
+		sourcePixel = pointToFisheyeUv( point, fovIn );
+	else if( inputProjection == FLAT )
+		sourcePixel = latLonToFlatUv( latLon, fovIn );
+
+	if( sourcePixel == SET_TO_TRANSPARENT ) {
+		fragColor = TRANSPARENT_PIXEL;
+		return;
+	}
 	// Set the color of the destination pixel to the color of the source pixel
 	fragColor = texture( InputTexture, sourcePixel );
 }
-)"
+//)"

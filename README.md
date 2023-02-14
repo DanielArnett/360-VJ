@@ -1,3 +1,14 @@
+# 360-VJ: Reprojection
+
+360-VJ, now powered by the Reprojection shader, is a single effect that can convert between equirectangular, fisheye, and flat projections in both directions. It's a simple way to rotate and convert to/from 360 content. Enjoy!
+
+
+## Building
+
+This project is a pretty tight fork of the Resolume's ffgl repository for Resolume plugins. To try and minimize diffs from the main branch (because Resolume keeps breaking my code), everything is packed into one of their example programs, specifically the AddSubtract effect. To build this example, simply open AddSubtract and build that effect. Then find the generated AddSubtract.dll, rename it to Reprojection.dll, and copy into a folder where you keep Resolume effects.
+
+
+# Resolume's original README: 
 This is the Resolume fork of the FFGL repository. It is up to date and has Visual Studio and Xcode projects to compile 64 bit plugins that can be loaded by Resolume 7.0.3 and up.  
 
 **Note for macOS developers:** *Resolume 7.11.0 has added native ARM support. This means that on Apple Sillicon it will run as a native ARM process. Native ARM processes cannot load x86_64 based plugins. To enable your plugin to be loaded you should build it as universal build. If your Xcode is up-to-date enough you can choose to build for "Any Mac (Apple Silicon, Intel)" instead of "My Mac" in the top left corner. Please read the [apple developer documentation](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary) for more information about universal builds.*

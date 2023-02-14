@@ -5,7 +5,7 @@
 
 ## Building
 
-This project is a pretty tight fork of the Resolume's ffgl repository for Resolume plugins. To try and minimize diffs from the main branch (because Resolume keeps breaking my code), everything is packed into one of their example programs, specifically the AddSubtract effect. To build this example, simply open AddSubtract and build that effect. Then find the generated AddSubtract.dll, rename it to Reprojection.dll, and copy into a folder where you keep Resolume effects.
+This project is a pretty tight fork of [Resolume's ffgl repository](https://github.com/resolume/ffgl) for Resolume plugins. To try and minimize diffs from Resolume's fork (because Resolume keeps breaking my code), everything is packed into one of their example programs, specifically the AddSubtract effect. To build this example, simply open AddSubtract and build that effect. Then find the generated AddSubtract.dll, rename it to Reprojection.dll, and copy into a folder where you keep Resolume effects.
 
 
 # Resolume's original README: 

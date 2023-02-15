@@ -203,19 +203,19 @@ char* AddSubtract::GetParameterDisplay( unsigned int index )
 	switch( index )
 	{
 	case PT_PITCH:
-		sprintf_s( displayValueBuffer, "%f", pitch * 360.0f - 180.0f );
+		sprintf( displayValueBuffer, "%f", pitch * 360.0f - 180.0f );
 		return displayValueBuffer;
 	case PT_YAW:
-		sprintf_s( displayValueBuffer, "%f", yaw * 360.0f - 180.0f );
+		sprintf( displayValueBuffer, "%f", yaw * 360.0f - 180.0f );
 		return displayValueBuffer;
 	case PT_ROLL:
-		sprintf_s( displayValueBuffer, "%f", roll * 360.0f - 180.0f );
+		sprintf( displayValueBuffer, "%f", roll * 360.0f - 180.0f );
 		return displayValueBuffer;
 	case PT_FOV_OUT:
-		sprintf_s( displayValueBuffer, "%f", fovOut );
+		sprintf( displayValueBuffer, "%f", fovOut );
 		return displayValueBuffer;
 	case PT_FOV_IN:
-		sprintf_s( displayValueBuffer, "%f", fovIn );
+		sprintf( displayValueBuffer, "%f", fovIn );
 		return displayValueBuffer;
 	default:
 		return CFFGLPlugin::GetParameterDisplay( index );

@@ -17,6 +17,7 @@ public:
 
 	float GetFloatParameter( unsigned int index ) override;
 	char* GetParameterDisplay( unsigned int index ) override;
+	void printDoubleToResolumeBuffer( char ( &buffer )[ 15 ], double value );
 
 
 private:

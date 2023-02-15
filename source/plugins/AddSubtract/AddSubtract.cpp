@@ -190,32 +190,44 @@ float AddSubtract::GetFloatParameter( unsigned int index )
 	return 0.0f;
 }
 
+/**
+* This will print a double value behind the slider in resolume. 
+*/
+void AddSubtract::printDoubleToResolumeBuffer( char ( &buffer )[ 15 ], double value )
+{
+#if defined( WIN32 ) || defined( _WIN32 ) || defined( __WIN32__ ) || defined( __NT__ )
+	sprintf_s( buffer, "%f", value );
+#elif __APPLE__
+	sprintf( buffer, "%f", value );
+#endif
+}
+
 char* AddSubtract::GetParameterDisplay( unsigned int index )
 {
+	static char displayValueBuffer[ 15 ];
 	/**
 	 * We're not returning ownership over the string we return, so we have to somehow guarantee that
 	 * the lifetime of the returned string encompasses the usage of that string by the host. Having this static
 	 * buffer here keeps previously returned display string alive until this function is called again.
 	 * This happens to be long enough for the hosts we know about.
 	 */
-	static char displayValueBuffer[ 15 ];
 	memset( displayValueBuffer, 0, sizeof( displayValueBuffer ) );
 	switch( index )
 	{
 	case PT_PITCH:
-		sprintf( displayValueBuffer, "%f", pitch * 360.0f - 180.0f );
+		printDoubleToResolumeBuffer( displayValueBuffer, pitch * 360.0f - 180.0f );
 		return displayValueBuffer;
 	case PT_YAW:
-		sprintf( displayValueBuffer, "%f", yaw * 360.0f - 180.0f );
+		printDoubleToResolumeBuffer( displayValueBuffer, yaw * 360.0f - 180.0f );
 		return displayValueBuffer;
 	case PT_ROLL:
-		sprintf( displayValueBuffer, "%f", roll * 360.0f - 180.0f );
+		printDoubleToResolumeBuffer( displayValueBuffer, roll * 360.0f - 180.0f );
 		return displayValueBuffer;
 	case PT_FOV_OUT:
-		sprintf( displayValueBuffer, "%f", fovOut );
+		printDoubleToResolumeBuffer( displayValueBuffer, fovOut );
 		return displayValueBuffer;
 	case PT_FOV_IN:
-		sprintf( displayValueBuffer, "%f", fovIn );
+		printDoubleToResolumeBuffer( displayValueBuffer, fovIn );
 		return displayValueBuffer;
 	default:
 		return CFFGLPlugin::GetParameterDisplay( index );

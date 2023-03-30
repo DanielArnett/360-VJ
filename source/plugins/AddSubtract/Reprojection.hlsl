@@ -4,6 +4,7 @@ uniform sampler2D InputTexture;
 uniform vec3 Rotation;
 
 in vec2 uv;
+uniform vec2 MaxUV;
 out vec4 fragColor;
 uniform int inputProjection, outputProjection, width, height;
 uniform float fovOut, fovIn;
@@ -237,6 +238,9 @@ void main()
 		fragColor = TRANSPARENT_PIXEL;
 		return;
 	}
+	// Applying the MaxUV after our opterations fixes the "seam" from
+	// https://github.com/DanielArnett/360-VJ/issues/10
+	sourcePixel *= MaxUV;
 	// Set the color of the destination pixel to the color of the source pixel
 	fragColor = texture( InputTexture, sourcePixel );
 }

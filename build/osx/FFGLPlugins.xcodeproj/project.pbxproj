@@ -317,7 +317,7 @@
 		2FD1224618853D640009EBA8 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		2FD1224818853D700009EBA8 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		2FD1225318853FFB0009EBA8 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		2FD1226B188540470009EBA8 /* AddSubtract.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AddSubtract.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		2FD1226B188540470009EBA8 /* Reprojection.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Reprojection.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		6524805F2306FD13007257C5 /* FFGLSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFGLSource.cpp; sourceTree = "<group>"; };
 		652480602306FD13007257C5 /* FFGLParamTrigger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFGLParamTrigger.h; sourceTree = "<group>"; };
 		652480612306FD13007257C5 /* FFGLParamFFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFGLParamFFT.cpp; sourceTree = "<group>"; };
@@ -520,7 +520,7 @@
 		2DA285A10AEE5E480030A4DD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2FD1226B188540470009EBA8 /* AddSubtract.bundle */,
+				2FD1226B188540470009EBA8 /* Reprojection.bundle */,
 				DB4B63F41FF845820069DA80 /* Add.bundle */,
 				DB4B64161FF845920069DA80 /* Gradients.bundle */,
 				A9F92EA9201A1C1500527E48 /* Particles.bundle */,
@@ -752,9 +752,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2FD12258188540470009EBA8 /* AddSubtract */ = {
+		2FD12258188540470009EBA8 /* Reprojection */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2FD12268188540470009EBA8 /* Build configuration list for PBXNativeTarget "AddSubtract" */;
+			buildConfigurationList = 2FD12268188540470009EBA8 /* Build configuration list for PBXNativeTarget "Reprojection" */;
 			buildPhases = (
 				2FD1225B188540470009EBA8 /* Resources */,
 				2FD1225C188540470009EBA8 /* Sources */,
@@ -764,9 +764,9 @@
 			);
 			dependencies = (
 			);
-			name = AddSubtract;
+			name = Reprojection;
 			productName = FFGLBrightness;
-			productReference = 2FD1226B188540470009EBA8 /* AddSubtract.bundle */;
+			productReference = 2FD1226B188540470009EBA8 /* Reprojection.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		65D4D1C323193D0000D12558 /* CustomThumbnail */ = {
@@ -880,7 +880,7 @@
 			targets = (
 				D6369DBB1AAF108500B0CC43 /* ALL */,
 				DB4B64071FF845920069DA80 /* Gradients */,
-				2FD12258188540470009EBA8 /* AddSubtract */,
+				2FD12258188540470009EBA8 /* Reprojection */,
 				DB4B63E51FF845820069DA80 /* Add */,
 				A9F92E9A201A1C1500527E48 /* Particles */,
 				65D4D1C323193D0000D12558 /* CustomThumbnail */,
@@ -1199,7 +1199,7 @@
 		};
 		D6369DC21AAF109800B0CC43 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2FD12258188540470009EBA8 /* AddSubtract */;
+			target = 2FD12258188540470009EBA8 /* Reprojection */;
 			targetProxy = D6369DC11AAF109800B0CC43 /* PBXContainerItemProxy */;
 		};
 		DB4B64191FF8459E0069DA80 /* PBXTargetDependency */ = {
@@ -1308,7 +1308,7 @@
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "FFGLPlugin-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
-				PRODUCT_NAME = AddSubtract;
+				PRODUCT_NAME = Reprojection;
 				WRAPPER_EXTENSION = bundle;
 				ZERO_LINK = NO;
 			};
@@ -1326,7 +1326,7 @@
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "FFGLPlugin-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
-				PRODUCT_NAME = AddSubtract;
+				PRODUCT_NAME = Reprojection;
 				WRAPPER_EXTENSION = bundle;
 				ZERO_LINK = NO;
 			};
@@ -1594,7 +1594,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2FD12268188540470009EBA8 /* Build configuration list for PBXNativeTarget "AddSubtract" */ = {
+		2FD12268188540470009EBA8 /* Build configuration list for PBXNativeTarget "Reprojection" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2FD12269188540470009EBA8 /* Debug */,

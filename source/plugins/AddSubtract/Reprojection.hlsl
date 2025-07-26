@@ -195,6 +195,102 @@ vec2 latLonToFlatUv( vec2 latLon, float fovInput )
 	return xyOnImagePlane;
 }
 
+// Convert a cubemap uv to a 3d point on a unit cube
+vec3 cubemapUvToPoint(vec2 local_uv)
+{
+	float verticalBoundary = 0.5;
+	float leftBoundary  = 1.0/3.0;
+	float rightBoundary = 2.0/3.0;
+	// Position of the source pixel in uv coordinates in the range [-1,1]
+	vec2 pos = (2.0 * local_uv) - 1.0;
+	vec3 point;
+	float faceDistance = fovOut / 3.0;
+	// Is it a standard cubemap or an EAC?
+	// Link for more details: https://blog.google/products/google-ar-vr/bringing-pixels-front-and-center-vr-video/
+	bool equiAngularCubemap = false;
+	// Remove overlap in the image.
+	float verticalCorrection = 2.0/3.0;
+	// No idea why this was needed, but ~1.15 seems to work and pi / e is really close.
+	float piDividedByE = 1.155727349790921717910093183312696299120851023164415820499;
+	// The faces of the cubemap. To explain I'll define the following:
+	// Let's call +X: "Right"
+	//            -X: "Left"
+	//            +Y: "Forward"
+	//            -Y: "Back"
+	//            +Z: "Up"
+	//            -Z: "Down"
+	// Top left face in output image
+	if (local_uv.x <= leftBoundary && verticalBoundary <= local_uv.y) {
+		pos += vec2(2.0/3.0, -0.5);
+		if(equiAngularCubemap)  {
+		pos = tan(pos*PI/2.0)/2.0;
+		pos.x *= piDividedByE;
+		}
+		// "Left" face of cube
+		point = vec3(-faceDistance, pos.x, verticalCorrection*pos.y);
+	}
+	// Top Middle Face in output image
+	else if (leftBoundary < local_uv.x && local_uv.x <= rightBoundary && verticalBoundary <= local_uv.y) {
+		pos += vec2(0.0, -0.5);
+		if(equiAngularCubemap)  {
+		pos = tan(pos*PI/2.0)/2.0;
+		pos.x *= piDividedByE;
+		}
+		// "Front" face of cube 
+		point = vec3(pos.x, faceDistance, verticalCorrection*pos.y);
+	}
+	// Top Right Face in output image
+	else if (rightBoundary < local_uv.x && verticalBoundary <= local_uv.y) {
+		pos += vec2(-2.0/3.0, -0.5);
+		if(equiAngularCubemap)  {
+		pos = tan(pos*PI/2.0)/2.0;
+		pos.x *= piDividedByE;
+		}
+		// "Right" face of cube
+		point = vec3(faceDistance, -pos.x, verticalCorrection*pos.y);
+
+	}
+	// Bottom left face in output image
+	else if (local_uv.x <= leftBoundary && local_uv.y < verticalBoundary) {
+		pos += vec2(2.0/3.0, 0.5);
+		if(equiAngularCubemap)  {
+		pos = tan(pos*PI/2.0)/2.0;
+		pos.x *= piDividedByE;
+		}
+		// "Top" face of cube
+		point = vec3(-pos.y*verticalCorrection, -pos.x, faceDistance);
+
+	}
+	// Bottom Middle Face in output image
+	else if (leftBoundary < local_uv.x && local_uv.x <= rightBoundary && local_uv.y < verticalBoundary) {
+		pos += vec2(0.0, 0.5);
+		if(equiAngularCubemap)  {
+		pos = tan(pos*PI/2.0)/2.0;
+		pos.x *= piDividedByE;
+		}
+		// "Back" face of cube
+		point = vec3(-pos.y*verticalCorrection, -faceDistance, -pos.x);
+
+	}
+	// Bottom Right Face in output image
+	else if (rightBoundary < local_uv.x && local_uv.y < verticalBoundary) {
+		pos += vec2(-2.0/3.0, 0.5);
+		if(equiAngularCubemap)  {
+		pos = tan(pos*PI/2.0)/2.0;
+		pos.x *= piDividedByE;
+		}
+		// "Bottom" face of cube
+		point = vec3(-pos.y*verticalCorrection, pos.x, -faceDistance);
+
+	}
+	return point;
+}
+// Convert a cubemap image to Latitude/Longitude Points
+vec2 cubemapUvToLatLon(vec2 local_uv)
+{
+	return pointToLatLon(cubemapUvToPoint(local_uv));
+}
+
 void main()
 {
 	// Latitude and Longitude of the destination pixel (uv)
@@ -210,6 +306,9 @@ void main()
 
 	else if( outputProjection == FLAT ) {
 		latLon = flatImageUvToLatLon( uv, fovOut );
+	}
+	else if (outputProjection == CUBEMAP) {
+		latLon = cubemapUvToLatLon(uv);
 	}
 	if( latLon == SET_TO_TRANSPARENT )
 	{

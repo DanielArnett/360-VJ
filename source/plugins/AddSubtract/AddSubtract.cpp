@@ -54,7 +54,7 @@ AddSubtract::AddSubtract() :
 	SetParamElementInfo( PT_INPUT_PROJECTION, 1, "Fisheye", 1 );
 	SetParamElementInfo( PT_INPUT_PROJECTION, 2, "Flat", 2 );
 	SetParamElementInfo( PT_INPUT_PROJECTION, 3, "Cubemap", 3 );
-	SetOptionParamInfo(  PT_OUTPUT_PROJECTION, "OutputProjection", 3, outputProjection );
+	SetOptionParamInfo(  PT_OUTPUT_PROJECTION, "OutputProjection", 4, outputProjection );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 0, "Equirectangular", 0 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 1, "Fisheye", 1 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 2, "Flat", 2 );

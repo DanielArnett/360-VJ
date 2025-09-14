@@ -7,9 +7,11 @@
 
 The easiest way to build this project, clone the [resolume/ffgl](https://github.com/resolume/ffgl) repo, navigate to the [AddSubtract](https://github.com/resolume/ffgl/tree/master/source/plugins/AddSubtract) plugin example, and replace those files with the ones contained in this repo, such that
 
-Reprojection.cpp -> AddSubtract.cpp
-
-Reprojection.h -> AddSubtract.h
+```
+Reprojection.cpp  -> AddSubtract.cpp
+Reprojection.h    -> AddSubtract.h
+Reprojection.hlsl -> Reprojection.hlsl   // Unchanged
+```
 
 
 Also note if doing so that the first line of Reprojection.cpp will need changed to read

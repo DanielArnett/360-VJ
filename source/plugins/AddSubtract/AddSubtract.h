@@ -23,6 +23,6 @@ public:
 private:
 	ffglex::FFGLShader shader;  //!< Utility to help us compile and link some shaders into a program.
 	ffglex::FFGLScreenQuad quad;//!< Utility to help us render a full screen quad.
-	int inputProjection, outputProjection;
+	int inputProjection, outputProjection, stereo;
 	float pitch, roll, yaw, fovOut, fovIn;
 };

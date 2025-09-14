@@ -9,6 +9,7 @@ enum ParamType : FFUInt32
 {
 	PT_INPUT_PROJECTION,
 	PT_OUTPUT_PROJECTION,
+	PT_STEREO,
 	PT_PITCH,
 	PT_ROLL,
 	PT_YAW,
@@ -44,7 +45,7 @@ void main()
 )";
 
 AddSubtract::AddSubtract() :
-	inputProjection( 0 ), outputProjection( 0 ), pitch( 0.5f ), roll( 0.5f ), yaw( 0.5f ), fovOut( 0.5 ), fovIn( 0.5 )
+	inputProjection( 0 ), outputProjection( 0 ), stereo( 0 ), pitch( 0.5f ), roll( 0.5f ), yaw( 0.5f ), fovOut( 0.5 ), fovIn( 0.5 )
 {
 	SetMinInputs( 1 );
 	SetMaxInputs( 1 );
@@ -54,11 +55,17 @@ AddSubtract::AddSubtract() :
 	SetParamElementInfo( PT_INPUT_PROJECTION, 1, "Fisheye", 1 );
 	SetParamElementInfo( PT_INPUT_PROJECTION, 2, "Flat", 2 );
 	SetParamElementInfo( PT_INPUT_PROJECTION, 3, "Cubemap", 3 );
-	SetOptionParamInfo(  PT_OUTPUT_PROJECTION, "OutputProjection", 4, outputProjection );
+
+	SetOptionParamInfo( PT_OUTPUT_PROJECTION, "OutputProjection", 4, outputProjection );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 0, "Equirectangular", 0 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 1, "Fisheye", 1 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 2, "Flat", 2 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 3, "Cubemap", 3 );
+
+	SetOptionParamInfo(  PT_STEREO, "Stereo", 3, stereo );
+	SetParamElementInfo( PT_STEREO, 0, "None", 0 );
+	SetParamElementInfo( PT_STEREO, 1, "Over/Under", 1 );
+	SetParamElementInfo( PT_STEREO, 2, "Side by Side", 2 );
 
 	SetParamInfof( PT_PITCH, "Pitch", FF_TYPE_STANDARD );
 	SetParamInfof( PT_ROLL, "Roll", FF_TYPE_STANDARD );
@@ -118,6 +125,7 @@ FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	glUniform1f( shader.FindUniform( "fovIn" ), fovIn * 3.14159269359 / 2.0 );
 	glUniform1i( shader.FindUniform( "inputProjection" ), inputProjection );
 	glUniform1i( shader.FindUniform( "outputProjection" ), outputProjection );
+	glUniform1i( shader.FindUniform( "stereo" ), stereo );
 	glUniform1i( shader.FindUniform( "width" ), pGL->inputTextures[ 0 ]->Width );
 	glUniform1i( shader.FindUniform( "height" ), pGL->inputTextures[ 0 ]->Height );
 
@@ -153,6 +161,9 @@ FFResult AddSubtract::SetFloatParameter( unsigned int dwIndex, float value )
 	case PT_OUTPUT_PROJECTION:
 		outputProjection = value;
 		break;
+	case PT_STEREO:
+		stereo = value;
+		break;
 	case PT_FOV_OUT:
 		fovOut = value;
 		break;
@@ -180,6 +191,8 @@ float AddSubtract::GetFloatParameter( unsigned int index )
 		return inputProjection;
 	case PT_OUTPUT_PROJECTION:
 		return outputProjection;
+	case PT_STEREO:
+		return stereo;
 	case PT_FOV_OUT:
 		return fovOut;
 	case PT_FOV_IN:

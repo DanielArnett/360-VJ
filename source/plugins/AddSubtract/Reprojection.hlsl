@@ -6,17 +6,21 @@ uniform vec3 Rotation;
 in vec2 uv;
 uniform vec2 MaxUV;
 out vec4 fragColor;
-uniform int inputProjection, outputProjection, width, height;
+uniform int inputProjection, outputProjection, stereo, width, height;
 uniform float fovOut, fovIn;
 //precision highp float;
 vec4 TRANSPARENT_PIXEL = vec4( 0.0, 0.0, 0.0, 0.0 );
-float PI = 3.14159265359;
+float PI = 3.141592653589793;
 const int EQUI          = 0;
 const int FISHEYE       = 1;
 const int FLAT          = 2;
 const int CUBEMAP       = 3;
 const int GRIDLINES_OFF = 0;
 const int GRIDLINES_ON  = 1;
+
+const int STEREO_NONE         = 0;
+const int STEREO_OVER_UNDER   = 1;
+const int STEREO_SIDE_BY_SIDE = 2;
 vec2 SET_TO_TRANSPARENT = vec2( -1.0, -1.0 );
 bool isTransparent      = false;// A global flag indicating if the pixel should just set to transparent and return immediately.
 // uniform vec3 InputRotation;
@@ -293,22 +297,42 @@ vec2 cubemapUvToLatLon(vec2 local_uv)
 
 void main()
 {
+	vec2 local_uv = uv;
+	bool stereoImageSecondHalf = false;
+	if (stereo == STEREO_OVER_UNDER) {
+		if (local_uv.y <= 0.5) {
+			local_uv.y = local_uv.y * 2.0;
+		}
+		else {
+			local_uv.y = (local_uv.y - 0.5) * 2.0;
+			stereoImageSecondHalf = true;
+		}
+	}
+    if (stereo == STEREO_SIDE_BY_SIDE) {
+        if (local_uv.x <= 0.5) {
+            local_uv.x = local_uv.x * 2.0;
+        }
+        else {
+            local_uv.x = (local_uv.x - 0.5) * 2.0;
+            stereoImageSecondHalf = true;
+        }
+    }
 	// Latitude and Longitude of the destination pixel (uv)
 	vec2 latLon;
 	if( outputProjection == EQUI )
 	{
-		latLon = equiUvToLatLon( uv );
+		latLon = equiUvToLatLon( local_uv );
 	}
 	else if( outputProjection == FISHEYE )
 	{
-		latLon = fisheyeUvToLatLon( uv, fovOut );
+		latLon = fisheyeUvToLatLon( local_uv, fovOut );
 	}
 
 	else if( outputProjection == FLAT ) {
-		latLon = flatImageUvToLatLon( uv, fovOut );
+		latLon = flatImageUvToLatLon( local_uv, fovOut );
 	}
 	else if (outputProjection == CUBEMAP) {
-		latLon = cubemapUvToLatLon(uv);
+		latLon = cubemapUvToLatLon(local_uv);
 	}
 	if( latLon == SET_TO_TRANSPARENT )
 	{
@@ -337,6 +361,23 @@ void main()
 		fragColor = TRANSPARENT_PIXEL;
 		return;
 	}
+	
+	if (stereo == STEREO_OVER_UNDER) {
+		if (stereoImageSecondHalf) {
+			sourcePixel.y = sourcePixel.y / 2.0 + 0.5;
+		}
+		else {
+			sourcePixel.y = (sourcePixel.y / 2.0);
+		}
+	}
+	else if (stereo == STEREO_SIDE_BY_SIDE) {
+        if (stereoImageSecondHalf) {
+            sourcePixel.x = sourcePixel.x / 2.0 + 0.5;
+        }
+        else {
+            sourcePixel.x = (sourcePixel.x / 2.0);
+        }
+    }
 	// Applying the MaxUV after our opterations fixes the "seam" from
 	// https://github.com/DanielArnett/360-VJ/issues/10
 	sourcePixel *= MaxUV;

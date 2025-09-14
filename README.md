@@ -21,3 +21,8 @@ Also note if doing so that the first line of Reprojection.cpp will need changed 
 ```
 
 I keep all build artifacts out of this repo so we can use Joris De Jong's CI/CD pipeline to build this plugin.
+
+
+## License
+
+If you use this software, please send me pics of cool projects you do with it.

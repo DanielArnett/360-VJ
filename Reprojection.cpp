@@ -1,10 +1,10 @@
 #include "Reprojection.h"
 #include <fstream>// std::ifstream
 
+#include "Shader.h"
+
 using namespace ffglex;
-const std::string _fragmentShaderCode = { 
-#include "Reprojection.hlsl"
-};
+
 enum ParamType : FFUInt32
 {
 	PT_INPUT_PROJECTION,

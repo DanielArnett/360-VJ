@@ -1,5 +1,6 @@
-R"(
-#version 410 core
+#pragma once
+
+static const char _fragmentShaderCode[] = R"(#version 410 core
 uniform sampler2D InputTexture;
 uniform vec3 Rotation;
 
@@ -384,4 +385,4 @@ void main()
 	// Set the color of the destination pixel to the color of the source pixel
 	fragColor = texture( InputTexture, sourcePixel );
 }
-//)"
+)";

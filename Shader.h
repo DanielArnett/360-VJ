@@ -297,25 +297,25 @@ vec2 cubemapUvToLatLon(vec2 local_uv)
 	return pointToLatLon(cubemapUvToPoint(local_uv));
 }
 
-// Convert a cubemap image to Latitude/Longitude Points
+// Convert a uv coordinate in the output image into angles on the sphere
 vec2 mirrorUvToMirrorLatLon(vec2 local_uv)
 {
 	// TODO
 	return vec2(0.0, 0.0);
 }
 
-// Convert a cubemap image to Latitude/Longitude Points
+// Convert a latitude/longitude on the little spherical mirror, to a 3d point on the sphere
 vec3 mirrorLatLonToDomePoint(vec2 local_uv)
 {
 	// TODO
 	return vec3(0.0, 0.0, 0.0);
 }
 
-// Convert a cubemap image to Latitude/Longitude Points
+// Convert a uv (coordinate in the image) to a latitude/longitude in the sphere.
 vec2 mirrorDomeUvToLatLon(vec2 local_uv)
 {
-	vec3 mirrorLatLon = mirrorUvToMirrorLatLon(local_uv);
-	vec3 domePoint = mirrorLatLonToDomePoint(mirrorPoint);
+	vec2 mirrorLatLon = mirrorUvToMirrorLatLon(local_uv);
+	vec3 domePoint = mirrorLatLonToDomePoint(mirrorLatLon);
 	return pointToLatLon(domePoint);
 }
 

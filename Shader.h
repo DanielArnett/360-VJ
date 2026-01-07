@@ -16,6 +16,7 @@ const int EQUI          = 0;
 const int FISHEYE       = 1;
 const int FLAT          = 2;
 const int CUBEMAP       = 3;
+const int MIRROR_DOME   = 4;
 const int GRIDLINES_OFF = 0;
 const int GRIDLINES_ON  = 1;
 
@@ -296,6 +297,28 @@ vec2 cubemapUvToLatLon(vec2 local_uv)
 	return pointToLatLon(cubemapUvToPoint(local_uv));
 }
 
+// Convert a cubemap image to Latitude/Longitude Points
+vec2 mirrorUvToMirrorLatLon(vec2 local_uv)
+{
+	// TODO
+	return vec2(0.0, 0.0);
+}
+
+// Convert a cubemap image to Latitude/Longitude Points
+vec3 mirrorLatLonToDomePoint(vec2 local_uv)
+{
+	// TODO
+	return vec3(0.0, 0.0, 0.0);
+}
+
+// Convert a cubemap image to Latitude/Longitude Points
+vec2 mirrorDomeUvToLatLon(vec2 local_uv)
+{
+	vec3 mirrorLatLon = mirrorUvToMirrorLatLon(local_uv);
+	vec3 domePoint = mirrorLatLonToDomePoint(mirrorPoint);
+	return pointToLatLon(domePoint);
+}
+
 void main()
 {
 	vec2 local_uv = uv;
@@ -334,6 +357,9 @@ void main()
 	}
 	else if (outputProjection == CUBEMAP) {
 		latLon = cubemapUvToLatLon(local_uv);
+	}
+	else if (outputProjection == MIRROR_DOME) {
+		latLon = mirrorDomeUvToLatLon(local_uv);
 	}
 	if( latLon == SET_TO_TRANSPARENT )
 	{

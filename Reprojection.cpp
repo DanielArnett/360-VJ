@@ -61,6 +61,7 @@ AddSubtract::AddSubtract() :
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 1, "Fisheye", 1 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 2, "Flat", 2 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 3, "Cubemap", 3 );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 4, "MirrorDome", 4 );
 
 	SetOptionParamInfo(  PT_STEREO, "Stereo", 3, stereo );
 	SetParamElementInfo( PT_STEREO, 0, "None", 0 );

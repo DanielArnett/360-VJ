@@ -18,7 +18,8 @@ enum ParamType : FFUInt32
 	PT_MIRROR_RADIUS,
 	PT_PROJ_DISTANCE,
 	PT_PROJ_LIFT,
-	PT_MIRROR_PROJ_FOV
+	PT_MIRROR_PROJ_FOV,
+	PT_PROJ_TILT
 };
 
 static CFFGLPluginInfo PluginInfo(
@@ -50,7 +51,7 @@ void main()
 
 AddSubtract::AddSubtract() :
 	inputProjection( 0 ), outputProjection( 0 ), stereo( 0 ), pitch( 0.5f ), roll( 0.5f ), yaw( 0.5f ), fovOut( 0.5 ), fovIn( 0.5 ),
-	mirrorRadius( 0.5f ), projDistance( 0.5f ), projLift( 0.5f ), mirrorProjFov( 0.5f )
+	mirrorRadius( 0.5f ), projDistance( 0.5f ), projLift( 0.5f ), mirrorProjFov( 0.5f ), projTilt( 0.5f )
 {
 	SetMinInputs( 1 );
 	SetMaxInputs( 1 );
@@ -83,6 +84,7 @@ AddSubtract::AddSubtract() :
 	SetParamInfof( PT_PROJ_DISTANCE, "Proj Distance", FF_TYPE_STANDARD );
 	SetParamInfof( PT_PROJ_LIFT, "Proj Lift", FF_TYPE_STANDARD );
 	SetParamInfof( PT_MIRROR_PROJ_FOV, "Mirror Proj FoV", FF_TYPE_STANDARD );
+	SetParamInfof( PT_PROJ_TILT, "Proj Tilt", FF_TYPE_STANDARD );
 
 	FFGLLog::LogToHost( "Created AddSubtract effect" );
 }
@@ -145,6 +147,7 @@ FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	glUniform1f( shader.FindUniform( "projDistance" ), 0.5f + projDistance * 4.5f );
 	glUniform1f( shader.FindUniform( "projLift" ), projLift * 2.0f );
 	glUniform1f( shader.FindUniform( "mirrorProjFov" ), 0.1f + mirrorProjFov * 2.94f );
+	glUniform1f( shader.FindUniform( "projTilt" ), (projTilt - 0.5f) * 3.14159265359f );
 
 	quad.Draw();
 
@@ -198,6 +201,9 @@ FFResult AddSubtract::SetFloatParameter( unsigned int dwIndex, float value )
 	case PT_MIRROR_PROJ_FOV:
 		mirrorProjFov = value;
 		break;
+	case PT_PROJ_TILT:
+		projTilt = value;
+		break;
 	default:
 		return FF_FAIL;
 	}
@@ -233,6 +239,8 @@ float AddSubtract::GetFloatParameter( unsigned int index )
 		return projLift;
 	case PT_MIRROR_PROJ_FOV:
 		return mirrorProjFov;
+	case PT_PROJ_TILT:
+		return projTilt;
 	}
 
 	return 0.0f;
@@ -288,6 +296,9 @@ char* AddSubtract::GetParameterDisplay( unsigned int index )
 		return displayValueBuffer;
 	case PT_MIRROR_PROJ_FOV:
 		printDoubleToResolumeBuffer( displayValueBuffer, (0.1 + mirrorProjFov * 2.94) * 180.0 / 3.14159265359 );
+		return displayValueBuffer;
+	case PT_PROJ_TILT:
+		printDoubleToResolumeBuffer( displayValueBuffer, (projTilt - 0.5) * 180.0 );
 		return displayValueBuffer;
 	default:
 		return CFFGLPlugin::GetParameterDisplay( index );

@@ -14,7 +14,8 @@ uniform float fovOut, fovIn;
 // projDistance: distance from projector to mirror center
 // projLift: height of projector above mirror center
 // mirrorProjFov: projector field of view in radians
-uniform float mirrorRadius, projDistance, projLift, mirrorProjFov;
+// projTilt: angle in radians to tilt the projector aim up (+) or down (-)
+uniform float mirrorRadius, projDistance, projLift, mirrorProjFov, projTilt;
 //precision highp float;
 vec4 TRANSPARENT_PIXEL = vec4( 0.0, 0.0, 0.0, 0.0 );
 float PI = 3.141592653589793;
@@ -314,13 +315,16 @@ vec2 mirrorUvToMirrorLatLon(vec2 local_uv)
 	vec3 mirrorCenter = vec3(0.0, 0.0, 0.0);
 	vec3 projPos = vec3(0.0, -projDistance, projLift);
 
-	// Projector aims at mirror center
+	// Projector aims at mirror center, then tilted up/down by projTilt
 	vec3 projForward = normalize(mirrorCenter - projPos);
 
 	// Build projector's local coordinate system
 	vec3 worldUp = vec3(0.0, 0.0, 1.0);
 	vec3 projRight = normalize(cross(projForward, worldUp));
 	vec3 projUp = normalize(cross(projRight, projForward));
+
+	// Apply tilt: rotate projForward around projRight by projTilt angle
+	projForward = normalize(projForward * cos(projTilt) + projUp * sin(projTilt));
 
 	// Convert UV [0,1] to pixel position [-1,1] on the projector's image plane
 	vec2 pixelPos = 2.0 * local_uv - 1.0;

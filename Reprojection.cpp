@@ -14,7 +14,11 @@ enum ParamType : FFUInt32
 	PT_ROLL,
 	PT_YAW,
 	PT_FOV_IN,
-	PT_FOV_OUT
+	PT_FOV_OUT,
+	PT_MIRROR_RADIUS,
+	PT_PROJ_DISTANCE,
+	PT_PROJ_LIFT,
+	PT_MIRROR_PROJ_FOV
 };
 
 static CFFGLPluginInfo PluginInfo(
@@ -45,7 +49,8 @@ void main()
 )";
 
 AddSubtract::AddSubtract() :
-	inputProjection( 0 ), outputProjection( 0 ), stereo( 0 ), pitch( 0.5f ), roll( 0.5f ), yaw( 0.5f ), fovOut( 0.5 ), fovIn( 0.5 )
+	inputProjection( 0 ), outputProjection( 0 ), stereo( 0 ), pitch( 0.5f ), roll( 0.5f ), yaw( 0.5f ), fovOut( 0.5 ), fovIn( 0.5 ),
+	mirrorRadius( 0.5f ), projDistance( 0.5f ), projLift( 0.5f ), mirrorProjFov( 0.5f )
 {
 	SetMinInputs( 1 );
 	SetMaxInputs( 1 );
@@ -73,6 +78,11 @@ AddSubtract::AddSubtract() :
 	SetParamInfof( PT_YAW, "Yaw", FF_TYPE_STANDARD );
 	SetParamInfof( PT_FOV_OUT, "fov Out", FF_TYPE_STANDARD );
 	SetParamInfof( PT_FOV_IN, "fov In", FF_TYPE_STANDARD );
+
+	SetParamInfof( PT_MIRROR_RADIUS, "Mirror Radius", FF_TYPE_STANDARD );
+	SetParamInfof( PT_PROJ_DISTANCE, "Proj Distance", FF_TYPE_STANDARD );
+	SetParamInfof( PT_PROJ_LIFT, "Proj Lift", FF_TYPE_STANDARD );
+	SetParamInfof( PT_MIRROR_PROJ_FOV, "Mirror Proj FoV", FF_TYPE_STANDARD );
 
 	FFGLLog::LogToHost( "Created AddSubtract effect" );
 }
@@ -130,6 +140,11 @@ FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	glUniform1i( shader.FindUniform( "width" ), pGL->inputTextures[ 0 ]->Width );
 	glUniform1i( shader.FindUniform( "height" ), pGL->inputTextures[ 0 ]->Height );
 
+	// Mirror dome parameters: map from [0,1] slider to physical ranges
+	glUniform1f( shader.FindUniform( "mirrorRadius" ), 0.01f + mirrorRadius * 0.49f );
+	glUniform1f( shader.FindUniform( "projDistance" ), 0.5f + projDistance * 4.5f );
+	glUniform1f( shader.FindUniform( "projLift" ), projLift * 2.0f );
+	glUniform1f( shader.FindUniform( "mirrorProjFov" ), 0.1f + mirrorProjFov * 2.94f );
 
 	quad.Draw();
 
@@ -171,6 +186,18 @@ FFResult AddSubtract::SetFloatParameter( unsigned int dwIndex, float value )
 	case PT_FOV_IN:
 		fovIn = value;
 		break;
+	case PT_MIRROR_RADIUS:
+		mirrorRadius = value;
+		break;
+	case PT_PROJ_DISTANCE:
+		projDistance = value;
+		break;
+	case PT_PROJ_LIFT:
+		projLift = value;
+		break;
+	case PT_MIRROR_PROJ_FOV:
+		mirrorProjFov = value;
+		break;
 	default:
 		return FF_FAIL;
 	}
@@ -198,6 +225,14 @@ float AddSubtract::GetFloatParameter( unsigned int index )
 		return fovOut;
 	case PT_FOV_IN:
 		return fovIn;
+	case PT_MIRROR_RADIUS:
+		return mirrorRadius;
+	case PT_PROJ_DISTANCE:
+		return projDistance;
+	case PT_PROJ_LIFT:
+		return projLift;
+	case PT_MIRROR_PROJ_FOV:
+		return mirrorProjFov;
 	}
 
 	return 0.0f;
@@ -241,6 +276,18 @@ char* AddSubtract::GetParameterDisplay( unsigned int index )
 		return displayValueBuffer;
 	case PT_FOV_IN:
 		printDoubleToResolumeBuffer( displayValueBuffer, fovIn );
+		return displayValueBuffer;
+	case PT_MIRROR_RADIUS:
+		printDoubleToResolumeBuffer( displayValueBuffer, 0.01 + mirrorRadius * 0.49 );
+		return displayValueBuffer;
+	case PT_PROJ_DISTANCE:
+		printDoubleToResolumeBuffer( displayValueBuffer, 0.5 + projDistance * 4.5 );
+		return displayValueBuffer;
+	case PT_PROJ_LIFT:
+		printDoubleToResolumeBuffer( displayValueBuffer, projLift * 2.0 );
+		return displayValueBuffer;
+	case PT_MIRROR_PROJ_FOV:
+		printDoubleToResolumeBuffer( displayValueBuffer, (0.1 + mirrorProjFov * 2.94) * 180.0 / 3.14159265359 );
 		return displayValueBuffer;
 	default:
 		return CFFGLPlugin::GetParameterDisplay( index );

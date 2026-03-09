@@ -9,6 +9,12 @@ uniform vec2 MaxUV;
 out vec4 fragColor;
 uniform int inputProjection, outputProjection, stereo, width, height;
 uniform float fovOut, fovIn;
+// Mirror dome parameters (pre-mapped from [0,1] slider in C++ code)
+// mirrorRadius: radius of the spherical mirror (dome radius = 1.0)
+// projDistance: distance from projector to mirror center
+// projLift: height of projector above mirror center
+// mirrorProjFov: projector field of view in radians
+uniform float mirrorRadius, projDistance, projLift, mirrorProjFov;
 //precision highp float;
 vec4 TRANSPARENT_PIXEL = vec4( 0.0, 0.0, 0.0, 0.0 );
 float PI = 3.141592653589793;
@@ -297,25 +303,123 @@ vec2 cubemapUvToLatLon(vec2 local_uv)
 	return pointToLatLon(cubemapUvToPoint(local_uv));
 }
 
-// Convert a uv coordinate in the output image into angles on the sphere
+// Convert a uv coordinate in the output image (projector pixel) into lat/lon on the mirror surface.
+// This traces a ray from the projector through the pixel and intersects it with the spherical mirror.
+// Based on Paul Bourke's mirror dome projection approach.
 vec2 mirrorUvToMirrorLatLon(vec2 local_uv)
 {
-	// TODO
-	return vec2(0.0, 0.0);
+	// Mirror is a sphere at the origin with radius mirrorRadius.
+	// Dome is a hemisphere at the origin with radius 1.0.
+	// Projector is at (0, -projDistance, projLift) aimed at the mirror center.
+	vec3 mirrorCenter = vec3(0.0, 0.0, 0.0);
+	vec3 projPos = vec3(0.0, -projDistance, projLift);
+
+	// Projector aims at mirror center
+	vec3 projForward = normalize(mirrorCenter - projPos);
+
+	// Build projector's local coordinate system
+	vec3 worldUp = vec3(0.0, 0.0, 1.0);
+	vec3 projRight = normalize(cross(projForward, worldUp));
+	vec3 projUp = normalize(cross(projRight, projForward));
+
+	// Convert UV [0,1] to pixel position [-1,1] on the projector's image plane
+	vec2 pixelPos = 2.0 * local_uv - 1.0;
+	float aspectRatio = float(width) / float(height);
+	float halfTan = tan(mirrorProjFov / 2.0);
+
+	// Ray direction from projector through this pixel
+	vec3 rayDir = normalize(
+		projForward
+		+ halfTan * pixelPos.x * aspectRatio * projRight
+		+ halfTan * pixelPos.y * projUp
+	);
+
+	// Ray-sphere intersection: ray P = projPos + t * rayDir, sphere |P|^2 = mirrorRadius^2
+	vec3 oc = projPos - mirrorCenter;
+	float b = 2.0 * dot(oc, rayDir);
+	float c = dot(oc, oc) - mirrorRadius * mirrorRadius;
+	float discriminant = b * b - 4.0 * c;
+
+	if (discriminant < 0.0) {
+		// Ray misses the mirror
+		isTransparent = true;
+		return SET_TO_TRANSPARENT;
+	}
+
+	// Take the closer intersection (smaller t)
+	float t = (-b - sqrt(discriminant)) / 2.0;
+	if (t < 0.0) {
+		// Mirror is behind the projector
+		isTransparent = true;
+		return SET_TO_TRANSPARENT;
+	}
+
+	// Hit point on mirror surface
+	vec3 hitPoint = projPos + t * rayDir;
+
+	// Convert the hit point to a direction from the mirror center, then to lat/lon
+	vec3 mirrorSurfaceDir = normalize(hitPoint - mirrorCenter);
+	return pointToLatLon(mirrorSurfaceDir);
 }
 
-// Convert a latitude/longitude on the little spherical mirror, to a 3d point on the sphere
-vec3 mirrorLatLonToDomePoint(vec2 local_uv)
+// Convert a latitude/longitude on the spherical mirror surface to a 3D point on the dome.
+// Reconstructs the incident ray from the projector, reflects it off the mirror, and
+// intersects the reflected ray with the dome hemisphere.
+vec3 mirrorLatLonToDomePoint(vec2 mirrorLatLon)
 {
-	// TODO
-	return vec3(0.0, 0.0, 0.0);
+	vec3 mirrorCenter = vec3(0.0, 0.0, 0.0);
+	vec3 projPos = vec3(0.0, -projDistance, projLift);
+
+	// Reconstruct the hit point on the mirror surface from lat/lon
+	vec3 mirrorNormal = latLonToPoint(mirrorLatLon);
+	vec3 hitPoint = mirrorCenter + mirrorRadius * mirrorNormal;
+
+	// Incident ray direction (from projector to hit point on mirror)
+	vec3 incidentDir = normalize(hitPoint - projPos);
+
+	// Reflect the incident ray off the mirror surface
+	// R = I - 2(I . N)N
+	vec3 reflectedDir = incidentDir - 2.0 * dot(incidentDir, mirrorNormal) * mirrorNormal;
+	reflectedDir = normalize(reflectedDir);
+
+	// Intersect reflected ray with dome hemisphere (sphere at origin, radius = 1.0)
+	// Ray: P = hitPoint + t * reflectedDir
+	// Sphere: |P|^2 = 1.0
+	float b = 2.0 * dot(hitPoint, reflectedDir);
+	float c = dot(hitPoint, hitPoint) - 1.0;
+	float discriminant = b * b - 4.0 * c;
+
+	if (discriminant < 0.0) {
+		isTransparent = true;
+		return vec3(0.0, 0.0, 0.0);
+	}
+
+	// Take the farther intersection (we are inside the dome, want the outward hit)
+	float t = (-b + sqrt(discriminant)) / 2.0;
+	if (t < 0.0) {
+		isTransparent = true;
+		return vec3(0.0, 0.0, 0.0);
+	}
+
+	vec3 domePoint = hitPoint + t * reflectedDir;
+
+	// Only accept points on the upper hemisphere (the dome surface)
+	if (domePoint.z < 0.0) {
+		isTransparent = true;
+		return vec3(0.0, 0.0, 0.0);
+	}
+
+	return domePoint;
 }
 
-// Convert a uv (coordinate in the image) to a latitude/longitude in the sphere.
+// Convert a uv (coordinate in the projector image) to a latitude/longitude on the dome.
+// Chains the full ray trace: projector pixel → mirror hit → reflection → dome point → lat/lon.
 vec2 mirrorDomeUvToLatLon(vec2 local_uv)
 {
 	vec2 mirrorLatLon = mirrorUvToMirrorLatLon(local_uv);
+	if (isTransparent) return SET_TO_TRANSPARENT;
 	vec3 domePoint = mirrorLatLonToDomePoint(mirrorLatLon);
+	if (isTransparent) return SET_TO_TRANSPARENT;
 	return pointToLatLon(domePoint);
 }
 

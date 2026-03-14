@@ -1,5 +1,4 @@
-#include "Reprojection.h"
-#include <fstream>// std::ifstream
+#include "Reprojection.h"#include <fstream>// std::ifstream
 
 #include "Shader.h"
 
@@ -24,15 +23,15 @@ enum ParamType : FFUInt32
 
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< AddSubtract >,// Create method
-	"RPRJ",                      // Plugin unique ID of maximum length 4.
-	"Reprojection",            // Plugin name
+	"MRRD",                      // Plugin unique ID of maximum length 4.
+	"MirrorDome",                // Plugin name
 	2,                           // API major version number
 	1,                           // API minor version number
 	1,                           // Plugin major version number
 	0,                           // Plugin minor version number
 	FF_EFFECT,                   // Plugin type
-	"Change image projection",   // Plugin description
-	"Modify projections"      // About
+	"Paul Bourke's Mirror Dome", // Plugin description
+	"Reprojection w/ Mirror Dome"// About
 );
 
 static const char _vertexShaderCode[] = R"(#version 410 core
@@ -62,7 +61,7 @@ AddSubtract::AddSubtract() :
 	SetParamElementInfo( PT_INPUT_PROJECTION, 2, "Flat", 2 );
 	SetParamElementInfo( PT_INPUT_PROJECTION, 3, "Cubemap", 3 );
 
-	SetOptionParamInfo( PT_OUTPUT_PROJECTION, "OutputProjection", 4, outputProjection );
+	SetOptionParamInfo( PT_OUTPUT_PROJECTION, "OutputProjection", 5, outputProjection );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 0, "Equirectangular", 0 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 1, "Fisheye", 1 );
 	SetParamElementInfo( PT_OUTPUT_PROJECTION, 2, "Flat", 2 );

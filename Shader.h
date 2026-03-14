@@ -427,6 +427,7 @@ vec2 mirrorDomeUvToLatLon(vec2 local_uv)
 	return pointToLatLon(domePoint);
 }
 
+)" R"( // <- Shader string was too long, needed to break it up
 void main()
 {
 	vec2 local_uv = uv;

@@ -1,6 +1,6 @@
-#include "Reprojection.h"#include <fstream>// std::ifstream
-
+#include "Reprojection.h" // Switch to AddSubtract.h when building locally
 #include "Shader.h"
+#include <fstream>
 
 using namespace ffglex;
 
@@ -49,8 +49,8 @@ void main()
 )";
 
 AddSubtract::AddSubtract() :
-	inputProjection( 0 ), outputProjection( 0 ), stereo( 0 ), pitch( 0.5f ), roll( 0.5f ), yaw( 0.5f ), fovOut( 0.5 ), fovIn( 0.5 ),
-	mirrorRadius( 0.5f ), projDistance( 0.5f ), projLift( 0.5f ), mirrorProjFov( 0.5f ), projTilt( 0.5f )
+	inputProjection( 1 ), outputProjection( 4 ), stereo( 0 ), pitch( 0.75f ), roll( 0.5f ), yaw( 0.5f ), fovOut( 0.5 ), fovIn( 0.5 ),
+	mirrorRadius( 0.5f ), projDistance( 0.5f ), projLift( 0.0f ), mirrorProjFov( 0.12347f ), projTilt( 0.52751f )
 {
 	SetMinInputs( 1 );
 	SetMaxInputs( 1 );
@@ -84,6 +84,13 @@ AddSubtract::AddSubtract() :
 	SetParamInfof( PT_PROJ_LIFT, "Proj Lift", FF_TYPE_STANDARD );
 	SetParamInfof( PT_MIRROR_PROJ_FOV, "Mirror Proj FoV", FF_TYPE_STANDARD );
 	SetParamInfof( PT_PROJ_TILT, "Proj Tilt", FF_TYPE_STANDARD );
+
+	// Set mirror dome defaults to match typical Paul Bourke mirror dome geometry
+	mirrorRadius = 0.5f;
+	projDistance = 0.54f;
+	projLift = 0.0f;
+	mirrorProjFov = 0.5f;
+	projTilt = 0.515f;
 
 	FFGLLog::LogToHost( "Created AddSubtract effect" );
 }
@@ -143,9 +150,9 @@ FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 
 	// Mirror dome parameters: map from [0,1] slider to physical ranges
 	glUniform1f( shader.FindUniform( "mirrorRadius" ), 0.01f + mirrorRadius * 0.49f );
-	glUniform1f( shader.FindUniform( "projDistance" ), 0.5f + projDistance * 4.5f );
+	glUniform1f( shader.FindUniform( "projDistance" ), 0.5f + projDistance * 2.5f );
 	glUniform1f( shader.FindUniform( "projLift" ), projLift * 2.0f );
-	glUniform1f( shader.FindUniform( "mirrorProjFov" ), 0.1f + mirrorProjFov * 2.94f );
+	glUniform1f( shader.FindUniform( "mirrorProjFov" ), 0.02f + mirrorProjFov * 1.03f );
 	glUniform1f( shader.FindUniform( "projTilt" ), (projTilt - 0.5f) * 3.14159265359f );
 
 	quad.Draw();
@@ -288,13 +295,13 @@ char* AddSubtract::GetParameterDisplay( unsigned int index )
 		printDoubleToResolumeBuffer( displayValueBuffer, 0.01 + mirrorRadius * 0.49 );
 		return displayValueBuffer;
 	case PT_PROJ_DISTANCE:
-		printDoubleToResolumeBuffer( displayValueBuffer, 0.5 + projDistance * 4.5 );
+		printDoubleToResolumeBuffer( displayValueBuffer, 0.5 + projDistance * 2.5 );
 		return displayValueBuffer;
 	case PT_PROJ_LIFT:
 		printDoubleToResolumeBuffer( displayValueBuffer, projLift * 2.0 );
 		return displayValueBuffer;
 	case PT_MIRROR_PROJ_FOV:
-		printDoubleToResolumeBuffer( displayValueBuffer, (0.1 + mirrorProjFov * 2.94) * 180.0 / 3.14159265359 );
+		printDoubleToResolumeBuffer( displayValueBuffer, (0.02 + mirrorProjFov * 1.03) * 180.0 / 3.14159265359 );
 		return displayValueBuffer;
 	case PT_PROJ_TILT:
 		printDoubleToResolumeBuffer( displayValueBuffer, (projTilt - 0.5) * 180.0 );

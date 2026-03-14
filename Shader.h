@@ -325,6 +325,8 @@ vec2 mirrorUvToMirrorLatLon(vec2 local_uv)
 
 	// Apply tilt: rotate projForward around projRight by projTilt angle
 	projForward = normalize(projForward * cos(projTilt) + projUp * sin(projTilt));
+	// Recompute projUp to stay perpendicular to the tilted forward direction
+	projUp = normalize(cross(projRight, projForward));
 
 	// Convert UV [0,1] to pixel position [-1,1] on the projector's image plane
 	vec2 pixelPos = 2.0 * local_uv - 1.0;

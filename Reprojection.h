@@ -25,5 +25,5 @@ private:
 	ffglex::FFGLScreenQuad quad;//!< Utility to help us render a full screen quad.
 	int inputProjection, outputProjection, stereo;
 	float pitch, roll, yaw, fovOut, fovIn;
-	float mirrorRadius, projDistance, projLift, mirrorProjFov, projTilt;
+	float mirrorRadius, projDistance, projLift, mirrorProjFov, projTilt, domeRadius;
 };

@@ -10,12 +10,13 @@ out vec4 fragColor;
 uniform int inputProjection, outputProjection, stereo, width, height;
 uniform float fovOut, fovIn;
 // Mirror dome parameters (pre-mapped from [0,1] slider in C++ code)
-// mirrorRadius: radius of the spherical mirror (dome radius = 1.0)
-// projDistance: distance from projector to mirror center
-// projLift: height of projector above mirror center
+// mirrorRadius: radius of the spherical mirror (meters)
+// projDistance: distance from projector to mirror center (meters)
+// projLift: height of projector above mirror center (meters)
 // mirrorProjFov: projector field of view in radians
 // projTilt: angle in radians to tilt the projector aim up (+) or down (-)
-uniform float mirrorRadius, projDistance, projLift, mirrorProjFov, projTilt;
+// domeRadius: radius of the dome hemisphere (meters, range [0.5, 50.0])
+uniform float mirrorRadius, projDistance, projLift, mirrorProjFov, projTilt, domeRadius;
 //precision highp float;
 vec4 TRANSPARENT_PIXEL = vec4( 0.0, 0.0, 0.0, 0.0 );
 float PI = 3.141592653589793;
@@ -310,7 +311,7 @@ vec2 cubemapUvToLatLon(vec2 local_uv)
 vec2 mirrorUvToMirrorLatLon(vec2 local_uv)
 {
 	// Mirror is a sphere at the origin with radius mirrorRadius.
-	// Dome is a hemisphere at the origin with radius 1.0.
+	// Dome is a hemisphere at the origin with radius domeRadius.
 	// Projector is at (0, -projDistance, projLift) aimed at the mirror center.
 	vec3 mirrorCenter = vec3(0.0, 0.0, 0.0);
 	vec3 projPos = vec3(0.0, -projDistance, projLift);
@@ -388,11 +389,11 @@ vec3 mirrorLatLonToDomePoint(vec2 mirrorLatLon)
 	vec3 reflectedDir = incidentDir - 2.0 * dot(incidentDir, mirrorNormal) * mirrorNormal;
 	reflectedDir = normalize(reflectedDir);
 
-	// Intersect reflected ray with dome hemisphere (sphere at origin, radius = 1.0)
+	// Intersect reflected ray with dome hemisphere (sphere at origin, radius = domeRadius)
 	// Ray: P = hitPoint + t * reflectedDir
-	// Sphere: |P|^2 = 1.0
+	// Sphere: |P|^2 = domeRadius^2
 	float b = 2.0 * dot(hitPoint, reflectedDir);
-	float c = dot(hitPoint, hitPoint) - 1.0;
+	float c = dot(hitPoint, hitPoint) - domeRadius * domeRadius;
 	float discriminant = b * b - 4.0 * c;
 
 	if (discriminant < 0.0) {

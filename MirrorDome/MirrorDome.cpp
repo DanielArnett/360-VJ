@@ -1,0 +1,316 @@
+#include "MirrorDome.h" // Switch to AddSubtract.h when building locally
+#include "../Reprojection/Shader.h"
+#include <fstream>
+
+using namespace ffglex;
+
+enum ParamType : FFUInt32
+{
+	PT_INPUT_PROJECTION,
+	PT_OUTPUT_PROJECTION,
+	PT_STEREO,
+	PT_PITCH,
+	PT_ROLL,
+	PT_YAW,
+	PT_FOV_IN,
+	PT_FOV_OUT,
+	PT_MIRROR_RADIUS,
+	PT_PROJ_DISTANCE,
+	PT_PROJ_LIFT,
+	PT_MIRROR_PROJ_FOV,
+	PT_PROJ_TILT,
+	PT_DOME_RADIUS
+};
+
+static CFFGLPluginInfo PluginInfo(
+	PluginFactory< AddSubtract >,// Create method
+	"MRRD",                      // Plugin unique ID of maximum length 4.
+	"MirrorDome",                // Plugin name
+	2,                           // API major version number
+	1,                           // API minor version number
+	1,                           // Plugin major version number
+	0,                           // Plugin minor version number
+	FF_EFFECT,                   // Plugin type
+	"Paul Bourke's Mirror Dome", // Plugin description
+	"Reprojection w/ Mirror Dome"// About
+);
+
+static const char _vertexShaderCode[] = R"(#version 410 core
+
+layout( location = 0 ) in vec4 vPosition;
+layout( location = 1 ) in vec2 vUV;
+
+out vec2 uv;
+
+void main()
+{
+	gl_Position = vPosition;
+	uv = vUV;
+}
+)";
+
+AddSubtract::AddSubtract() :
+	inputProjection( 1 ), outputProjection( 4 ), stereo( 0 ), pitch( 0.75f ), roll( 0.5f ), yaw( 0.5f ), fovOut( 0.5 ), fovIn( 0.5 ),
+	mirrorRadius( 0.5f ), projDistance( 0.5f ), projLift( 0.5f ), mirrorProjFov( 0.12347f ), projTilt( 0.52751f ), domeRadius( 0.0101f )
+{
+	SetMinInputs( 1 );
+	SetMaxInputs( 1 );
+
+	SetOptionParamInfo( PT_INPUT_PROJECTION, "InputProjection", 3, inputProjection );
+	SetParamElementInfo( PT_INPUT_PROJECTION, 0, "Equirectangular", 0 );
+	SetParamElementInfo( PT_INPUT_PROJECTION, 1, "Fisheye", 1 );
+	SetParamElementInfo( PT_INPUT_PROJECTION, 2, "Flat", 2 );
+	SetParamElementInfo( PT_INPUT_PROJECTION, 3, "Cubemap", 3 );
+
+	SetOptionParamInfo( PT_OUTPUT_PROJECTION, "OutputProjection", 5, outputProjection );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 0, "Equirectangular", 0 );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 1, "Fisheye", 1 );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 2, "Flat", 2 );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 3, "Cubemap", 3 );
+	SetParamElementInfo( PT_OUTPUT_PROJECTION, 4, "MirrorDome", 4 );
+
+	SetOptionParamInfo(  PT_STEREO, "Stereo", 3, stereo );
+	SetParamElementInfo( PT_STEREO, 0, "None", 0 );
+	SetParamElementInfo( PT_STEREO, 1, "Over/Under", 1 );
+	SetParamElementInfo( PT_STEREO, 2, "Side by Side", 2 );
+
+	SetParamInfof( PT_PITCH, "Pitch", FF_TYPE_STANDARD );
+	SetParamInfof( PT_ROLL, "Roll", FF_TYPE_STANDARD );
+	SetParamInfof( PT_YAW, "Yaw", FF_TYPE_STANDARD );
+	SetParamInfof( PT_FOV_OUT, "fov Out", FF_TYPE_STANDARD );
+	SetParamInfof( PT_FOV_IN, "fov In", FF_TYPE_STANDARD );
+
+	SetParamInfof( PT_MIRROR_RADIUS, "Mirror Radius", FF_TYPE_STANDARD );
+	SetParamInfof( PT_PROJ_DISTANCE, "Proj Distance", FF_TYPE_STANDARD );
+	SetParamInfof( PT_PROJ_LIFT, "Proj Lift", FF_TYPE_STANDARD );
+	SetParamInfof( PT_MIRROR_PROJ_FOV, "Mirror Proj FoV", FF_TYPE_STANDARD );
+	SetParamInfof( PT_PROJ_TILT, "Proj Tilt", FF_TYPE_STANDARD );
+	SetParamInfof( PT_DOME_RADIUS, "Dome Radius", FF_TYPE_STANDARD );
+
+	FFGLLog::LogToHost( "Created AddSubtract effect" );
+}
+AddSubtract::~AddSubtract()
+{
+}
+
+FFResult AddSubtract::InitGL( const FFGLViewportStruct* vp )
+{
+	if( !shader.Compile( _vertexShaderCode, _fragmentShaderCode ) )
+	{
+		DeInitGL();
+		return FF_FAIL;
+	}
+	if( !quad.Initialise() )
+	{
+		DeInitGL();
+		return FF_FAIL;
+	}
+	
+	//Use base-class init as success result so that it retains the viewport.
+	return CFFGLPlugin::InitGL( vp );
+}
+FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
+{
+	if( pGL->numInputTextures < 1 )
+		return FF_FAIL;
+
+	if( pGL->inputTextures[ 0 ] == NULL )
+		return FF_FAIL;
+
+	//FFGL requires us to leave the context in a default state on return, so use this scoped binding to help us do that.
+	ScopedShaderBinding shaderBinding( shader.GetGLID() );
+	//The shader's sampler is always bound to sampler index 0 so that's where we need to bind the texture.
+	//Again, we're using the scoped bindings to help us keep the context in a default state.
+	ScopedSamplerActivation activateSampler( 0 );
+	Scoped2DTextureBinding textureBinding( pGL->inputTextures[ 0 ]->Handle );
+	
+
+	shader.Set( "InputTexture", 0 );
+
+	//The input texture's dimension might change each frame and so might the content area.
+	//We're adopting the texture's maxUV using a uniform because that way we dont have to update our vertex buffer each frame.
+	FFGLTexCoords maxCoords = GetMaxGLTexCoords( *pGL->inputTextures[ 0 ] );
+	shader.Set( "MaxUV", maxCoords.s, maxCoords.t );
+	//SetParamDisplayName( PT_RED, std::to_string( pGL->inputTextures[ 0 ]->Width ).c_str(), true );
+	glUniform3f( shader.FindUniform( "Rotation" ), (pitch-0.5)*2.0*3.14159265359,
+		                                           (roll -0.5)*2.0*3.14159265359,
+		                                           (yaw  -0.5)*2.0*3.14159265359 );
+	glUniform1f( shader.FindUniform( "fovOut" ), fovOut * 3.14159269359 / 2.0 );
+	glUniform1f( shader.FindUniform( "fovIn" ), fovIn * 3.14159269359 / 2.0 );
+	glUniform1i( shader.FindUniform( "inputProjection" ), inputProjection );
+	glUniform1i( shader.FindUniform( "outputProjection" ), outputProjection );
+	glUniform1i( shader.FindUniform( "stereo" ), stereo );
+	glUniform1i( shader.FindUniform( "width" ), pGL->inputTextures[ 0 ]->Width );
+	glUniform1i( shader.FindUniform( "height" ), pGL->inputTextures[ 0 ]->Height );
+
+	// Mirror dome parameters: map from [0,1] slider to physical ranges
+	glUniform1f( shader.FindUniform( "mirrorRadius" ), 0.01f + mirrorRadius * 0.49f );
+	glUniform1f( shader.FindUniform( "projDistance" ), 0.5f + projDistance * 2.5f );
+	glUniform1f( shader.FindUniform( "projLift" ), (projLift - 0.5f) * 4.0f );
+	glUniform1f( shader.FindUniform( "mirrorProjFov" ), 0.02f + mirrorProjFov * 1.03f );
+	glUniform1f( shader.FindUniform( "projTilt" ), (projTilt - 0.5f) * 3.14159265359f );
+	glUniform1f( shader.FindUniform( "domeRadius" ), 0.5f + domeRadius * 49.5f );
+
+	quad.Draw();
+
+	return FF_SUCCESS;
+}
+FFResult AddSubtract::DeInitGL()
+{
+	shader.FreeGLResources();
+	quad.Release();
+
+	return FF_SUCCESS;
+}
+
+FFResult AddSubtract::SetFloatParameter( unsigned int dwIndex, float value )
+{
+	switch( dwIndex )
+	{
+	case PT_PITCH:
+		pitch = value;
+		break;
+	case PT_ROLL:
+		roll = value;
+		break;
+	case PT_YAW:
+		yaw = value;
+		break;
+	case PT_INPUT_PROJECTION:
+		inputProjection = value;
+		break;
+	case PT_OUTPUT_PROJECTION:
+		outputProjection = value;
+		break;
+	case PT_STEREO:
+		stereo = value;
+		break;
+	case PT_FOV_OUT:
+		fovOut = value;
+		break;
+	case PT_FOV_IN:
+		fovIn = value;
+		break;
+	case PT_MIRROR_RADIUS:
+		mirrorRadius = value;
+		break;
+	case PT_PROJ_DISTANCE:
+		projDistance = value;
+		break;
+	case PT_PROJ_LIFT:
+		projLift = value;
+		break;
+	case PT_MIRROR_PROJ_FOV:
+		mirrorProjFov = value;
+		break;
+	case PT_PROJ_TILT:
+		projTilt = value;
+		break;
+	case PT_DOME_RADIUS:
+		domeRadius = value;
+		break;
+	default:
+		return FF_FAIL;
+	}
+
+	return FF_SUCCESS;
+}
+
+float AddSubtract::GetFloatParameter( unsigned int index )
+{
+	switch( index )
+	{
+	case PT_PITCH:
+		return pitch;
+	case PT_ROLL:
+		return roll;
+	case PT_YAW:
+		return yaw;
+	case PT_INPUT_PROJECTION:
+		return inputProjection;
+	case PT_OUTPUT_PROJECTION:
+		return outputProjection;
+	case PT_STEREO:
+		return stereo;
+	case PT_FOV_OUT:
+		return fovOut;
+	case PT_FOV_IN:
+		return fovIn;
+	case PT_MIRROR_RADIUS:
+		return mirrorRadius;
+	case PT_PROJ_DISTANCE:
+		return projDistance;
+	case PT_PROJ_LIFT:
+		return projLift;
+	case PT_MIRROR_PROJ_FOV:
+		return mirrorProjFov;
+	case PT_PROJ_TILT:
+		return projTilt;
+	case PT_DOME_RADIUS:
+		return domeRadius;
+	}
+
+	return 0.0f;
+}
+
+/**
+* This will print a double value behind the slider in resolume. 
+*/
+void AddSubtract::printDoubleToResolumeBuffer( char ( &buffer )[ 15 ], double value )
+{
+#if defined( WIN32 ) || defined( _WIN32 ) || defined( __WIN32__ ) || defined( __NT__ )
+	sprintf_s( buffer, "%f", value );
+#elif __APPLE__
+	sprintf( buffer, "%f", value );
+#endif
+}
+
+char* AddSubtract::GetParameterDisplay( unsigned int index )
+{
+	static char displayValueBuffer[ 15 ];
+	/**
+	 * We're not returning ownership over the string we return, so we have to somehow guarantee that
+	 * the lifetime of the returned string encompasses the usage of that string by the host. Having this static
+	 * buffer here keeps previously returned display string alive until this function is called again.
+	 * This happens to be long enough for the hosts we know about.
+	 */
+	memset( displayValueBuffer, 0, sizeof( displayValueBuffer ) );
+	switch( index )
+	{
+	case PT_PITCH:
+		printDoubleToResolumeBuffer( displayValueBuffer, pitch * 360.0f - 180.0f );
+		return displayValueBuffer;
+	case PT_YAW:
+		printDoubleToResolumeBuffer( displayValueBuffer, yaw * 360.0f - 180.0f );
+		return displayValueBuffer;
+	case PT_ROLL:
+		printDoubleToResolumeBuffer( displayValueBuffer, roll * 360.0f - 180.0f );
+		return displayValueBuffer;
+	case PT_FOV_OUT:
+		printDoubleToResolumeBuffer( displayValueBuffer, fovOut );
+		return displayValueBuffer;
+	case PT_FOV_IN:
+		printDoubleToResolumeBuffer( displayValueBuffer, fovIn );
+		return displayValueBuffer;
+	case PT_MIRROR_RADIUS:
+		printDoubleToResolumeBuffer( displayValueBuffer, 0.01 + mirrorRadius * 0.49 );
+		return displayValueBuffer;
+	case PT_PROJ_DISTANCE:
+		printDoubleToResolumeBuffer( displayValueBuffer, 0.5 + projDistance * 2.5 );
+		return displayValueBuffer;
+	case PT_PROJ_LIFT:
+		printDoubleToResolumeBuffer( displayValueBuffer, (projLift - 0.5) * 4.0 );
+		return displayValueBuffer;
+	case PT_MIRROR_PROJ_FOV:
+		printDoubleToResolumeBuffer( displayValueBuffer, (0.02 + mirrorProjFov * 1.03) * 180.0 / 3.14159265359 );
+		return displayValueBuffer;
+	case PT_PROJ_TILT:
+		printDoubleToResolumeBuffer( displayValueBuffer, (projTilt - 0.5) * 180.0 );
+		return displayValueBuffer;
+	case PT_DOME_RADIUS:
+		printDoubleToResolumeBuffer( displayValueBuffer, 0.5 + domeRadius * 49.5 );
+		return displayValueBuffer;
+	default:
+		return CFFGLPlugin::GetParameterDisplay( index );
+	}
+}

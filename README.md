@@ -1,27 +1,20 @@
-# 360-VJ: Reprojection
+# Reprojection
 
-360-VJ, now powered by the Reprojection shader, is a single effect that can convert between equirectangular, fisheye, and flat projections in both directions. It's a simple way to rotate and convert to/from 360 content. Enjoy!
+Two [FFGL](https://github.com/resolume/ffgl) plugins for [Resolume](https://resolume.com/) that reproject video between projection formats in real time.
 
+- **Reprojection** — Convert between equirectangular, fisheye, flat, and cubemap projections. Rotate and adjust FoV.
+- **MirrorDome** — Everything in Reprojection, plus Paul Bourke's spherical mirror dome projection (projector → mirror → dome ray tracing).
+
+Both plugins share a single GLSL fragment shader (`Reprojection/Shader.h`).
 
 ## Building
 
-The easiest way to build this project, clone the [resolume/ffgl](https://github.com/resolume/ffgl) repo, navigate to the [AddSubtract](https://github.com/resolume/ffgl/tree/master/source/plugins/AddSubtract) plugin example, and replace those files with the ones contained in this repo, such that
+1. Clone [resolume/ffgl](https://github.com/resolume/ffgl).
+2. Place these files inside the SDK's plugin directory (e.g., replace the `AddSubtract` example).
+3. Per-plugin: rename the `.cpp`/`.h` to `AddSubtract.cpp`/`AddSubtract.h` and update the `#include` accordingly.
+4. Build using the SDK's CMake pipeline.
 
-```
-Reprojection.cpp  -> AddSubtract.cpp
-Reprojection.h    -> AddSubtract.h
-Reprojection.hlsl -> Reprojection.hlsl   // Unchanged
-```
-
-
-Also note if doing so that the first line of Reprojection.cpp will need changed to read
-
-```
-#include <AddSubtract.h>
-```
-
-I keep all build artifacts out of this repo so we can use Joris De Jong's CI/CD pipeline to build this plugin.
-
+Build artifacts are kept out of this repo so we can use Joris De Jong's CI/CD pipeline.
 
 ## License
 

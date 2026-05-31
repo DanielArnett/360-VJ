@@ -296,6 +296,90 @@ vec2 cubemapUvToLatLon(vec2 local_uv)
 	return pointToLatLon(cubemapUvToPoint(local_uv));
 }
 
+vec2 pointToCubemapUv( vec3 point, float fovInput )
+{
+	float faceDistance = fovInput / 3.0;
+	float verticalCorrection = 2.0 / 3.0;
+	float epsilon = 0.000001;
+	vec2 pos;
+	vec2 local_uv;
+	vec3 absPoint = abs( point );
+
+	if( absPoint.x >= absPoint.y && absPoint.x >= absPoint.z )
+	{
+		if( abs( point.x ) < epsilon )
+		{
+			isTransparent = true;
+			return SET_TO_TRANSPARENT;
+		}
+		if( point.x < 0.0 )
+		{
+			pos.x      = -faceDistance * point.y / point.x;
+			pos.y      = -faceDistance * point.z / ( verticalCorrection * point.x );
+			local_uv.x = ( pos.x + 1.0 / 3.0 ) / 2.0;
+			local_uv.y = ( pos.y + 1.5 ) / 2.0;
+		}
+		else
+		{
+			pos.x      = -faceDistance * point.y / point.x;
+			pos.y      = faceDistance * point.z / ( verticalCorrection * point.x );
+			local_uv.x = ( pos.x + 5.0 / 3.0 ) / 2.0;
+			local_uv.y = ( pos.y + 1.5 ) / 2.0;
+		}
+	}
+	else if( absPoint.y >= absPoint.x && absPoint.y >= absPoint.z )
+	{
+		if( abs( point.y ) < epsilon )
+		{
+			isTransparent = true;
+			return SET_TO_TRANSPARENT;
+		}
+		if( point.y > 0.0 )
+		{
+			pos.x      = faceDistance * point.x / point.y;
+			pos.y      = faceDistance * point.z / ( verticalCorrection * point.y );
+			local_uv.x = ( pos.x + 1.0 ) / 2.0;
+			local_uv.y = ( pos.y + 1.5 ) / 2.0;
+		}
+		else
+		{
+			pos.x      = faceDistance * point.z / point.y;
+			pos.y      = faceDistance * point.x / ( verticalCorrection * point.y );
+			local_uv.x = ( pos.x + 1.0 ) / 2.0;
+			local_uv.y = ( pos.y + 0.5 ) / 2.0;
+		}
+	}
+	else
+	{
+		if( abs( point.z ) < epsilon )
+		{
+			isTransparent = true;
+			return SET_TO_TRANSPARENT;
+		}
+		if( point.z > 0.0 )
+		{
+			pos.x      = -faceDistance * point.y / point.z;
+			pos.y      = -faceDistance * point.x / ( verticalCorrection * point.z );
+			local_uv.x = ( pos.x + 1.0 / 3.0 ) / 2.0;
+			local_uv.y = ( pos.y + 0.5 ) / 2.0;
+		}
+		else
+		{
+			pos.x      = -faceDistance * point.y / point.z;
+			pos.y      = faceDistance * point.x / ( verticalCorrection * point.z );
+			local_uv.x = ( pos.x + 5.0 / 3.0 ) / 2.0;
+			local_uv.y = ( pos.y + 0.5 ) / 2.0;
+		}
+	}
+
+	if( outOfFlatBounds( local_uv, 0.0, 1.0 ) )
+	{
+		isTransparent = true;
+		return SET_TO_TRANSPARENT;
+	}
+	return local_uv;
+}
+
 void main()
 {
 	vec2 local_uv = uv;
@@ -357,6 +441,8 @@ void main()
 		sourcePixel = pointToFisheyeUv( point, fovIn );
 	else if( inputProjection == FLAT )
 		sourcePixel = latLonToFlatUv( latLon, fovIn );
+	else if( inputProjection == CUBEMAP )
+		sourcePixel = pointToCubemapUv( point, fovIn );
 
 	if( sourcePixel == SET_TO_TRANSPARENT ) {
 		fragColor = TRANSPARENT_PIXEL;

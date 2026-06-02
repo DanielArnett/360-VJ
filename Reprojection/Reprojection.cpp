@@ -50,7 +50,7 @@ AddSubtract::AddSubtract() :
 	SetMinInputs( 1 );
 	SetMaxInputs( 1 );
 
-	SetOptionParamInfo( PT_INPUT_PROJECTION, "InputProjection", 3, inputProjection );
+	SetOptionParamInfo( PT_INPUT_PROJECTION, "InputProjection", 4, inputProjection );
 	SetParamElementInfo( PT_INPUT_PROJECTION, 0, "Equirectangular", 0 );
 	SetParamElementInfo( PT_INPUT_PROJECTION, 1, "Fisheye", 1 );
 	SetParamElementInfo( PT_INPUT_PROJECTION, 2, "Flat", 2 );
